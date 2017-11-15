@@ -3,13 +3,12 @@
 # Robonomics market distribution controller.
 #
 
-from web3.contract import ConciseContract
 from web3 import Web3, HTTPProvider
 from robonomics_market.msg import Bid
 from std_msgs.msg import String
 from . import signer
+import rospy, json
 import numpy as np
-import rospy
 
 def desired_distribution(cap_vector, rob_vector):
     '''
@@ -26,8 +25,6 @@ def distribution_error(cap_vector, rob_vector):
     return desired_distribution(cap_vector, rob_vector) - rob_vector
 
 class Distribution:
-    INVESTORS_CONTRACT_ABI = []
-    INVESTORS_CONTRACT_ADDRESS = ""
     robots = {}
 
     def __init__(self):
@@ -35,12 +32,16 @@ class Distribution:
             Market distribution node initialisation.
         '''
         rospy.init_node('robonomics_distribution')
-        http_provider = rospy.get_param('web3_http_provider', 'http://localhost:8545')
+
+        http_provider = rospy.get_param('web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
-        #self.investors = self.web3.eth.contract(self.INVESTORS_CONTRACT_ABI,
-        #                                        self.INVESTORS_CONTRACT_ADDRESS,
-        #                                        ContractFactoryClass=ConciseContract)
-        self.market_list = rospy.get_param('supported_models', ["QmWboFP8XeBtFMbNYK3Ne8Z3gKFBSR5iQzkKgeNgQz3dz4"])
+
+        investors_abi = json.loads(rospy.get_param('~investors_contract_abi'))
+        investors_address = rospy.get_param('~investors_contract_address')
+        self.investors = self.web3.eth.contract(investors_address, abi=investors_abi)
+
+        self.market_list = json.loads(rospy.get_param('~supported_models'))
+
         self.current_market = rospy.Publisher('current_market', String, queue_size=10)
         self.subscribe_new_bids()
 
@@ -82,8 +83,7 @@ class Distribution:
         '''
         rospy.loginfo('Input market list is %s', self.market_list)
 
-        cap = [ 10 ] 
-        #cap = [self.investors.totalCap(m) for m in self.market_list]
+        cap = [self.investors.call().supply(m) for m in self.market_list]
         rospy.loginfo('Capitalization vector is %s', cap)
 
         rob = [len(self.robots[m]) for m in self.market_list]
