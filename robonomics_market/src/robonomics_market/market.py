@@ -10,6 +10,7 @@ import rospy, pubsub
 def bid2dict(b):
     return { 'model'    : b.model,
              'cost'     : b.cost,
+             'count'    : b.count,
              'fee'      : b.fee,
              'salt'     : b.salt,
              'signature': b.signature }
@@ -18,6 +19,7 @@ def ask2dict(a):
     return { 'model'    : a.model,
              'objective': a.objective,
              'cost'     : a.cost,
+             'count'    : a.count,
              'fee'      : a.fee,
              'salt'     : a.salt,
              'signature': a.signature }
@@ -45,6 +47,7 @@ class Market:
                     msg.model     = m['model']
                     msg.objective = m['objective']
                     msg.cost      = m['cost']
+                    msg.count     = m['count']
                     msg.fee       = m['fee']
                     msg.salt      = m['salt']
                     msg.signature = m['signature']
@@ -53,6 +56,7 @@ class Market:
                     msg = Bid()
                     msg.model     = m['model']
                     msg.cost      = m['cost']
+                    msg.count     = m['count']
                     msg.fee       = m['fee']
                     msg.salt      = m['salt']
                     msg.signature = m['signature']

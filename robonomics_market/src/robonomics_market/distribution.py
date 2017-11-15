@@ -54,6 +54,7 @@ class Distribution:
         '''
         def ecrecover(order):
             # TODO: ecrecover contract call
+            # w3.eth.account.recover(msghash, vrs=vrs)
             return 'NONE'
 
         def incoming_bid(msg):
