@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
+#
+# Robonomics market related nodes.
+#
 
-from market import Market
-from signer import Signer
-from distribution import Distribution
+from . import market
+from . import signer
+from . import generator
+from . import distribution
 
 def market_node():
-    Market().spin()
+    market.Market().spin()
 
 def signer_node():
-    Signer().spin()
+    signer.Signer().spin()
+
+def generator_node():
+    generator.Generator().spin()
 
 def distribution_node():
-    Distribution().spin()
+    distribution.Distribution().spin()

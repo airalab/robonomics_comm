@@ -15,6 +15,12 @@ add_message_files(
         Bid.msg
 )
 
+add_service_files(
+    FILES
+        AsksGenerator.srv
+        BidsGenerator.srv
+)
+
 generate_messages()
 
 catkin_install_python(

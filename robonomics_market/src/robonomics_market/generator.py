@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+#
+# Robonomics market Bid/Ask generator.
+#
+
+from robonomics_market.msg import Ask, Bid
+from robonomics_market.srv import *
+import rospy
+
+class Generator:
+    def __init__(self):
+        '''
+            Robonomics market Bid/Ask generator initialisation.
+        '''
+        rospy.init_node('robonomics_generator')
+        self.signing_bid = rospy.Publisher('signing/bid', Bid, queue_size=10)
+        self.signing_ask = rospy.Publisher('signing/ask', Ask, queue_size=10)
+
+        def gen_asks(req):
+            try:
+                self.gen_linear_asks(req.a, req.k, req.market, req.objective, req.fee, req.price_range)
+                return AsksGeneratorResponse('ok')
+            except Exception as e:
+                return AsksGeneratorResponse('fail: {0}'.format(e))
+        rospy.Service('gen_asks', AsksGenerator, gen_asks)
+
+        def gen_bids(req):
+            try:
+                self.gen_linear_bids(req.a, req.k, req.market, req.fee, req.price_range)
+                return BidsGeneratorResponse('ok')
+            except Exception as e:
+                return BidsGeneratorResponse('fail: {0}'.format(e))
+        rospy.Service('gen_bids', BidsGenerator, gen_bids)
+
+    def spin(self):
+        rospy.spin()
+
+    def gen_linear_asks(self, a, k, market, objective, fee, price_range):
+        '''
+            Market asks linear generator, ask function is `Q = a - k * P`
+        '''
+        msg = Ask()
+        msg.model     = market
+        msg.objective = objective
+        msg.fee       = fee
+        for P in range(1, price_range):
+            msg.cost  = P
+            msg.count = int(a - k * P)
+            if msg.count > 0:
+                self.signing_ask.publish(msg)
+
+
+    def gen_linear_bids(self, a, k, market, fee, price_range):
+        '''
+            Market bids linear generator, bid function is `Q = a + k * P`
+        '''
+        msg = Bid()
+        msg.model = market
+        msg.fee   = fee
+        for P in range(1, price_range):
+            msg.cost  = P
+            msg.count = int(a + k * P)
+            if msg.count > 0:
+                self.signing_bid.publish(msg)

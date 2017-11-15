@@ -12,7 +12,8 @@ def publish(topic, msg):
     '''
         Publish message to given topic.
     '''
-    return spawn('ipfs pubsub pub {0} "{1}\r\n"'.format(topic, b64encode(dumps(msg)))).expect(EOF)
+    msgdata = b64encode(dumps(msg).encode('utf-8')).decode('utf-8')
+    return spawn('ipfs pubsub pub {0} "{1}\r\n"'.format(topic, msgdata)).expect(EOF)
 
 def subscribe(topic):
     '''
@@ -21,4 +22,4 @@ def subscribe(topic):
     child = spawn('ipfs pubsub sub {0}'.format(topic))
     while not child.eof():
         child.expect('\r\n', timeout=None)
-        yield loads(b64decode(child.before))
+        yield loads(b64decode(child.before).decode('utf-8'))

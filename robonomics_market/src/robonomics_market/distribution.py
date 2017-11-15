@@ -3,20 +3,22 @@
 # Robonomics market distribution controller.
 #
 
-from signer import ask_hexdata, bid_hexdata
 from web3.contract import ConciseContract
 from web3 import Web3, HTTPProvider
+from robonomics_market.msg import Bid
+from std_msgs.msg import String
+from . import signer
 import numpy as np
 import rospy
 
-def desired_distribution(self, cap_vector, rob_vector):
+def desired_distribution(cap_vector, rob_vector):
     '''
         Desired robot distribution according to investor capital distribution,
         ref http://ensrationis.com/smart-factory-and-capital/
     '''
     return cap_vector * (sum(rob_vector) + 1) / sum(cap_vector)
 
-def distribution_error(self, cap_vector, rob_vector):
+def distribution_error(cap_vector, rob_vector):
     '''
         Robot distribution error according to current capital and robot distribution,
         ref http://ensrationis.com/smart-factory-and-capital/
@@ -35,12 +37,11 @@ class Distribution:
         rospy.init_node('robonomics_distribution')
         http_provider = rospy.get_param('web3_http_provider', 'http://localhost:8545')
         self.web3 = Web3(HTTPProvider(http_provider))
-        self.ns = ENS.fromWeb3(self.web3)
-        self.investors = self.web3.eth.contract(self.INVESTORS_CONTRACT_ABI,
-                                                self.INVESTORS_CONTRACT_ADDRESS,
-                                                ContractFactoryClass=ConciseContract)
-        self.market_list = rospy.get_param('supported_models')
-        self.current_market = rospy.Publisher('current_market', std_msgs.msg.String, queue_size=10)
+        #self.investors = self.web3.eth.contract(self.INVESTORS_CONTRACT_ABI,
+        #                                        self.INVESTORS_CONTRACT_ADDRESS,
+        #                                        ContractFactoryClass=ConciseContract)
+        self.market_list = rospy.get_param('supported_models', ["QmWboFP8XeBtFMbNYK3Ne8Z3gKFBSR5iQzkKgeNgQz3dz4"])
+        self.current_market = rospy.Publisher('current_market', String, queue_size=10)
         self.subscribe_new_bids()
 
     def spin(self):
@@ -53,17 +54,21 @@ class Distribution:
         '''
             Subscribe to incoming bids and register new robots by markets.
         '''
-        def ecrecover(order):
-            msgdata = ''
-            if hasattr(order, 'objective'):
-                msgdata = ask_hexdata(order)
-            else:
-                msgdata = bid_hexdata(order)
-            return self.web3.eth.account.recoverMessage(hexstr=msgdata, signature=order.signature)
+        def ecrecover(msg):
+            try:
+                msg.objective
+                return self.web3.eth.account.recoverMessage(data=signer.askdata(msg),
+                                                            signature=msg.signature)
+            except AttributeError:
+                return self.web3.eth.account.recoverMessage(data=signer.biddata(msg),
+                                                            signature=msg.signature)
 
         def incoming_bid(msg):
             if msg.model in self.market_list:
+                if not msg.model in self.robots:
+                    self.robots[msg.model] = set()
                 self.robots[msg.model].add(ecrecover(msg))
+
                 rospy.loginfo('Robots updated: %s', self.robots)
                 self.update_current_market()
 
@@ -77,7 +82,8 @@ class Distribution:
         '''
         rospy.loginfo('Input market list is %s', self.market_list)
 
-        cap = [self.investors.totalCap(m) for m in self.market_list]
+        cap = [ 10 ] 
+        #cap = [self.investors.totalCap(m) for m in self.market_list]
         rospy.loginfo('Capitalization vector is %s', cap)
 
         rob = [len(self.robots[m]) for m in self.market_list]

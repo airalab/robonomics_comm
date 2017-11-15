@@ -7,6 +7,6 @@ uint32 count        # int
 # Validation fee
 uint32 fee          # int 
 # Order salt
-string salt         # hex
+uint8[] salt        # hex
 # Order signature
-string signature    # hex
+uint8[] signature   # hex

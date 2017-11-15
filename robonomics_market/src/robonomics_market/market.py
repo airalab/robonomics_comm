@@ -4,16 +4,18 @@
 #
 
 from robonomics_market.msg import Ask, Bid
+from binascii import hexlify, unhexlify
 from threading import Thread
-import rospy, pubsub
+from . import pubsub
+import rospy
 
 def bid2dict(b):
     return { 'model'    : b.model,
              'cost'     : b.cost,
              'count'    : b.count,
              'fee'      : b.fee,
-             'salt'     : b.salt,
-             'signature': b.signature }
+             'salt'     : hexlify(b.salt).decode('utf-8'),
+             'signature': hexlify(b.signature).decode('utf-8') }
 
 def ask2dict(a):
     return { 'model'    : a.model,
@@ -21,8 +23,8 @@ def ask2dict(a):
              'cost'     : a.cost,
              'count'    : a.count,
              'fee'      : a.fee,
-             'salt'     : a.salt,
-             'signature': a.signature }
+             'salt'     : hexlify(a.salt).decode('utf-8'),
+             'signature': hexlify(a.signature).decode('utf-8') }
 
 class Market:
     def __init__(self):
@@ -49,8 +51,8 @@ class Market:
                     msg.cost      = m['cost']
                     msg.count     = m['count']
                     msg.fee       = m['fee']
-                    msg.salt      = m['salt']
-                    msg.signature = m['signature']
+                    msg.salt      = unhexlify(m['salt'].encode('utf-8'))
+                    msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     self.incoming_ask.publish(msg)
                 else:
                     msg = Bid()
@@ -58,8 +60,8 @@ class Market:
                     msg.cost      = m['cost']
                     msg.count     = m['count']
                     msg.fee       = m['fee']
-                    msg.salt      = m['salt']
-                    msg.signature = m['signature']
+                    msg.salt      = unhexlify(m['salt'].encode('utf-8'))
+                    msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     self.incoming_bid.publish(msg)
         Thread(target=incoming_thread).start()
         rospy.spin()
