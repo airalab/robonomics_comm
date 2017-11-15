@@ -42,7 +42,7 @@ class Distribution:
 
         self.market_list = json.loads(rospy.get_param('~supported_models'))
 
-        self.current_market = rospy.Publisher('current_market', String, queue_size=10)
+        self.market = rospy.Publisher('current', String, queue_size=10)
         self.subscribe_new_bids()
 
     def spin(self):
@@ -95,4 +95,4 @@ class Distribution:
         maxi = np.argmax(err)
         rospy.loginfo('Maximal error index is %d', maxi)
 
-        self.current_market.publish(self.market_list[maxi])
+        self.market.publish(self.market_list[maxi])

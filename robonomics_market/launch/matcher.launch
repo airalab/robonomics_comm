@@ -1,0 +1,14 @@
+<launch>
+  <group ns="matcher">
+    <param name="web3_http_provider" value="http://localhost:8545" />
+
+    <node pkg="robonomics_market" type="market_node" name="market">
+      <param name="market_topic" value="aira_market" />
+    </node>
+
+    <node pkg="robonomics_market" type="matcher_node" name="matcher" output="screen">
+      <param name="security_contract_abi" textfile="$(find robonomics_market)/abi/security.json" />
+      <param name="security_contract_address" value="0xEcE7e18Fdb0aDa64a123Db664300c9Bcd3573850" />
+    </node>
+  </group>
+</launch>

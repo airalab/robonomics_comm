@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from robonomics_market.nodes import matcher_node
+
+if __name__ == '__main__':
+    matcher_node()
