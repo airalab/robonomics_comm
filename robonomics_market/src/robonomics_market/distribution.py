@@ -3,8 +3,9 @@
 # Robonomics market distribution controller.
 #
 
-from web3 import Web3, HTTPProvider
+from signer import ask_hexdata, bid_hexdata
 from web3.contract import ConciseContract
+from web3 import Web3, HTTPProvider
 import numpy as np
 import rospy
 
@@ -53,13 +54,17 @@ class Distribution:
             Subscribe to incoming bids and register new robots by markets.
         '''
         def ecrecover(order):
-            # TODO: ecrecover contract call
-            # w3.eth.account.recover(msghash, vrs=vrs)
-            return 'NONE'
+            msgdata = ''
+            if hasattr(order, 'objective'):
+                msgdata = ask_hexdata(order)
+            else:
+                msgdata = bid_hexdata(order)
+            return self.web3.eth.account.recoverMessage(hexstr=msgdata, signature=order.signature)
 
         def incoming_bid(msg):
             if msg.model in self.market_list:
                 self.robots[msg.model].add(ecrecover(msg))
+                rospy.loginfo('Robots updated: %s', self.robots)
                 self.update_current_market()
 
         rospy.Subscriber('incoming/bid', Bid, incoming_bid)
@@ -70,18 +75,18 @@ class Distribution:
             Choose market by capital proportional robot distribution,
             ref http://ensrationis.com/smart-factory-and-capital/
         '''
-        rospy.info('Input market list is %s', self.market_list)
+        rospy.loginfo('Input market list is %s', self.market_list)
 
         cap = [self.investors.totalCap(m) for m in self.market_list]
-        rospy.info('Capitalization vector is %s', cap)
+        rospy.loginfo('Capitalization vector is %s', cap)
 
         rob = [len(self.robots[m]) for m in self.market_list]
-        rospy.info('Real robot distribution is %s', rob)
+        rospy.loginfo('Real robot distribution is %s', rob)
 
         err = distribution_error(np.array(cap), np.array(rob))
-        rospy.info('Robot distribution error is %s', err)
+        rospy.loginfo('Robot distribution error is %s', err)
 
         maxi = np.argmax(err)
-        rospy.info('Maximal error index is %d', maxi)
+        rospy.loginfo('Maximal error index is %d', maxi)
 
         self.current_market.publish(self.market_list[maxi])
