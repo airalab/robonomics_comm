@@ -37,12 +37,12 @@ class Matcher:
         self.security = self.web3.eth.contract(security_address, abi=security_abi)
 
         def incoming_bid(msg):
-            bids.add(Order(msg))
+            self.bids.add(Order(msg))
             self.match()
         rospy.Subscriber('incoming/bid', Bid, incoming_bid)
 
         def incoming_ask(msg):
-            asks.add(Order(msg))
+            self.asks.add(Order(msg))
             self.match()
         rospy.Subscriber('incoming/ask', Ask, incoming_ask)
 
@@ -58,7 +58,7 @@ class Matcher:
             if call `match` on every insertion to bids/asks then
             intersection should have only two elements or nothing.
         '''
-        eqs = bids & asks
+        eqs = self.bids & self.asks
         if len(eqs) == 0:
             return
 
@@ -69,13 +69,13 @@ class Matcher:
         try:
             eqs[0].msg.objective
             self.new_liability(eqs[0], eqs[1])
-            asks.remove(eqs[0])
-            bids.remove(eqs[1])
+            self.asks.remove(eqs[0])
+            self.bids.remove(eqs[1])
 
         except AttributeError:
             self.new_liability(eqs[1], eqs[0])
-            asks.remove(eqs[1])
-            bids.remove(eqs[0])
+            self.asks.remove(eqs[1])
+            self.bids.remove(eqs[0])
 
     def new_liability(self, ask, bid):
         '''
