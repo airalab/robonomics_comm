@@ -1,6 +1,6 @@
 <launch>
-  <group ns="market">
-    <param name="web3_http_provider" value="http://localhost:8545" />
+  <group ns="market2">
+    <param name="web3_http_provider" value="http://localhost:8555" />
 
     <node pkg="robonomics_market" type="market_node" name="market">
       <param name="market_topic" value="aira_market" />

@@ -8,7 +8,7 @@
 
     <node pkg="robonomics_market" type="matcher_node" name="matcher" output="screen">
       <param name="security_contract_abi" textfile="$(find robonomics_market)/abi/security.json" />
-      <param name="security_contract_address" value="0xEcE7e18Fdb0aDa64a123Db664300c9Bcd3573850" />
+      <param name="security_contract_address" value="0x74dD409122D19A51005B007349ef8b59fa4238c3" />
     </node>
   </group>
 </launch>

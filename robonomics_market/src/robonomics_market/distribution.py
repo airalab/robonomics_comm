@@ -58,10 +58,10 @@ class Distribution:
         def ecrecover(msg):
             try:
                 msg.objective
-                return self.web3.eth.account.recoverMessage(data=signer.askdata(msg),
+                return self.web3.eth.account.recoverMessage(data=signer.askhash(msg),
                                                             signature=msg.signature)
             except AttributeError:
-                return self.web3.eth.account.recoverMessage(data=signer.biddata(msg),
+                return self.web3.eth.account.recoverMessage(data=signer.bidhash(msg),
                                                             signature=msg.signature)
 
         def incoming_bid(msg):

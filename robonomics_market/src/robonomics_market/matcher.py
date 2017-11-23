@@ -6,28 +6,33 @@
 from robonomics_market.msg import Bid, Ask
 from web3 import Web3, HTTPProvider
 from base58 import b58decode
+from binascii import hexlify
 import rospy, json
+
+from . import signer 
 
 class Order:
     def __init__(self, msg):
         self.msg = msg
 
-    def __cmp__(self, other):
-        return cmp((self.msg.model, self.msg.cost, self.msg.count, self.msg.fee),
-                   (other.msg.model, other.msg.cost, other.msg.count, other.msg.fee))
+    def __hash__(self):
+        return hash((self.msg.model, self.msg.cost, self.msg.count, self.msg.fee))
+
+    def __eq__(self, other):
+        return (self.msg.model, self.msg.cost, self.msg.count, self.msg.fee) == (other.msg.model, other.msg.cost, other.msg.count, other.msg.fee)
 
     def __repr__(self):
         return '{0}'.format(self.msg)
 
 class Matcher:
-    bids = set()
-    asks = set()
+    bids = {}
+    asks = {}
 
     def __init__(self):
         '''
             Market distribution node initialisation.
         '''
-        rospy.init_node('robonomics_distribution')
+        rospy.init_node('robonomics_matcher')
 
         http_provider = rospy.get_param('web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
@@ -37,13 +42,13 @@ class Matcher:
         self.security = self.web3.eth.contract(security_address, abi=security_abi)
 
         def incoming_bid(msg):
-            self.bids.add(Order(msg))
-            self.match()
+            rospy.logdebug('Incoming bid: %s', msg)
+            self.match(bid=msg)
         rospy.Subscriber('incoming/bid', Bid, incoming_bid)
 
         def incoming_ask(msg):
-            self.asks.add(Order(msg))
-            self.match()
+            rospy.logdebug('Incoming ask: %s', msg)
+            self.match(ask=msg)
         rospy.Subscriber('incoming/ask', Ask, incoming_ask)
 
     def spin(self):
@@ -52,30 +57,31 @@ class Matcher:
         '''
         rospy.spin()
 
-    def match(self):
+    def match(self, bid=None, ask=None):
         '''
-            Make bids and asks intersection, 
-            if call `match` on every insertion to bids/asks then
-            intersection should have only two elements or nothing.
+            Make bids and asks intersection.
         '''
-        eqs = self.bids & self.asks
-        if len(eqs) == 0:
-            return
+        assert(not bid or not ask)
 
-        assert(len(eqs) == 2)
-
-        rospy.loginfo('Match found: %s', eqs)
+        if not ask:
+            self.bids[hash(Order(bid))] = Order(bid)
+        else:
+            self.asks[hash(Order(ask))] = Order(ask)
 
         try:
-            eqs[0].msg.objective
-            self.new_liability(eqs[0], eqs[1])
-            self.asks.remove(eqs[0])
-            self.bids.remove(eqs[1])
+            if not ask:
+                ask = self.asks[hash(Order(bid))].msg
+            else:
+                bid = self.bids[hash(Order(ask))].msg
 
-        except AttributeError:
-            self.new_liability(eqs[1], eqs[0])
-            self.asks.remove(eqs[1])
-            self.bids.remove(eqs[0])
+            rospy.loginfo('Match found: %s <=> %s', ask, bid)
+
+            self.new_liability(ask, bid)
+            del self.asks[Order(ask)]
+            del self.bids[Order(bid)]
+
+        except KeyError:
+            rospy.loginfo('No match found')
 
     def new_liability(self, ask, bid):
         '''
@@ -84,15 +90,22 @@ class Matcher:
         assert(ask.model == bid.model
                 and ask.cost == bid.cost
                 and ask.count == bid.count
-                and ask.fee == bid.fee) 
+                and ask.fee == bid.fee)
+
+        rospy.loginfo('model: %s', hexlify(b58decode(ask.model)).decode('utf-8'))
+        rospy.loginfo('obj: %s', hexlify(b58decode(ask.objective)).decode('utf-8'))
+        rospy.loginfo('siga: %s', hexlify(ask.signature).decode('utf-8'))
+        rospy.loginfo('sigb: %s', hexlify(bid.signature).decode('utf-8'))
+        rospy.loginfo('salta: %s', hexlify(ask.salt).decode('utf-8'))
+        rospy.loginfo('saltb: %s', hexlify(bid.salt).decode('utf-8'))
+        rospy.loginfo('hasha: %s', hexlify(signer.askhash(ask)).decode('utf-8'))
+        rospy.loginfo('hashb: %s', hexlify(signer.bidhash(bid)).decode('utf-8'))
 
         self.security.transact().create(b58decode(ask.model),
-                                        b58decode(ask.objective), 
-                                        ask.cost,
-                                        ask.count,
-                                        ask.fee,
+                                        b58decode(ask.objective),
+                                        [ask.cost, ask.count, ask.fee],
                                         ask.salt,
                                         ask.signature,
                                         bid.salt,
                                         bid.signature)
-        rospy.loginfo('Liability created')
+        rospy.loginfo('Liability contract created')

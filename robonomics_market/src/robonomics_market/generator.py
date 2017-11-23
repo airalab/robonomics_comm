@@ -13,8 +13,8 @@ class Generator:
             Robonomics market Bid/Ask generator initialisation.
         '''
         rospy.init_node('robonomics_generator')
-        self.signing_bid = rospy.Publisher('signing/bid', Bid, queue_size=10)
-        self.signing_ask = rospy.Publisher('signing/ask', Ask, queue_size=10)
+        self.signing_bid = rospy.Publisher('signing/bid', Bid, queue_size=128)
+        self.signing_ask = rospy.Publisher('signing/ask', Ask, queue_size=128)
 
         def gen_asks(req):
             try:
@@ -48,7 +48,6 @@ class Generator:
             msg.count = int(a - k * P)
             if msg.count > 0:
                 self.signing_ask.publish(msg)
-
 
     def gen_linear_bids(self, a, k, market, fee, price_range):
         '''

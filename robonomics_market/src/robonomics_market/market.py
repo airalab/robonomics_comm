@@ -32,7 +32,7 @@ class Market:
             Robonomics market initialisation.
         '''
         rospy.init_node('robonomics_market')
-        self.market_topic = rospy.get_param('market_topic', 'market')
+        self.market_topic = rospy.get_param('~market_topic')
         self.incoming_bid = rospy.Publisher('incoming/bid', Bid, queue_size=10)
         self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
         rospy.Subscriber('sending/bid', Bid, lambda m: pubsub.publish(self.market_topic, bid2dict(m)))
