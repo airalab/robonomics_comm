@@ -11,19 +11,6 @@ import rospy, json
 
 from . import signer 
 
-class Order:
-    def __init__(self, msg):
-        self.msg = msg
-
-    def __hash__(self):
-        return hash((self.msg.model, self.msg.cost, self.msg.count, self.msg.fee))
-
-    def __eq__(self, other):
-        return (self.msg.model, self.msg.cost, self.msg.count, self.msg.fee) == (other.msg.model, other.msg.cost, other.msg.count, other.msg.fee)
-
-    def __repr__(self):
-        return '{0}'.format(self.msg)
-
 class Matcher:
     bids = {}
     asks = {}
@@ -41,15 +28,8 @@ class Matcher:
         security_address = rospy.get_param('~security_contract_address')
         self.security = self.web3.eth.contract(security_address, abi=security_abi)
 
-        def incoming_bid(msg):
-            rospy.logdebug('Incoming bid: %s', msg)
-            self.match(bid=msg)
-        rospy.Subscriber('incoming/bid', Bid, incoming_bid)
-
-        def incoming_ask(msg):
-            rospy.logdebug('Incoming ask: %s', msg)
-            self.match(ask=msg)
-        rospy.Subscriber('incoming/ask', Ask, incoming_ask)
+        rospy.Subscriber('incoming/bid', Bid, lambda x: self.match(bid=x))
+        rospy.Subscriber('incoming/ask', Ask, lambda x: self.match(ask=x))
 
     def spin(self):
         '''
@@ -64,21 +44,25 @@ class Matcher:
         assert(not bid or not ask)
 
         if not ask:
-            self.bids[hash(Order(bid))] = Order(bid)
+            h = hash((bid.model, bid.cost, bid.count, bid.fee))
+            self.bids[h] = bid
         else:
-            self.asks[hash(Order(ask))] = Order(ask)
+            h = hash((ask.model, ask.cost, ask.count, ask.fee))
+            self.asks[h] = ask
 
         try:
             if not ask:
-                ask = self.asks[hash(Order(bid))].msg
+                h = hash((bid.model, bid.cost, bid.count, bid.fee))
+                ask = self.asks[h]
             else:
-                bid = self.bids[hash(Order(ask))].msg
+                h = hash((ask.model, ask.cost, ask.count, ask.fee))
+                bid = self.bids[h]
 
             rospy.loginfo('Match found: %s <=> %s', ask, bid)
 
             self.new_liability(ask, bid)
-            del self.asks[Order(ask)]
-            del self.bids[Order(bid)]
+            del self.asks[h]
+            del self.bids[h]
 
         except KeyError:
             rospy.loginfo('No match found')
@@ -87,25 +71,14 @@ class Matcher:
         '''
             Create liability contract for matched ask & bid.
         '''
-        assert(ask.model == bid.model
-                and ask.cost == bid.cost
-                and ask.count == bid.count
-                and ask.fee == bid.fee)
-
-        rospy.loginfo('model: %s', hexlify(b58decode(ask.model)).decode('utf-8'))
-        rospy.loginfo('obj: %s', hexlify(b58decode(ask.objective)).decode('utf-8'))
-        rospy.loginfo('siga: %s', hexlify(ask.signature).decode('utf-8'))
-        rospy.loginfo('sigb: %s', hexlify(bid.signature).decode('utf-8'))
-        rospy.loginfo('salta: %s', hexlify(ask.salt).decode('utf-8'))
-        rospy.loginfo('saltb: %s', hexlify(bid.salt).decode('utf-8'))
-        rospy.loginfo('hasha: %s', hexlify(signer.askhash(ask)).decode('utf-8'))
-        rospy.loginfo('hashb: %s', hexlify(signer.bidhash(bid)).decode('utf-8'))
-
-        self.security.transact().create(b58decode(ask.model),
-                                        b58decode(ask.objective),
-                                        [ask.cost, ask.count, ask.fee],
-                                        ask.salt,
-                                        ask.signature,
-                                        bid.salt,
-                                        bid.signature)
+        param = [ask.cost, ask.count, ask.fee]
+        sign = [ ask.salt
+               , bytes(31) + bytes([ask.signature[64]])
+               , ask.signature[0:32]
+               , ask.signature[32:64]
+               , bid.salt
+               , bytes(31) + bytes([bid.signature[64]])
+               , bid.signature[0:32]
+               , bid.signature[32:64] ]
+        self.security.transact().create(b58decode(ask.model), b58decode(ask.objective), param, sign)
         rospy.loginfo('Liability contract created')
