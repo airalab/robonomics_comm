@@ -7,7 +7,6 @@ from . import market
 from . import signer
 from . import matcher
 from . import generator
-from . import distribution
 
 def market_node():
     market.Market().spin()
@@ -17,9 +16,6 @@ def signer_node():
 
 def generator_node():
     generator.Generator().spin()
-
-def distribution_node():
-    distribution.Distribution().spin()
 
 def matcher_node():
     matcher.Matcher().spin()

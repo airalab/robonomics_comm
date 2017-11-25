@@ -26,7 +26,9 @@ generate_messages()
 catkin_install_python(
     PROGRAMS
         scripts/market_node
-        scripts/distribution_node
+        scripts/signer_node
+        scripts/matcher_node
+        scripts/generator_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
