@@ -1,11 +1,15 @@
 <launch>
-  <group ns="market">
+  <group ns="liability">
     <param name="web3_http_provider" value="http://localhost:8545" />
 
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
       <param name="builder_contract_abi" textfile="$(find robonomics_liability)/abi/builder.json" />
       <param name="builder_contract_address" value="0x8C5f9542D62d443F16691F3346E059465a44B0E7" />
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
+    </node>
+
+    <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen">
+      <param name="run_liability_immediately" value="true" />
     </node>
   </group>
 </launch>

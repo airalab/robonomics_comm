@@ -4,7 +4,7 @@
 #
 
 from robonomics_liability.msg import Liability
-import rospy
+import rospy, rosbag
 
 class Executor:
     def __init__(self):

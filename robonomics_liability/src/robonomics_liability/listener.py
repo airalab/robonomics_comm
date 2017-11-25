@@ -36,7 +36,7 @@ class Listener:
                 return SetLiabilityResultResponse(l.transact().setResult(b58decode(req.result)))
             except Exception as e:
                 return SetLiabilityResultResponse('fail: {0}'.format(e))
-        rospy.Service('set_result', LiabilityResult, set_result)
+        rospy.Service('set_result', SetLiabilityResult, set_result)
         
     def liability_read(self, address):
         '''
@@ -62,7 +62,7 @@ class Listener:
         def liability_filter_thread():
             for eve in liability_filter.get_new_entries():
                 self.liability.publish(self.liability_read(eve.args['instance']))
-            Timer(poll_interval, liability_filter_thread).start()
+            Timer(self.poll_interval, liability_filter_thread).start()
         liability_filter_thread()
 
         rospy.spin()
