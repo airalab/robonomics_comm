@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from robonomics_liability.nodes import listener_node
+
+if __name__ == '__main__':
+    listener_node()
