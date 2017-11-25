@@ -3,7 +3,7 @@
 # Robonomics market distribution controller.
 #
 
-from robonomics_market.signer import askhash, bidhash
+from robonomics_market.signer import bidhash
 from robonomics_market.msg import Bid
 from web3 import Web3, HTTPProvider
 from std_msgs.msg import String
@@ -56,13 +56,8 @@ class Distribution:
             Subscribe to incoming bids and register new robots by markets.
         '''
         def ecrecover(msg):
-            try:
-                msg.objective
-                return self.web3.eth.account.recoverMessage(data=askhash(msg),
-                                                            signature=msg.signature)
-            except AttributeError:
-                return self.web3.eth.account.recoverMessage(data=bidhash(msg),
-                                                            signature=msg.signature)
+            return self.web3.eth.account.recoverMessage(data=bidhash(msg),
+                                                        signature=msg.signature)
 
         def incoming_bid(msg):
             if msg.model in self.market_list:
