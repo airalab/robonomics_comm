@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
     COMPONENTS
         rospy
         message_generation
+        std_srvs
 )
 
 catkin_python_setup()

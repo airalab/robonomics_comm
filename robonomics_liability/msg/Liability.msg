@@ -1,3 +1,4 @@
+string address
 string model
 string objective
 string promisee

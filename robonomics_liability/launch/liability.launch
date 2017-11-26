@@ -1,6 +1,7 @@
 <launch>
   <group ns="liability">
     <param name="web3_http_provider" value="http://localhost:8545" />
+    <param name="ipfs_http_provider" value="http://localhost:5001" />
 
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
       <param name="builder_contract_abi" textfile="$(find robonomics_liability)/abi/builder.json" />
@@ -10,6 +11,7 @@
 
     <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen">
       <param name="run_liability_immediately" value="true" />
+      <param name="account" value="0x27eddd316c8a9bfed82e7d271c87922abb0c153c" />
     </node>
   </group>
 </launch>
