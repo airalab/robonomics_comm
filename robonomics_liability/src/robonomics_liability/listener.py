@@ -32,8 +32,10 @@ class Listener:
 
         def set_result(req):
             try:
+                rospy.logdebug('Set result request to %s with %s', req.address, req.result)
                 l = self.web3.eth.contract(req.address, abi=self.liability_abi)
-                return SetLiabilityResultResponse(l.transact().setResult(b58decode(req.result)))
+                txhash = l.transact({'gas': 100000}).setResult(b58decode(req.result))
+                return SetLiabilityResultResponse(str(txhash))
             except Exception as e:
                 return SetLiabilityResultResponse('fail: {0}'.format(e))
         rospy.Service('set_result', SetLiabilityResult, set_result)
@@ -52,7 +54,7 @@ class Listener:
         msg.cost = c.call().cost()
         msg.count = c.call().count()
         msg.fee = c.call().fee()
-        rospy.loginfo('New liability readed: %s', msg)
+        rospy.logdebug('New liability readed: %s', msg)
         return msg
 
     def spin(self):
@@ -61,8 +63,8 @@ class Listener:
         '''
         liability_filter = self.builder.eventFilter('Builded')
         def liability_filter_thread():
-            for eve in liability_filter.get_new_entries():
-                self.liability.publish(self.liability_read(eve.args['instance']))
+            for entry in liability_filter.get_new_entries():
+                self.liability.publish(self.liability_read(entry['args']['instance']))
             Timer(self.poll_interval, liability_filter_thread).start()
         liability_filter_thread()
 

@@ -11,7 +11,7 @@
 
     <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen">
       <param name="run_liability_immediately" value="true" />
-      <param name="account" value="0x27eddd316c8a9bfed82e7d271c87922abb0c153c" />
+      <param name="account" value="0x27EDdd316c8A9BfeD82E7D271c87922ABB0C153C" />
     </node>
   </group>
 </launch>
