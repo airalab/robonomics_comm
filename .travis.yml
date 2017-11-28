@@ -1,11 +1,12 @@
-sudo: true
+sudo: required
+dist: trusty
 language: python 
 
 before_install:
-- sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116 && sudo apt-get update && sudo apt-get install ros-lunar-ros-base 
+- sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' && sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116 && sudo apt-get update && sudo apt-get install ros-indigo-ros-base python-catkin-tools
 
 install:
-- source /opt/ros/lunar/setup.bash && mkdir -p ~/ws/src && ln -s ~/ws/src/robonomics_comm && cd ~/ws/src && catkin_init_workspace && cd .. && catkin_make install 
+- source /opt/ros/indigo/setup.bash && mkdir /tmp/ws/src -p && cd /tmp/ws && catkin init
 
 script:
-- source ~/ws/install/setup.bash
+- source /opt/ros/indigo/setup.bash && cd /tmp/ws/src && git clone https://github.com/airalab/robonomics_comm && catkin build --dry-run

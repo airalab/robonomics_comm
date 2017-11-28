@@ -37,4 +37,15 @@ This packages implements robonomics control rules described at [article](http://
 Examples
 --------
 
+**Robot**
 
+```bash
+$ roslaunch robonomics_comm market.launch
+$ roslaunch robonomics_comm liability.launch
+```
+
+**Market matcher**
+
+```bash
+$ roslaunch robonomics_comm matcher.launch
+```
