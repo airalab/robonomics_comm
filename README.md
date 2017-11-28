@@ -1,8 +1,11 @@
 Robonomics communication stack 
 ==============================
+[![Build Status](https://travis-ci.org/airalab/robonomics_comm.svg?branch=master)](https://travis-ci.org/airalab/robonomics_comm)
+![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)
 
-Robonomics communication ROS package stack contains common packages as a core of communication process.
-Communication in robonomics consist of two parts: decentralized messaging and consensus economical transactions.
+> This is reference implementation of robot economics protocol.
+
+Robonomics communication stack contains a set of ROS packages for economical communication purposes.
 
 **Installation** process is similar to any ROS catkin package set.
 
@@ -15,16 +18,23 @@ catkin_init_workspace && cd .. && catkin_make
 Robonomics liability
 --------------------
 
-
+Liability package implements protocol part about robot liability
+smart contract actions. It provide methods for robot task/result
+store, delivery and interpretation.
 
 Robonomics market
 -----------------
 
 Market package implements protocol part about robonomics markets.
-The robonomics market is decentralized and use smart contracts and
-blockchain arbitrary system for orders closing.
+The decentralized robonomics market use IPFS and Ethereum smart contracts
+for order processing.
 
 Robonomics control
 ------------------
 
 This packages implements robonomics control rules described at [article](http://ensrationis.com/smart-factory-and-capital/).
+
+Examples
+--------
+
+
