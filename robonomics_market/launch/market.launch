@@ -1,21 +1,20 @@
 <launch>
+  <!-- arguments -->
+  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="market_topic" default="aira_market" />
+  <arg name="enable_generator" default="true" />
+  <arg name="enable_signer" default="true" />
+
+  <!-- market group -->
   <group ns="market">
-    <param name="web3_http_provider" value="http://localhost:8545" />
-
     <node pkg="robonomics_market" type="market_node" name="market">
-      <param name="market_topic" value="aira_market" />
+      <param name="market_topic" value="$(arg market_topic)" />
     </node>
 
-    <node pkg="robonomics_market" type="signer_node" name="signer" />
-
-    <node pkg="robonomics_market" type="generator_node" name="generator" />
-
-    <!--
-    <node pkg="robonomics_market" type="distribution_node" name="distribution" output="screen">
-      <param name="investors_contract_abi" textfile="$(find robonomics_market)/abi/investors.json" />
-      <param name="investors_contract_address" value="0x7Dc07BE45D6547670e186568deB91a1A4E2E6e53" />
-      <param name="supported_models" textfile="$(find robonomics_market)/models/simple.json" />
+    <node pkg="robonomics_market" type="signer_node" name="signer" if="$(arg enable_signer)">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
     </node>
-    -->
+
+    <node pkg="robonomics_market" type="generator_node" name="generator" if="$(arg enable_generator)" />
   </group>
 </launch>

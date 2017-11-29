@@ -17,7 +17,7 @@ class Listener:
         '''
         rospy.init_node('robonomics_liability_listener')
 
-        http_provider = rospy.get_param('web3_http_provider')
+        http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
         self.poll_interval = rospy.get_param('~poll_interval', 5)

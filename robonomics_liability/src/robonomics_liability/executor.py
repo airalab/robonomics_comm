@@ -7,6 +7,7 @@ from robonomics_liability.msg import Liability
 from robonomics_liability.srv import SetLiabilityResult
 from std_srvs.srv import Empty, EmptyResponse
 from tempfile import TemporaryDirectory 
+from web3 import Web3, HTTPProvider
 from urllib.parse import urlparse
 from .recorder import Recorder
 from subprocess import Popen
@@ -20,11 +21,14 @@ class Executor:
         '''
         rospy.init_node('robonomics_liability_executor')
 
-        ipfs_provider = urlparse(rospy.get_param('ipfs_http_provider')).netloc.split(':')
+        web3_provider = rospy.get_param('~web3_http_provider')
+        self.web3 = Web3(HTTPProvider(web3_provider))
+
+        ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         self.run_liability_immediately = rospy.get_param('~run_liability_immediately')
-        self.account = rospy.get_param('~account')
+        self.account = self.web3.eth.accounts[0] 
 
         def incoming_liability(msg):
             if self.run_liability_immediately:

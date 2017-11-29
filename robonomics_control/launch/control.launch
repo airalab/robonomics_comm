@@ -1,11 +1,22 @@
 <launch>
-  <group ns="market">
-    <param name="web3_http_provider" value="http://localhost:8545" />
+  <!-- arguments -->
+  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="investors_contract_address" default="0x7Dc07BE45D6547670e186568deB91a1A4E2E6e53" />
+  <arg name="supported_models_file" default="$(find robonomics_control)/models/simple.json" />
+
+  <!-- market group -->
+  <group ns="control">
+    <include file="$(find robonomics_market)/launch/market.launch">
+      <arg name="enable_signer" value="false" />
+      <arg name="enable_generator" value="false" />
+      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+    </include>
 
     <node pkg="robonomics_control" type="distribution_node" name="distribution" output="screen">
       <param name="investors_contract_abi" textfile="$(find robonomics_control)/abi/investors.json" />
-      <param name="investors_contract_address" value="0x7Dc07BE45D6547670e186568deB91a1A4E2E6e53" />
-      <param name="supported_models" textfile="$(find robonomics_control)/models/simple.json" />
+      <param name="investors_contract_address" value="$(arg investors_contract_address)" />
+      <param name="supported_models" textfile="$(arg supported_models_file)" />
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
     </node>
   </group>
 </launch>

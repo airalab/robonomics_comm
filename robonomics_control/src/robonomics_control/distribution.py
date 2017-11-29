@@ -33,7 +33,7 @@ class Distribution:
         '''
         rospy.init_node('robonomics_distribution')
 
-        http_provider = rospy.get_param('web3_http_provider')
+        http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
         investors_abi = json.loads(rospy.get_param('~investors_contract_abi'))
@@ -68,7 +68,7 @@ class Distribution:
                 rospy.loginfo('Robots updated: %s', self.robots)
                 self.update_current_market()
 
-        rospy.Subscriber('incoming/bid', Bid, incoming_bid)
+        rospy.Subscriber('market/incoming/bid', Bid, incoming_bid)
 
     def update_current_market(self):
         '''

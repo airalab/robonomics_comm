@@ -33,7 +33,7 @@ class Signer:
             Market order signer initialisation.
         '''
         rospy.init_node('robonomics_signer')
-        http_provider = rospy.get_param('web3_http_provider', 'http://localhost:8545')
+        http_provider = rospy.get_param('~web3_http_provider')
         self.web3     = Web3(HTTPProvider(http_provider))
         self.account  = self.web3.eth.accounts[0]
 

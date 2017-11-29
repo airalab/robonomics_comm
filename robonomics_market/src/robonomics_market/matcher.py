@@ -21,15 +21,15 @@ class Matcher:
         '''
         rospy.init_node('robonomics_matcher')
 
-        http_provider = rospy.get_param('web3_http_provider')
+        http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
-        security_abi = json.loads(rospy.get_param('~security_contract_abi'))
-        security_address = rospy.get_param('~security_contract_address')
-        self.security = self.web3.eth.contract(security_address, abi=security_abi)
+        builder_abi = json.loads(rospy.get_param('~builder_contract_abi'))
+        builder_address = rospy.get_param('~builder_contract_address')
+        self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
-        rospy.Subscriber('incoming/bid', Bid, lambda x: self.match(bid=x))
-        rospy.Subscriber('incoming/ask', Ask, lambda x: self.match(ask=x))
+        rospy.Subscriber('market/incoming/bid', Bid, lambda x: self.match(bid=x))
+        rospy.Subscriber('market/incoming/ask', Ask, lambda x: self.match(ask=x))
 
     def spin(self):
         '''
@@ -80,5 +80,5 @@ class Matcher:
                , bytes(31) + bytes([bid.signature[64]])
                , bid.signature[0:32]
                , bid.signature[32:64] ]
-        self.security.transact().create(b58decode(ask.model), b58decode(ask.objective), param, sign)
+        self.builder.transact().create(b58decode(ask.model), b58decode(ask.objective), param, sign)
         rospy.loginfo('Liability contract created')
