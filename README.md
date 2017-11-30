@@ -40,12 +40,12 @@ Examples
 **Robot**
 
 ```bash
-$ roslaunch robonomics_comm market.launch
-$ roslaunch robonomics_comm liability.launch
+$ roslaunch robonomics_market market.launch
+$ roslaunch robonomics_liability liability.launch
 ```
 
 **Market matcher**
 
 ```bash
-$ roslaunch robonomics_comm matcher.launch
+$ roslaunch robonomics_market matcher.launch
 ```
