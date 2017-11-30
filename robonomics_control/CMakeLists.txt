@@ -17,3 +17,10 @@ catkin_install_python(
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(
+    FILES
+        launch/control.launch
+    DESTINATION
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
