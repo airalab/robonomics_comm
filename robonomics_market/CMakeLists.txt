@@ -23,6 +23,8 @@ add_service_files(
 
 generate_messages()
 
+catkin_package()
+
 catkin_install_python(
     PROGRAMS
         scripts/market_node
@@ -38,5 +40,12 @@ install(
         launch/market.launch
         launch/matcher.launch
     DESTINATION
-        ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+
+install(
+    FILES
+        abi/builder.json
+    DESTINATION
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )

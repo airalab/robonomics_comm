@@ -22,6 +22,8 @@ add_service_files(
 
 generate_messages()
 
+catkin_package()
+
 catkin_install_python(
     PROGRAMS
         scripts/listener_node
@@ -34,5 +36,12 @@ install(
     FILES
         launch/liability.launch
     DESTINATION
-        ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+
+install(
+    FILES
+        abi/liability.json
+    DESTINATION
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )
