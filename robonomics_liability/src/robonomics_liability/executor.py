@@ -4,7 +4,6 @@
 #
 
 from robonomics_liability.msg import Liability
-from robonomics_liability.srv import SetLiabilityResult
 from std_srvs.srv import Empty, EmptyResponse
 from tempfile import TemporaryDirectory 
 from web3 import Web3, HTTPProvider
@@ -15,6 +14,9 @@ from signal import SIGINT
 import rospy, ipfsapi, os
 
 class Executor:
+    player = {}
+    recorder = {}
+
     def __init__(self):
         '''
             Robonomics liability node initialisation.
@@ -38,7 +40,15 @@ class Executor:
 
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
-        self.set_result = rospy.ServiceProxy('set_result', SetLiabilityResult)
+        def finish_record(msg):
+            try:
+                self.player[msg.data].terminate()
+                self.recorder[msg.data].stop()
+            except:
+                rospy.logerr('Unable to finish liability %s', msg.data)
+        rospy.Subscriber('finish', String, finish_record)
+
+        self.result = rospy.Publisher('result', Liability, queue_size=10)
 
     def run_liability(self, msg):
         if msg.promisor != self.account:
@@ -55,32 +65,22 @@ class Executor:
             self.ipfs.get(msg.objective)
             rospy.loginfo('Objective is written to %s', tmpdir + '/' + msg.objective)
 
-            player = Popen('rosbag play -k ' + msg.objective, shell=True, cwd=tmpdir, preexec_fn=os.setsid)
+            self.player[msg.address] = Popen('rosbag play -k ' + msg.objective, shell=True, cwd=tmpdir, preexec_fn=os.setsid)
             rospy.logdebug('Rosbag player started')
 
             result_file = os.path.join(tmpdir, 'result.bag')
             rospy.loginfo('Start recording to %s...', result_file)
 
-            recorder = Recorder(result_file) 
-            recorder.start()
+            self.recorder[msg.address] = Recorder(result_file)
+            self.recorder[msg.address].start()
             rospy.logdebug('Rosbag recorder started')
 
-            def finish_record(r):
-                player.terminate()
-                recorder.stop()
-                return EmptyResponse()
-            rospy.Service(msg.objective + '/finish', Empty, finish_record)
+            self.player[msg.address].wait()
 
-            player.wait()
+            msg.result = self.ipfs.add(result_file)['Hash']
+            rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
-            result_hash = self.ipfs.add(result_file)['Hash']
-            rospy.loginfo('Liability %s finished with %s', msg.address, result_hash)
-
-            try:
-                response = self.set_result(msg.address, result_hash)
-                rospy.loginfo('Liability %s result txhash is %s', msg.address, response) 
-            except rospy.ServiceException as e:
-                rospy.logerr('Exception at result submission %s', e)
+            self.result.publish(msg)
 
     def spin(self):
         '''

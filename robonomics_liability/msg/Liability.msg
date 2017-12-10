@@ -1,6 +1,7 @@
 string address
 string model
 string objective
+string result
 string promisee
 string promisor
 uint64 cost

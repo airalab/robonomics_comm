@@ -4,7 +4,6 @@
 #
 
 from robonomics_liability.msg import Liability
-from robonomics_liability.srv import *
 from base58 import b58decode, b58encode
 from web3 import Web3, HTTPProvider
 from threading import Timer
@@ -30,15 +29,14 @@ class Listener:
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
 
-        def set_result(req):
+        def liability_result(msg):
+            rospy.loginfo('Set result `%s` to %s', msg.result, msg.address)
             try:
-                rospy.logdebug('Set result request to %s with %s', req.address, req.result)
-                l = self.web3.eth.contract(req.address, abi=self.liability_abi)
-                txhash = l.transact({'gas': 100000}).setResult(b58decode(req.result))
-                return SetLiabilityResultResponse(str(txhash))
+                l = self.web3.eth.contract(msg.address, abi=self.liability_abi)
+                l.transact({'gas': 100000}).setResult(b58decode(msg.result))
             except Exception as e:
-                return SetLiabilityResultResponse('fail: {0}'.format(e))
-        rospy.Service('set_result', SetLiabilityResult, set_result)
+                rospy.logerr(e)
+        rospy.Subscriber('result', LiabilityResult, liability_result)
         
     def liability_read(self, address):
         '''
