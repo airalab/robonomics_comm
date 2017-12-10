@@ -1,7 +1,7 @@
 <launch>
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://localhost:8545" />
-  <arg name="builder_contract_address" default="0x8C5f9542D62d443F16691F3346E059465a44B0E7" />
+  <arg name="builder_contract_address" default="0x11523db0844427F08bb8464cbF48944351dEB262" />
 
   <!-- market group -->
   <group ns="matcher">
