@@ -48,7 +48,8 @@ class Executor:
                 rospy.logerr('Unable to finish liability %s', msg.data)
         rospy.Subscriber('finish', String, finish_record)
 
-        self.result = rospy.Publisher('result', Liability, queue_size=10)
+        self.complete = rospy.Publisher('complete', Liability, queue_size=10)
+        self.current  = rospy.Publisher('current', Liability, queue_size=10)
 
     def run_liability(self, msg):
         if msg.promisor != self.account:
@@ -56,6 +57,7 @@ class Executor:
             return
         else:
             rospy.loginfo('Liability %s promisor is %s is me, running...', msg.address, msg.promisor)
+            current.publish(msg)
 
         with TemporaryDirectory() as tmpdir:
             rospy.loginfo('Temporary directory created: %s', tmpdir)
@@ -80,7 +82,7 @@ class Executor:
             msg.result = self.ipfs.add(result_file)['Hash']
             rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
-            self.result.publish(msg)
+            self.complete.publish(msg)
 
     def spin(self):
         '''
