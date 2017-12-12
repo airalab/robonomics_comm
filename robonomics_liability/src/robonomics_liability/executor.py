@@ -5,6 +5,7 @@
 
 from robonomics_liability.msg import Liability
 from std_srvs.srv import Empty, EmptyResponse
+from std_msgs.msg import String
 from tempfile import TemporaryDirectory 
 from web3 import Web3, HTTPProvider
 from urllib.parse import urlparse
