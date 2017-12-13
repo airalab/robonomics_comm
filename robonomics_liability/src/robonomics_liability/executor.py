@@ -8,9 +8,9 @@ from std_srvs.srv import Empty, EmptyResponse
 from std_msgs.msg import String
 from tempfile import TemporaryDirectory 
 from web3 import Web3, HTTPProvider
+from subprocess import Popen, PIPE
 from urllib.parse import urlparse
 from .recorder import Recorder
-from subprocess import Popen
 from signal import SIGINT 
 import rospy, ipfsapi, os
 
@@ -43,7 +43,9 @@ class Executor:
 
         def finish_record(msg):
             try:
+                rospy.loginfo('Terminate player & recorder for %s', msg.data)
                 self.player[msg.data].terminate()
+                self.player[msg.data].kill()
                 self.recorder[msg.data].stop()
             except:
                 rospy.logerr('Unable to finish liability %s', msg.data)
@@ -68,7 +70,7 @@ class Executor:
             self.ipfs.get(msg.objective)
             rospy.loginfo('Objective is written to %s', tmpdir + '/' + msg.objective)
 
-            self.player[msg.address] = Popen('rosbag play -k ' + msg.objective, shell=True, cwd=tmpdir, preexec_fn=os.setsid)
+            self.player[msg.address] = Popen('rosbag play -k ' + msg.objective, shell=True, cwd=tmpdir, stdin=PIPE, stdout=PIPE)
             rospy.logdebug('Rosbag player started')
 
             result_file = os.path.join(tmpdir, 'result.bag')
