@@ -1,7 +1,7 @@
 <launch>
   <!-- arguments -->
-  <arg name="web3_http_provider" default="http://localhost:8545" />
-  <arg name="ipfs_http_provider" default="http://localhost:5001" />
+  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="builder_contract_address" default="0x11523db0844427F08bb8464cbF48944351dEB262" />
   <arg name="run_liability_immediately" default="true" />
 
@@ -12,12 +12,13 @@
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
       <param name="builder_contract_address" value="$(arg builder_contract_address)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     </node>
 
     <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen">
       <param name="run_liability_immediately" value="$(arg run_liability_immediately)" />
-      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     </node>
   </group>
 </launch>

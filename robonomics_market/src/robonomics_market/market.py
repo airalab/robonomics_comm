@@ -5,8 +5,9 @@
 
 from robonomics_market.msg import Ask, Bid
 from binascii import hexlify, unhexlify
+from .pubsub import publish, subscribe
+from urllib.parse import urlparse
 from threading import Thread
-from . import pubsub
 import rospy
 
 def bid2dict(b):
@@ -33,17 +34,20 @@ class Market:
         '''
         rospy.init_node('robonomics_market')
         self.market_topic = rospy.get_param('~market_topic')
+        ipfs_api = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
+        self.ipfs_api = '/ip4/{0}/tcp/{1}'.format(ipfs_api[0], ipfs_api[1])
+
         self.incoming_bid = rospy.Publisher('incoming/bid', Bid, queue_size=10)
         self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
-        rospy.Subscriber('sending/bid', Bid, lambda m: pubsub.publish(self.market_topic, bid2dict(m)))
-        rospy.Subscriber('sending/ask', Ask, lambda m: pubsub.publish(self.market_topic, ask2dict(m)))
+        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.market_topic, bid2dict(m)))
+        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.market_topic, ask2dict(m)))
 
     def spin(self):
         '''
             Waiting for the new messages.
         '''
         def incoming_thread():
-            for m in pubsub.subscribe(self.market_topic):
+            for m in subscribe(self.ipfs_api, self.market_topic):
                 if 'objective' in m:
                     msg = Ask()
                     msg.model     = m['model']

@@ -1,6 +1,7 @@
 <launch>
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="builder_contract_address" default="0x11523db0844427F08bb8464cbF48944351dEB262" />
 
   <!-- market group -->
@@ -9,6 +10,7 @@
       <arg name="enable_signer" value="false" />
       <arg name="enable_generator" value="false" />
       <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     </include>
 
     <node pkg="robonomics_market" type="matcher_node" name="matcher" output="screen">

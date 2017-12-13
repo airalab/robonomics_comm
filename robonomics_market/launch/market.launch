@@ -1,6 +1,7 @@
 <launch>
   <!-- arguments -->
-  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="market_topic" default="aira_market" />
   <arg name="enable_generator" default="true" />
   <arg name="enable_signer" default="true" />
@@ -8,6 +9,7 @@
   <!-- market group -->
   <group ns="market">
     <node pkg="robonomics_market" type="market_node" name="market">
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="market_topic" value="$(arg market_topic)" />
     </node>
 
