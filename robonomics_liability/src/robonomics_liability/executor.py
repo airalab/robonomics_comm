@@ -58,7 +58,7 @@ class Executor:
             return
         else:
             rospy.loginfo('Liability %s promisor is %s is me, running...', msg.address, msg.promisor)
-            current.publish(msg)
+            self.current.publish(msg)
 
         with TemporaryDirectory() as tmpdir:
             rospy.loginfo('Temporary directory created: %s', tmpdir)
