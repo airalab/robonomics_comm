@@ -44,9 +44,10 @@ class Executor:
         def finish_record(msg):
             try:
                 rospy.loginfo('Terminate player & recorder for %s', msg.data)
+                self.recorder[msg.data].stop()
+                Popen('rosnode list|grep play|xargs rosnode kill', shell=True).wait()
                 self.player[msg.data].terminate()
                 self.player[msg.data].kill()
-                self.recorder[msg.data].stop()
             except:
                 rospy.logerr('Unable to finish liability %s', msg.data)
         rospy.Subscriber('finish', String, finish_record)
