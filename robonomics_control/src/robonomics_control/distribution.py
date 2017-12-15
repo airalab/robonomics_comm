@@ -63,7 +63,13 @@ class Distribution:
             if msg.model in self.market_list:
                 if not msg.model in self.robots:
                     self.robots[msg.model] = set()
-                self.robots[msg.model].add(ecrecover(msg))
+
+                robot_id = ecrecover(msg)
+                # Clean up robot from another markets
+                self.robots = {k: v - set([robot_id]) for k, v in self.robots.items()}
+
+                # Append robot to current market
+                self.robots[msg.model].add(robot_id)
 
                 rospy.loginfo('Robots updated: %s', self.robots)
                 self.update_current_market()
