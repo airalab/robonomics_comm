@@ -42,6 +42,9 @@ class Distribution:
 
         self.market_list = json.loads(rospy.get_param('~supported_models'))
 
+        for m in self.market_list:
+            self.robots[m] = set()
+
         self.market = rospy.Publisher('current', String, queue_size=10)
         self.subscribe_new_bids()
 
@@ -61,9 +64,6 @@ class Distribution:
 
         def incoming_bid(msg):
             if msg.model in self.market_list:
-                if not msg.model in self.robots:
-                    self.robots[msg.model] = set()
-
                 robot_id = ecrecover(msg)
                 # Clean up robot from another markets
                 self.robots = {k: v - set([robot_id]) for k, v in self.robots.items()}
