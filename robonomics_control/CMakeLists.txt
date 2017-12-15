@@ -21,22 +21,10 @@ catkin_install_python(
 )
 
 install(
-    FILES
-        launch/control.launch
+    DIRECTORY
+        abi
+        launch
+        models
     DESTINATION
-        ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-)
-
-install(
-    FILES
-        abi/investors.json
-    DESTINATION
-        ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
-)
-
-install(
-    FILES
-        models/simple.json
-    DESTINATION
-        ${CATKIN_PACKAGE_SHARE_DESTINATION}/models
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
