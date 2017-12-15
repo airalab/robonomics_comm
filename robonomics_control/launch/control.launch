@@ -1,8 +1,8 @@
 <launch>
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://localhost:8545" />
-  <arg name="investors_contract_address" default="0x7Dc07BE45D6547670e186568deB91a1A4E2E6e53" />
-  <arg name="supported_models_file" default="$(find robonomics_control)/models/simple.json" />
+  <arg name="investors_contract_address" default="0x4F76a09Ce6892CEdc049Da763d2b060c5BBc6C1d" />
+  <arg name="supported_models_file" default="$(find robonomics_control)/models/plant.json" />
 
   <!-- market group -->
   <group ns="control">
