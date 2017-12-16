@@ -45,24 +45,27 @@ class Matcher:
 
         if not ask:
             h = hash((bid.model, bid.cost, bid.count, bid.fee))
-            self.bids[h] = bid
+            if h in self.bids:
+                self.bids[h].append(bid)
+            else:
+                self.bids[h] = [bid]
         else:
             h = hash((ask.model, ask.cost, ask.count, ask.fee))
-            self.asks[h] = ask
+            if h in self.asks:
+                self.asks[h].append(ask)
+            else:
+                self.asks[h] = [ask]
 
         try:
             if not ask:
                 h = hash((bid.model, bid.cost, bid.count, bid.fee))
-                ask = self.asks[h]
+                ask = self.asks[h].pop()
             else:
                 h = hash((ask.model, ask.cost, ask.count, ask.fee))
-                bid = self.bids[h]
+                bid = self.bids[h].pop()
 
             rospy.loginfo('Match found: %s <=> %s', ask, bid)
-
             self.new_liability(ask, bid)
-            del self.asks[h]
-            del self.bids[h]
 
         except KeyError:
             rospy.loginfo('No match found')
