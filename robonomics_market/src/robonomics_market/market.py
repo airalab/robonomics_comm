@@ -67,5 +67,5 @@ class Market:
                     msg.salt      = unhexlify(m['salt'].encode('utf-8'))
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     self.incoming_bid.publish(msg)
-        Thread(target=incoming_thread).start()
+        Thread(target=incoming_thread, daemon=True).start()
         rospy.spin()
