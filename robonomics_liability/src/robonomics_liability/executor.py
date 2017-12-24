@@ -5,18 +5,18 @@
 
 from robonomics_liability.msg import Liability
 from std_srvs.srv import Empty, EmptyResponse
-from std_msgs.msg import String
 from tempfile import TemporaryDirectory 
+from threading import Thread, Condition
 from web3 import Web3, HTTPProvider
-from subprocess import Popen, PIPE
 from urllib.parse import urlparse
 from .recorder import Recorder
-from signal import SIGINT 
+from .player import Player
+from queue import Queue
 import rospy, ipfsapi, os
 
 class Executor:
-    player = {}
-    recorder = {}
+    liability_queue = Queue()
+    liability_finish = Condition()
 
     def __init__(self):
         '''
@@ -26,70 +26,60 @@ class Executor:
 
         web3_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(web3_provider))
+        self.account = self.web3.eth.account[0]
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
-        self.run_liability_immediately = rospy.get_param('~run_liability_immediately')
-        self.account = self.web3.eth.accounts[0] 
-
         def incoming_liability(msg):
-            if self.run_liability_immediately:
-                self.run_liability(msg)
+            if msg.promisor != self.account:
+                rospy.logwarn('Liability %s is not for me, SKIP.', msg.address)
             else:
-                rospy.signal_shutdown(rospy.get_name() + ' liability queue is not implemented yet!')
-
+                rospy.loginfo('Append %s to liability queue.', msg.address)
+                self.liability_queue.put(msg)
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
-        def finish_record(msg):
-            try:
-                rospy.loginfo('Terminate player & recorder for %s', msg.data)
-                self.recorder[msg.data].stop()
-                Popen('rosnode list|grep play|xargs rosnode kill', shell=True).wait()
-                self.player[msg.data].terminate()
-                self.player[msg.data].kill()
-            except:
-                rospy.logerr('Unable to finish liability %s', msg.data)
-        rospy.Subscriber('finish', String, finish_record)
+        def finish_liability(msg):
+            self.liability_finish.notify()
+            return EmptyResponse()
+        rospy.Service('finish', Empty, finish_liability)
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
         self.current  = rospy.Publisher('current', Liability, queue_size=10)
 
-    def run_liability(self, msg):
-        if msg.promisor != self.account:
-            rospy.loginfo('Liability %s promisor is %s not me, skip it.', msg.address, msg.promisor)
-            return
-        else:
-            rospy.loginfo('Liability %s promisor is %s is me, running...', msg.address, msg.promisor)
+    def _liability_worker(self):
+        while not rospy.is_shutdown():
+            msg = self.liability_queue.get()
+            rospy.loginfo('Start work on liability %s', msg.address)
             self.current.publish(msg)
 
-        with TemporaryDirectory() as tmpdir:
-            rospy.loginfo('Temporary directory created: %s', tmpdir)
-            os.chdir(tmpdir)
+            with TemporaryDirectory() as tmpdir:
+                rospy.logdebug('Temporary directory created: %s', tmpdir)
+                os.chdir(tmpdir)
 
-            rospy.loginfo('Getting objective %s...', msg.objective)
-            self.ipfs.get(msg.objective)
-            rospy.loginfo('Objective is written to %s', tmpdir + '/' + msg.objective)
+                rospy.logdebug('Getting objective %s...', msg.objective)
+                self.ipfs.get(msg.objective)
+                rospy.logdebug('Objective is written to %s', tmpdir + '/' + msg.objective)
 
-            self.player[msg.address] = Popen('rosbag play -k ' + msg.objective, shell=True, cwd=tmpdir, stdin=PIPE, stdout=PIPE)
-            rospy.logdebug('Rosbag player started')
+                result_file = os.path.join(tmpdir, 'result.bag')
+                rospy.logdebug('Start recording to %s...', result_file)
 
-            result_file = os.path.join(tmpdir, 'result.bag')
-            rospy.loginfo('Start recording to %s...', result_file)
+                recorder = Recorder(result_file)
+                recorder.start()
+                rospy.logdebug('Rosbag recorder started')
 
-            self.recorder[msg.address] = Recorder(result_file)
-            self.recorder[msg.address].start()
-            rospy.logdebug('Rosbag recorder started')
+                player = Player(msg.objective)
+                rospy.logdebug('Rosbag player started')
 
-            self.player[msg.address].wait()
+                self.liability_finish.wait()
 
-            msg.result = self.ipfs.add(result_file)['Hash']
-            rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
-
-            self.complete.publish(msg)
+                msg.result = self.ipfs.add(result_file)['Hash']
+                self.complete.publish(msg)
+                rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
     def spin(self):
         '''
             Waiting for the new messages.
         '''
+        Thread(target=self._liability_worker, daemon=True).start()
         rospy.spin()

@@ -82,8 +82,8 @@ class Recorder(object):
 
         self._message_count = {}  # topic -> int (track number of messages recorded on each topic)
 
-        self._master_check_thread = threading.Thread(target=self._run_master_check)
-        self._write_thread        = threading.Thread(target=self._run_write)
+        self._master_check_thread = threading.Thread(target=self._run_master_check, daemon=True)
+        self._write_thread        = threading.Thread(target=self._run_write, daemon=True)
 
     @property
     def bag(self): return self._bag
