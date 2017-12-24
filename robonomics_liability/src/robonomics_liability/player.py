@@ -10,7 +10,7 @@ class Player:
         def worker():
             rospy.logdebug('Player: start %s', filename)
             pubs = {}
-            for topic, msg, _ in bag.read_messages()
+            for topic, msg, _ in bag.read_messages():
                 if not topic in pubcache:
                     pubs[topic] = rospy.Publisher(topic, msg.__class__, queue_size=10)
                 pubs[topic].publish(msg)
