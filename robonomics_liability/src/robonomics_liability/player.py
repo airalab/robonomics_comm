@@ -11,7 +11,7 @@ class Player:
             rospy.logdebug('Player: start %s', filename)
             pubs = {}
             for topic, msg, _ in bag.read_messages():
-                if not topic in pubcache:
+                if not topic in pubs:
                     pubs[topic] = rospy.Publisher(topic, msg.__class__, queue_size=10)
                 pubs[topic].publish(msg)
             rospy.logdebug('Player: finish %s', filename)
