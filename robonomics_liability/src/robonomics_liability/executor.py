@@ -54,6 +54,8 @@ class Executor:
             self.current.publish(msg)
 
             with TemporaryDirectory() as tmpdir:
+                self.liability_finish.acquire()
+
                 rospy.logdebug('Temporary directory created: %s', tmpdir)
                 os.chdir(tmpdir)
 
