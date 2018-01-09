@@ -40,8 +40,9 @@ class Executor:
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
         def finish_liability(msg):
-            self.liability_finish.notify()
-            return EmptyResponse()
+            with self.liability_finish as finish:
+                finish.notify()
+                return EmptyResponse()
         rospy.Service('finish', Empty, finish_liability)
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
@@ -53,31 +54,30 @@ class Executor:
             rospy.loginfo('Start work on liability %s', msg.address)
             self.current.publish(msg)
 
-            with TemporaryDirectory() as tmpdir:
-                self.liability_finish.acquire()
+            with self.liability_finish as finish:
+                with TemporaryDirectory() as tmpdir:
+                    rospy.logdebug('Temporary directory created: %s', tmpdir)
+                    os.chdir(tmpdir)
 
-                rospy.logdebug('Temporary directory created: %s', tmpdir)
-                os.chdir(tmpdir)
+                    rospy.logdebug('Getting objective %s...', msg.objective)
+                    self.ipfs.get(msg.objective)
+                    rospy.logdebug('Objective is written to %s', tmpdir + '/' + msg.objective)
 
-                rospy.logdebug('Getting objective %s...', msg.objective)
-                self.ipfs.get(msg.objective)
-                rospy.logdebug('Objective is written to %s', tmpdir + '/' + msg.objective)
+                    result_file = os.path.join(tmpdir, 'result.bag')
+                    rospy.logdebug('Start recording to %s...', result_file)
 
-                result_file = os.path.join(tmpdir, 'result.bag')
-                rospy.logdebug('Start recording to %s...', result_file)
+                    recorder = Recorder(result_file)
+                    recorder.start()
+                    rospy.logdebug('Rosbag recorder started')
 
-                recorder = Recorder(result_file)
-                recorder.start()
-                rospy.logdebug('Rosbag recorder started')
+                    player = Player(msg.objective)
+                    rospy.logdebug('Rosbag player started')
 
-                player = Player(msg.objective)
-                rospy.logdebug('Rosbag player started')
+                    finish.wait()
 
-                self.liability_finish.wait()
-
-                msg.result = self.ipfs.add(result_file)['Hash']
-                self.complete.publish(msg)
-                rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
+                    msg.result = self.ipfs.add(result_file)['Hash']
+                    self.complete.publish(msg)
+                    rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
     def spin(self):
         '''
