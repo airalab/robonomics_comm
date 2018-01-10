@@ -71,6 +71,7 @@ class Executor:
                     rospy.logdebug('Rosbag recorder started')
 
                     player = Player(msg.objective)
+                    player.start()
                     rospy.logdebug('Rosbag player started')
 
                     finish.wait()
