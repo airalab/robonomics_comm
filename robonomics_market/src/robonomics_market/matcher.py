@@ -67,7 +67,7 @@ class Matcher:
             rospy.loginfo('Match found: %s <=> %s', ask, bid)
             self.new_liability(ask, bid)
 
-        except KeyError:
+        except (KeyError, IndexError):
             rospy.loginfo('No match found')
 
     def new_liability(self, ask, bid):
