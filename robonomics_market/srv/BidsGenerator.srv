@@ -1,5 +1,5 @@
-int32 a
-int32 k
+float64 a
+float64 k
 string market
 uint32 fee
 uint32 price_range
