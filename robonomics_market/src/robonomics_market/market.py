@@ -14,7 +14,8 @@ def bid2dict(b):
     return { 'model'    : b.model,
              'cost'     : b.cost,
              'count'    : b.count,
-             'fee'      : b.fee,
+             'validatorFee' : b.validatorFee,
+             'lighthouseFee' : b.lighthouseFee,
              'salt'     : hexlify(b.salt).decode('utf-8'),
              'signature': hexlify(b.signature).decode('utf-8') }
 
@@ -23,7 +24,7 @@ def ask2dict(a):
              'objective': a.objective,
              'cost'     : a.cost,
              'count'    : a.count,
-             'fee'      : a.fee,
+             'lighthouseFee' : a.lighthouseFee,
              'salt'     : hexlify(a.salt).decode('utf-8'),
              'signature': hexlify(a.signature).decode('utf-8') }
 
@@ -54,7 +55,7 @@ class Market:
                     msg.objective = m['objective']
                     msg.cost      = m['cost']
                     msg.count     = m['count']
-                    msg.fee       = m['fee']
+                    msg.lighthouseFee = m['lighthouseFee']
                     msg.salt      = unhexlify(m['salt'].encode('utf-8'))
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     self.incoming_ask.publish(msg)
@@ -63,7 +64,8 @@ class Market:
                     msg.model     = m['model']
                     msg.cost      = m['cost']
                     msg.count     = m['count']
-                    msg.fee       = m['fee']
+                    msg.lighthouseFee = m['lighthouseFee']
+                    msg.validatorFee  = m['validatorFee']
                     msg.salt      = unhexlify(m['salt'].encode('utf-8'))
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     self.incoming_bid.publish(msg)

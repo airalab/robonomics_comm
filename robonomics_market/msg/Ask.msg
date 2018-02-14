@@ -1,13 +1,13 @@
 # Behaviour model
-string model        # Base58 
+string model         # Base58 
 # Task
-string objective    # Base58
+string objective     # Base58
 # Execution cost
-uint32 cost         # int
+uint32 cost          # int
 # Execution count
-uint32 count        # int
-# Validation fee
-uint32 fee          # int 
+uint32 count         # int
+# Settlement fee
+uint32 lighthouseFee # int 
 # Order salt
 uint8[] salt         # hex 
 # Order signature

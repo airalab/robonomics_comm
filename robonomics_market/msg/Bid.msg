@@ -4,8 +4,10 @@ string model        # Base58
 uint32 cost         # int
 # Execution count
 uint32 count        # int
-# Validation fee
-uint32 fee          # int 
+# Validator fee
+uint32 validatorFee  # int
+# Settlement fee
+uint32 lighthouseFee # int 
 # Order salt
 uint8[] salt        # hex
 # Order signature

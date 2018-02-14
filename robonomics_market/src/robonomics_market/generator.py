@@ -18,7 +18,7 @@ class Generator:
 
         def gen_asks(req):
             try:
-                self.gen_linear_asks(req.a, req.k, req.market, req.objective, req.fee, req.price_range)
+                self.gen_linear_asks(req.a, req.k, req.market, req.objective, req.lighthouseFee, req.price_range)
                 return AsksGeneratorResponse('ok')
             except Exception as e:
                 return AsksGeneratorResponse('fail: {0}'.format(e))
@@ -26,7 +26,7 @@ class Generator:
 
         def gen_bids(req):
             try:
-                self.gen_linear_bids(req.a, req.k, req.market, req.fee, req.price_range)
+                self.gen_linear_bids(req.a, req.k, req.market, req.lighthouseFee, req.validatorFee, req.price_range)
                 return BidsGeneratorResponse('ok')
             except Exception as e:
                 return BidsGeneratorResponse('fail: {0}'.format(e))
@@ -35,27 +35,28 @@ class Generator:
     def spin(self):
         rospy.spin()
 
-    def gen_linear_asks(self, a, k, market, objective, fee, price_range):
+    def gen_linear_asks(self, a, k, market, objective, lighthouseFee, price_range):
         '''
             Market asks linear generator, ask function is `Q = a - k * P`
         '''
         msg = Ask()
         msg.model     = market
         msg.objective = objective
-        msg.fee       = fee
+        msg.lighthouseFee = lighthouseFee
         for P in range(1, price_range):
             msg.cost  = P
             msg.count = int(a - k * P)
             if msg.count > 0:
                 self.signing_ask.publish(msg)
 
-    def gen_linear_bids(self, a, k, market, fee, price_range):
+    def gen_linear_bids(self, a, k, market, lighthouseFee, validatorFee, price_range):
         '''
             Market bids linear generator, bid function is `Q = a + k * P`
         '''
         msg = Bid()
         msg.model = market
-        msg.fee   = fee
+        msg.lighthouseFee = lighthouseFee
+        msg.validatorFee  = validatorFee
         for P in range(1, price_range):
             msg.cost  = P
             msg.count = int(a + k * P)
