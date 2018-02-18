@@ -44,9 +44,10 @@ class Generator:
         msg.objective = objective
         msg.fee       = fee
         for P in range(1, price_range):
-            msg.cost  = P
-            msg.count = int(a - k * P)
-            if msg.count > 0:
+            count = a - k * P
+            if count > 0 and count % 1 == 0:
+                msg.cost  = P
+                msg.count = int(count)
                 self.signing_ask.publish(msg)
 
     def gen_linear_bids(self, a, k, market, fee, price_range):
@@ -57,7 +58,8 @@ class Generator:
         msg.model = market
         msg.fee   = fee
         for P in range(1, price_range):
-            msg.cost  = P
-            msg.count = int(a + k * P)
-            if msg.count > 0:
+            count = a + k * P
+            if count > 0 and count % 1 == 0:
+                msg.cost  = P
+                msg.count = int(count)
                 self.signing_bid.publish(msg)
