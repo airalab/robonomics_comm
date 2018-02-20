@@ -52,6 +52,7 @@ class Distribution:
         '''
             Waiting for the new messages.
         '''
+        self.update_current_market()
         rospy.spin()
 
     def subscribe_new_bids(self):
