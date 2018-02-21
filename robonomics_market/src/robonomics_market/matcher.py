@@ -57,6 +57,10 @@ class Matcher:
             else:
                 self.asks[h] = [ask]
 
+        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} Fee: {4} |'.format(
+                            'Ask Obj: '+lot.objective if hasattr(lot, 'objective') else 'Bid',
+                            lot.model, lot.cost, lot.count, lot.fee)
+
         try:
             if not ask:
                 h = hash((bid.model, bid.cost, bid.count, bid.fee))
@@ -65,9 +69,6 @@ class Matcher:
                 h = hash((ask.model, ask.cost, ask.count, ask.fee))
                 bid = self.bids[h].pop()
 
-            prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} Fee: {4} |'.format(
-                                'Ask Obj: '+lot.objective if hasattr(lot, 'objective') else 'Bid',
-                                lot.model, lot.cost, lot.count, lot.fee)
             rospy.loginfo('Matched %s & %s', prlot(ask), prlot(bid))
             self.new_liability(ask, bid)
 
