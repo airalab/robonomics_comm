@@ -7,7 +7,9 @@ from robonomics_market.signer import bidhash
 from robonomics_market.msg import Bid
 from web3 import Web3, HTTPProvider
 from std_msgs.msg import String
-import rospy, json
+from std_srvs.srv import Empty, EmptyResponse
+import rospy
+import json
 import numpy as np
 
 def desired_distribution(cap_vector, rob_vector):
@@ -48,10 +50,13 @@ class Distribution:
         self.market = rospy.Publisher('current', String, queue_size=10)
         self.subscribe_new_bids()
 
+        rospy.Service('reset', Empty, self.reset)
+
     def spin(self):
         '''
             Waiting for the new messages.
         '''
+        rospy.sleep(3)
         self.update_current_market()
         rospy.spin()
 
@@ -71,8 +76,8 @@ class Distribution:
 
                 # Append robot to current market
                 self.robots[msg.model].add(robot_id)
-
                 rospy.loginfo('Robots updated: %s', self.robots)
+
                 self.update_current_market()
 
         rospy.Subscriber('market/incoming/bid', Bid, incoming_bid)
@@ -98,3 +103,11 @@ class Distribution:
         rospy.loginfo('Maximal error index is %d', maxi)
 
         self.market.publish(self.market_list[maxi])
+
+    def reset(self, request):
+        rospy.loginfo('Robot distribution reset')
+        self.robots = {}
+        for m in self.market_list:
+            self.robots[m] = set()
+        self.update_current_market()
+        return EmptyResponse()
