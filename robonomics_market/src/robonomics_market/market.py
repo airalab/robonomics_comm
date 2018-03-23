@@ -12,21 +12,25 @@ import rospy
 
 def bid2dict(b):
     return { 'model'    : b.model,
+             'token'    : b.token,
              'cost'     : b.cost,
              'count'    : b.count,
-             'validatorFee' : b.validatorFee,
              'lighthouseFee' : b.lighthouseFee,
              'salt'     : hexlify(b.salt).decode('utf-8'),
-             'signature': hexlify(b.signature).decode('utf-8') }
+             'signature': hexlify(b.signature).decode('utf-8'),
+             'deadline' : b.deadline }
 
 def ask2dict(a):
     return { 'model'    : a.model,
              'objective': a.objective,
+             'token'    : a.token,
              'cost'     : a.cost,
              'count'    : a.count,
-             'lighthouseFee' : a.lighthouseFee,
+             'validator'    : a.validator,
+             'validatorFee' : a.validatorFee,
              'salt'     : hexlify(a.salt).decode('utf-8'),
-             'signature': hexlify(a.signature).decode('utf-8') }
+             'signature': hexlify(a.signature).decode('utf-8'),
+             'deadline' : a.deadline }
 
 class Market:
     def __init__(self):
@@ -53,21 +57,25 @@ class Market:
                     msg = Ask()
                     msg.model     = m['model']
                     msg.objective = m['objective']
+                    msg.token     = m['token']
                     msg.cost      = m['cost']
                     msg.count     = m['count']
-                    msg.lighthouseFee = m['lighthouseFee']
+                    msg.validator    = m['validator']
+                    msg.validatorFee = m['validatorFee']
                     msg.salt      = unhexlify(m['salt'].encode('utf-8'))
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
+                    msg.deadline  = m['deadline']
                     self.incoming_ask.publish(msg)
                 else:
                     msg = Bid()
                     msg.model     = m['model']
+                    msg.token     = m['token']
                     msg.cost      = m['cost']
                     msg.count     = m['count']
                     msg.lighthouseFee = m['lighthouseFee']
-                    msg.validatorFee  = m['validatorFee']
                     msg.salt      = unhexlify(m['salt'].encode('utf-8'))
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
+                    msg.deadline  = m['deadline']
                     self.incoming_bid.publish(msg)
         Thread(target=incoming_thread, daemon=True).start()
         rospy.spin()

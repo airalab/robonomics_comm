@@ -7,24 +7,41 @@ from robonomics_market.msg import Ask, Bid
 from web3 import Web3, HTTPProvider
 from base58 import b58decode
 import rospy, os
+import binascii
 
 def askhash(msg):
-    types = ['bytes32', 'bytes32', 'uint256', 'uint256', 'bytes32']
+    types = [ 'bytes32'
+            , 'bytes32'
+            , 'address'
+            , 'address'
+            , 'uint256'
+            , 'uint256'
+            , 'bytes32'
+            , 'uint256' ]
     return Web3.soliditySha3(types,
             [ b58decode(msg.model)[2:]
             , b58decode(msg.objective)[2:]
+            , msg.token
+            , msg.validator
             , msg.cost * msg.count
-            , msg.lighthouseFee
-            , msg.salt ])
+            , msg.validatorFee
+            , msg.salt 
+            , msg.deadline ])
 
 def bidhash(msg):
-    types = ['bytes32', 'uint256', 'uint256', 'uint256', 'bytes32']
+    types = [ 'bytes32'
+            , 'address'
+            , 'uint256'
+            , 'uint256'
+            , 'bytes32'
+            , 'uint256' ]
     return Web3.soliditySha3(types,
             [ b58decode(msg.model)[2:]
+            , msg.token
             , msg.cost * msg.count
             , msg.lighthouseFee
-            , msg.validatorFee
-            , msg.salt ])
+            , msg.salt
+            , msg.deadline ])
 
 class Signer:
     def __init__(self):
@@ -42,12 +59,14 @@ class Signer:
         def sign_ask(msg):
             msg.salt = os.urandom(32)
             msg.signature = self.web3.eth.sign(self.account, askhash(msg))
+            rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
             self.signed_ask.publish(msg)
         rospy.Subscriber('signing/ask', Ask, sign_ask)
 
         def sign_bid(msg):
             msg.salt = os.urandom(32)
             msg.signature = self.web3.eth.sign(self.account, bidhash(msg))
+            rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(bidhash(msg)), binascii.hexlify(msg.signature))
             self.signed_bid.publish(msg)
         rospy.Subscriber('signing/bid', Bid, sign_bid)
 
