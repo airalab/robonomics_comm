@@ -11,6 +11,7 @@ import rospy, json
 
 from . import signer 
 
+
 class Matcher:
     bids = {}
     asks = {}
@@ -56,6 +57,10 @@ class Matcher:
             else:
                 self.asks[h] = [ask]
 
+        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} Fee: {4} |'.format(
+                            'Ask Obj: '+lot.objective if hasattr(lot, 'objective') else 'Bid',
+                            lot.model, lot.cost, lot.count, lot.fee)
+
         try:
             if not ask:
                 h = hash((bid.model, bid.token, bid.cost, bid.count))
@@ -64,11 +69,12 @@ class Matcher:
                 h = hash((ask.model, ask.token, ask.cost, ask.count))
                 bid = self.bids[h].pop()
 
-            rospy.loginfo('Match found: %s <=> %s', ask, bid)
+            rospy.loginfo('Matched %s & %s', prlot(ask), prlot(bid))
             self.new_liability(ask, bid)
 
         except (KeyError, IndexError):
-            rospy.loginfo('No match found')
+            rospy.loginfo('No match for: %s', prlot(ask or bid))
+
 
     def new_liability(self, ask, bid):
         '''
