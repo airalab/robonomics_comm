@@ -2,7 +2,7 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="builder_contract_address" default="0x11523db0844427F08bb8464cbF48944351dEB262" />
+  <arg name="builder_contract_address" default="0x9778aa32D264Cd6b9fb0883eC7cd03cF48886E21" />
 
   <!-- market group -->
   <group ns="matcher">

@@ -13,7 +13,7 @@
       <param name="market_topic" value="$(arg market_topic)" />
     </node>
 
-    <node pkg="robonomics_market" type="signer_node" name="signer" if="$(arg enable_signer)">
+    <node pkg="robonomics_market" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
     </node>
 

@@ -44,13 +44,13 @@ class Matcher:
         assert(not bid or not ask)
 
         if not ask:
-            h = hash((bid.model, bid.cost, bid.count, bid.fee))
+            h = hash((bid.model, bid.token, bid.cost, bid.count))
             if h in self.bids:
                 self.bids[h].append(bid)
             else:
                 self.bids[h] = [bid]
         else:
-            h = hash((ask.model, ask.cost, ask.count, ask.fee))
+            h = hash((ask.model, ask.token, ask.cost, ask.count))
             if h in self.asks:
                 self.asks[h].append(ask)
             else:
@@ -58,10 +58,10 @@ class Matcher:
 
         try:
             if not ask:
-                h = hash((bid.model, bid.cost, bid.count, bid.fee))
+                h = hash((bid.model, bid.token, bid.cost, bid.count))
                 ask = self.asks[h].pop()
             else:
-                h = hash((ask.model, ask.cost, ask.count, ask.fee))
+                h = hash((ask.model, ask.token, ask.cost, ask.count))
                 bid = self.bids[h].pop()
 
             rospy.loginfo('Match found: %s <=> %s', ask, bid)
@@ -74,7 +74,7 @@ class Matcher:
         '''
             Create liability contract for matched ask & bid.
         '''
-        param = [ask.cost, ask.count, ask.fee]
+        exps = [ ask.cost * ask.count, bid.lighthouseFee, ask.validatorFee ]
         sign = [ ask.salt
                , bytes(31) + bytes([ask.signature[64]])
                , ask.signature[0:32]
@@ -83,5 +83,11 @@ class Matcher:
                , bytes(31) + bytes([bid.signature[64]])
                , bid.signature[0:32]
                , bid.signature[32:64] ]
-        self.builder.transact().create(b58decode(ask.model), b58decode(ask.objective), param, sign)
+        deadline = [ ask.deadline, bid.deadline ]
+        self.builder.transact({'gas': 1000000}).createLiability(
+                b58decode(ask.model)[2:],
+                b58decode(ask.objective)[2:],
+                ask.token,
+                ask.validator,
+                exps, sign, deadline)
         rospy.loginfo('Liability contract created')

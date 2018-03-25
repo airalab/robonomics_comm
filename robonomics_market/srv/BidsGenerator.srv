@@ -1,7 +1,8 @@
 float64 a
 float64 k
 string market
-uint32 fee
+uint32 lighthouseFee
+uint32 validatorFee
 uint32 price_range
 ---
 string result
