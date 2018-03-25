@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Robonomics market support node.
+# Robonomics information channels support node.
 #
 
-from robonomics_market.msg import Ask, Bid
+from robonomics_lighthouse.msg import Ask, Bid, Result
 from binascii import hexlify, unhexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
@@ -32,27 +32,37 @@ def ask2dict(a):
              'signature': hexlify(a.signature).decode('utf-8'),
              'deadline' : a.deadline }
 
-class Market:
+def res2dict(r):
+    return { 'liability' : r.liability, 
+             'result'    : hexlify(r.result).decode('utf-8'),
+             'signature' : hexlify(r.signature).decode('utf-8') }
+
+class InfoChan:
     def __init__(self):
         '''
-            Robonomics market initialisation.
+            Robonomics information channel initialisation.
         '''
-        rospy.init_node('robonomics_market')
-        self.market_topic = rospy.get_param('~market_topic')
+        rospy.init_node('robonomics_infochan')
+        self.lighthouse = rospy.get_param('~lighthouse_contract')
         ipfs_api = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs_api = '/ip4/{0}/tcp/{1}'.format(ipfs_api[0], ipfs_api[1])
 
         self.incoming_bid = rospy.Publisher('incoming/bid', Bid, queue_size=10)
         self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
-        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.market_topic, bid2dict(m)))
-        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.market_topic, ask2dict(m)))
+        self.incoming_res = rospy.Publisher('incoming/result', Result, queue_size=10)
+
+        self.market_chan = '{0}_market'.format(self.lighthouse)
+        self.result_chan = '{0}_result'.format(self.lighthouse)
+        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.market_chan, bid2dict(m)))
+        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.market_chan, ask2dict(m)))
+        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_api, self.result_chan, res2dict(m)))
 
     def spin(self):
         '''
             Waiting for the new messages.
         '''
-        def incoming_thread():
-            for m in subscribe(self.ipfs_api, self.market_topic):
+        def market_thread():
+            for m in subscribe(self.ipfs_api, self.market_chan):
                 if 'objective' in m:
                     msg = Ask()
                     msg.model     = m['model']
@@ -77,5 +87,15 @@ class Market:
                     msg.signature = unhexlify(m['signature'].encode('utf-8'))
                     msg.deadline  = m['deadline']
                     self.incoming_bid.publish(msg)
-        Thread(target=incoming_thread, daemon=True).start()
+
+        def result_thread():
+            for m in subscribe(self.ipfs_api, self.result_chan):
+                msg = Result()
+                msg.liability = m['liability']
+                msg.result    = unhexlify(m['result'].encode('utf-8'))
+                msg.signature = unhexlify(m['signature'].encode('utf-8'))
+                self.incoming_res.publish(msg)
+
+        Thread(target=market_thread, daemon=True).start()
+        Thread(target=result_thread, daemon=True).start()
         rospy.spin()

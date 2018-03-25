@@ -3,7 +3,7 @@
 # Robonomics market Bid/Ask matcher node. 
 #
 
-from robonomics_market.msg import Bid, Ask
+from robonomics_lighthouse.msg import Bid, Ask
 from web3 import Web3, HTTPProvider
 from base58 import b58decode
 from binascii import hexlify
@@ -18,19 +18,19 @@ class Matcher:
 
     def __init__(self):
         '''
-            Market distribution node initialisation.
+            Market market matcher initialisation.
         '''
         rospy.init_node('robonomics_matcher')
 
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
-        builder_abi = json.loads(rospy.get_param('~builder_contract_abi'))
-        builder_address = rospy.get_param('~builder_contract_address')
+        builder_abi = json.loads(rospy.get_param('~builder_abi'))
+        builder_address = rospy.get_param('~builder_contract')
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
-        rospy.Subscriber('market/incoming/bid', Bid, lambda x: self.match(bid=x))
-        rospy.Subscriber('market/incoming/ask', Ask, lambda x: self.match(ask=x))
+        rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
+        rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))
 
     def spin(self):
         '''
@@ -57,9 +57,9 @@ class Matcher:
             else:
                 self.asks[h] = [ask]
 
-        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} Fee: {4} |'.format(
+        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} |'.format(
                             'Ask Obj: '+lot.objective if hasattr(lot, 'objective') else 'Bid',
-                            lot.model, lot.cost, lot.count, lot.fee)
+                            lot.model, lot.cost, lot.count)
 
         try:
             if not ask:

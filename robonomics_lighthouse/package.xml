@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>robonomics_market</name>
+  <name>robonomics_lighthouse</name>
   <version>0.0.0</version>
-  <description>The robonomics market nodes</description>
+  <description>The robonomics lighthouse nodes</description>
   <maintainer email="mail@akru.me">Alexander Krupenkin</maintainer>
   <license>BSD3</license>
   <author email="mail@akru.me">Alexander Krupenkin</author>

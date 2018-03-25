@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robonomics_market)
+project(robonomics_lighthouse)
 
 find_package(catkin REQUIRED
     COMPONENTS
@@ -13,6 +13,7 @@ add_message_files(
     FILES
         Ask.msg
         Bid.msg
+        Result.msg
 )
 
 add_service_files(
@@ -27,9 +28,10 @@ catkin_package()
 
 catkin_install_python(
     PROGRAMS
-        scripts/market_node
+        scripts/infochan_node
         scripts/signer_node
         scripts/matcher_node
+        scripts/reporter_node
         scripts/generator_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -37,15 +39,17 @@ catkin_install_python(
 
 install(
     FILES
-        launch/market.launch
-        launch/matcher.launch
+        launch/infochan.launch
+        launch/lighthouse.launch
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
 
 install(
     FILES
-        abi/builder.json
+        abi/factory.json
+        abi/liability.json
+        abi/lighthouse.json
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )

@@ -3,8 +3,8 @@
 # Robonomics market Bid/Ask generator.
 #
 
-from robonomics_market.msg import Ask, Bid
-from robonomics_market.srv import *
+from robonomics_lighthouse.msg import Ask, Bid
+from robonomics_lighthouse.srv import *
 import rospy
 
 class Generator:

@@ -3,13 +3,14 @@
 # Robonomics market related nodes.
 #
 
-from . import market
+from . import infochan
 from . import signer
 from . import matcher
+from . import reporter
 from . import generator
 
-def market_node():
-    market.Market().spin()
+def infochan_node():
+    infochan.InfoChan().spin()
 
 def signer_node():
     signer.Signer().spin()
@@ -19,3 +20,6 @@ def generator_node():
 
 def matcher_node():
     matcher.Matcher().spin()
+
+def reporter_node():
+    reporter.Reporter().spin()

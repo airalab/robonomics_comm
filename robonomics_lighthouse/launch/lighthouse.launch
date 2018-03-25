@@ -1,0 +1,29 @@
+<launch>
+  <!-- arguments -->
+  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
+  <arg name="lighthouse_contract" default="0x9c8DD1E767f54520B4fb1A6E306F172EA8492f9c" />
+
+  <!-- market group -->
+  <group ns="lighthouse">
+    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
+      <!-- <arg name="enable_signer" value="false" /> -->
+      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    </include>
+
+    <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" output="screen">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="builder_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
+      <param name="builder_contract" value="$(arg lighthouse_contract)" />
+    </node>
+
+    <node pkg="robonomics_lighthouse" type="reporter_node" name="reporter" output="screen">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
+      <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
+    </node>
+  </group>
+</launch>
