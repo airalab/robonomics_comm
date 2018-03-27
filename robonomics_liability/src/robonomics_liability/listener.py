@@ -29,15 +29,6 @@ class Listener:
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
 
-        def liability_finalize(msg):
-            rospy.loginfo('Set result `%s` to %s', msg.result, msg.address)
-            try:
-                l = self.web3.eth.contract(msg.address, abi=self.liability_abi)
-                l.transact({'gas': 100000}).setResult(b58decode(msg.result))
-            except Exception as e:
-                rospy.logerr(e)
-        rospy.Subscriber('complete', Liability, liability_finalize)
-        
     def liability_read(self, address):
         '''
             Read liability from blockchain to message.
@@ -49,9 +40,10 @@ class Listener:
         msg.objective = b58encode(c.call().objective())
         msg.promisee = c.call().promisee()
         msg.promisor = c.call().promisor()
+        msg.token = c.call().token()
         msg.cost = c.call().cost()
-        msg.count = c.call().count()
-        msg.fee = c.call().fee()
+        msg.validator = c.call().validator()
+        msg.validatorFee = c.call().validatorFee()
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 

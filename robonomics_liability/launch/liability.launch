@@ -2,13 +2,13 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="builder_contract_address" default="0x11523db0844427F08bb8464cbF48944351dEB262" />
+  <arg name="builder_contract_address" default="0x0b00A3D6590b255732869861DA9a995e45557cD6" />
   <arg name="run_liability_immediately" default="true" />
 
   <!-- liability group -->
   <group ns="liability">
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
-      <param name="builder_contract_abi" textfile="$(find robonomics_market)/abi/builder.json" />
+      <param name="builder_contract_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
       <param name="builder_contract_address" value="$(arg builder_contract_address)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />

@@ -4,6 +4,7 @@ string objective
 string result
 string promisee
 string promisor
+string token
 uint64 cost
-uint64 count 
-uint64 fee
+string validator
+uint64 validatorFee
