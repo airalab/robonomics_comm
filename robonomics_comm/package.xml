@@ -2,15 +2,13 @@
 <package format="2">
   <name>robonomics_comm</name>
   <version>0.0.0</version>
-  <description>The robonomics_comm package</description>
+  <description>The Robonomics communication stack</description>
   <maintainer email="mail@akru.me">Alexander Krupenkin</maintainer>
   <license>BSD3</license>
   <url type="repository">https://github.com/airalab/robonomics_comm</url>
   <author email="mail@akru.me">Alexander Krupenkin</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-
-  <exec_depend>robonomics_market</exec_depend>
 
   <export>
     <metapackage/>
