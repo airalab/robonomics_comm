@@ -51,10 +51,10 @@ class Listener:
         '''
             Waiting for the new liabilities.
         '''
-        liability_filter = self.builder.eventFilter('Builded')
+        liability_filter = self.builder.eventFilter('BuildedLiability')
         def liability_filter_thread():
             for entry in liability_filter.get_new_entries():
-                self.liability.publish(self.liability_read(entry['args']['instance']))
+                self.liability.publish(self.liability_read(entry['args']['robotLiability']))
             Timer(self.poll_interval, liability_filter_thread).start()
         liability_filter_thread()
 
