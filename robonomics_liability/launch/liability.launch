@@ -2,7 +2,7 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="builder_contract_address" default="0x0b00A3D6590b255732869861DA9a995e45557cD6" />
+  <arg name="builder_contract_address" default="0x673b9e3b800123E95B1582c97964812389E8040C" />
   <arg name="run_liability_immediately" default="true" />
 
   <!-- liability group -->
