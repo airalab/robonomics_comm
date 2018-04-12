@@ -3,6 +3,7 @@
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="lighthouse_contract" default="0x9c8DD1E767f54520B4fb1A6E306F172EA8492f9c" />
+  <arg name="eth_account_address" default="" />
 
   <!-- market group -->
   <group ns="lighthouse">
@@ -17,6 +18,7 @@
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="builder_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
       <param name="builder_contract" value="$(arg lighthouse_contract)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)" />
     </node>
 
     <node pkg="robonomics_lighthouse" type="reporter_node" name="reporter" output="screen">
@@ -24,6 +26,7 @@
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
       <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
       <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
+      <param name="eth_account_address" value="$(arg eth_account_address)" />
     </node>
   </group>
 </launch>
