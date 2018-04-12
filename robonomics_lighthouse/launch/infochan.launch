@@ -5,6 +5,7 @@
   <arg name="lighthouse_contract" default="0x9c8DD1E767f54520B4fb1A6E306F172EA8492f9c" />
   <arg name="enable_generator" default="false" />
   <arg name="enable_signer" default="true" />
+  <arg name="eth_account_address" default="" />
 
   <!-- market group -->
   <group ns="infochan">
@@ -15,6 +16,7 @@
 
     <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)" />
     </node>
 
     <node pkg="robonomics_lighthouse" type="generator_node" name="generator" if="$(arg enable_generator)" />

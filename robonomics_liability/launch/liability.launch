@@ -4,6 +4,7 @@
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="builder_contract_address" default="0x673b9e3b800123E95B1582c97964812389E8040C" />
   <arg name="run_liability_immediately" default="true" />
+  <arg name="eth_account_address" default="" />
 
   <!-- liability group -->
   <group ns="liability">
@@ -19,6 +20,7 @@
       <param name="run_liability_immediately" value="$(arg run_liability_immediately)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)" />
     </node>
   </group>
 </launch>

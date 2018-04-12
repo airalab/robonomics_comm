@@ -56,7 +56,8 @@ class Signer:
         rospy.init_node('robonomics_signer')
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3     = Web3(HTTPProvider(http_provider))
-        self.account  = self.web3.eth.accounts[0]
+        self.account = rospy.get_param('~eth_account_address')
+        self.account = self.web3.eth.accounts[0] if len(self.account) == 0 else self.account
 
         self.signed_ask = rospy.Publisher('sending/ask', Ask, queue_size=10)
         self.signed_bid = rospy.Publisher('sending/bid', Bid, queue_size=10)
