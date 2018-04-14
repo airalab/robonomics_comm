@@ -4,6 +4,7 @@
 #
 
 from robonomics_liability.msg import Liability
+from robonomics_lighthouse.msg import Result
 from std_srvs.srv import Empty, EmptyResponse
 from tempfile import TemporaryDirectory 
 from web3 import Web3, HTTPProvider
@@ -48,6 +49,7 @@ class Executor:
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
         self.current  = rospy.Publisher('current', Liability, queue_size=10)
+        self.result_topic = rospy.Publisher('result', Result, queue_size=10)
 
     def _liability_worker(self):
         while not rospy.is_shutdown():
@@ -79,7 +81,12 @@ class Executor:
                     rospy.sleep(1)
 
                 msg.result = self.ipfs.add(result_file)['Hash']
+                result_msg = Result()
+                result_msg.liability = msg.address
+                result_msg.result = msg.result
+
                 self.complete.publish(msg)
+                self.result_topic.publish(result_msg)
                 rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
     def spin(self):
