@@ -65,9 +65,11 @@ class Matcher:
             if not ask:
                 h = hash((bid.model, bid.token, bid.cost, bid.count))
                 ask = self.asks[h].pop()
+                bid = self.bids[h].pop()
             else:
                 h = hash((ask.model, ask.token, ask.cost, ask.count))
                 bid = self.bids[h].pop()
+                ask = self.asks[h].pop()
 
             rospy.loginfo('Matched %s & %s', prlot(ask), prlot(bid))
             self.new_liability(ask, bid)
