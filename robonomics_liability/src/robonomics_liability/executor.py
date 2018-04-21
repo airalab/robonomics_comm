@@ -80,6 +80,7 @@ class Executor:
                 while not self.liability_finish:
                     rospy.sleep(1)
 
+                recorder.stop()
                 msg.result = self.ipfs.add(result_file)['Hash']
                 result_msg = Result()
                 result_msg.liability = msg.address
