@@ -6,6 +6,7 @@
 from robonomics_lighthouse.msg import Result
 from web3 import Web3, HTTPProvider
 from binascii import hexlify, unhexlify
+from base58 import b58decode
 import rospy, json
 
 class Reporter:
@@ -23,6 +24,8 @@ class Reporter:
         lighthouse_address = rospy.get_param('~lighthouse_contract')
         self.lighthouse = self.web3.eth.contract(lighthouse_address, abi=lighthouse_abi)
 
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+
         rospy.Subscriber('infochan/incoming/result', Result, self.settlement)
 
     def spin(self):
@@ -37,6 +40,6 @@ class Reporter:
         '''
         v, r, s = msg.signature[64], msg.signature[0:32], msg.signature[32:64]
         liability = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
-        data = liability.functions.setResult(msg.result, v, r, s).buildTransaction({'gas': 1000000})['data'] 
-        self.lighthouse.transact({'gas': 300000}).to(msg.liability, data)
+        data = liability.functions.setResult(b58decode(msg.result)[2:], v, r, s).buildTransaction({'gas': 1000000})['data']
+        self.lighthouse.transact({'gas': 300000, 'from': self.account}).to(msg.liability, data)
         rospy.loginfo('Result submitted with data: {0}'.format(data))

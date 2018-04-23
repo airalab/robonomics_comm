@@ -4,6 +4,7 @@
 #
 
 from robonomics_liability.msg import Liability
+from robonomics_lighthouse.msg import Result
 from std_srvs.srv import Empty, EmptyResponse
 from tempfile import TemporaryDirectory 
 from web3 import Web3, HTTPProvider
@@ -26,7 +27,8 @@ class Executor:
 
         web3_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(web3_provider))
-        self.account = self.web3.eth.accounts[0]
+
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
@@ -46,6 +48,7 @@ class Executor:
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
         self.current  = rospy.Publisher('current', Liability, queue_size=10)
+        self.result_topic = rospy.Publisher('result', Result, queue_size=10)
 
     def _liability_worker(self):
         while not rospy.is_shutdown():
@@ -76,8 +79,14 @@ class Executor:
                 while not self.liability_finish:
                     rospy.sleep(1)
 
+                recorder.stop()
                 msg.result = self.ipfs.add(result_file)['Hash']
+                result_msg = Result()
+                result_msg.liability = msg.address
+                result_msg.result = msg.result
+
                 self.complete.publish(msg)
+                self.result_topic.publish(result_msg)
                 rospy.loginfo('Liability %s finished with %s', msg.address, msg.result)
 
     def spin(self):

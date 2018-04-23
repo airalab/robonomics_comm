@@ -34,7 +34,7 @@ def ask2dict(a):
 
 def res2dict(r):
     return { 'liability' : r.liability, 
-             'result'    : hexlify(r.result).decode('utf-8'),
+             'result'    : r.result,
              'signature' : hexlify(r.signature).decode('utf-8') }
 
 class InfoChan:
@@ -92,7 +92,7 @@ class InfoChan:
             for m in subscribe(self.ipfs_api, self.result_chan):
                 msg = Result()
                 msg.liability = m['liability']
-                msg.result    = unhexlify(m['result'].encode('utf-8'))
+                msg.result    = m['result']
                 msg.signature = unhexlify(m['signature'].encode('utf-8'))
                 self.incoming_res.publish(msg)
 

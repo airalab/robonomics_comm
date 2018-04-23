@@ -29,6 +29,8 @@ class Matcher:
         builder_address = rospy.get_param('~builder_contract')
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+
         rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
         rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))
 
@@ -92,7 +94,7 @@ class Matcher:
                , bid.signature[0:32]
                , bid.signature[32:64] ]
         deadline = [ ask.deadline, bid.deadline ]
-        self.builder.transact({'gas': 1000000}).createLiability(
+        self.builder.transact({'gas': 1000000, 'from': self.account}).createLiability(
                 b58decode(ask.model)[2:],
                 b58decode(ask.objective)[2:],
                 ask.token,
