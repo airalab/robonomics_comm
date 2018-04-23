@@ -18,7 +18,8 @@
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="builder_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
       <param name="builder_contract" value="$(arg lighthouse_contract)" />
-      <param name="eth_account_address" value="$(arg eth_account_address)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)"
+             if="$(eval len(arg('eth_account_address')) > 0)"/>
     </node>
 
     <node pkg="robonomics_lighthouse" type="reporter_node" name="reporter" output="screen">
@@ -26,7 +27,8 @@
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
       <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
       <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
-      <param name="eth_account_address" value="$(arg eth_account_address)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)"
+             if="$(eval len(arg('eth_account_address')) > 0)"/>
     </node>
   </group>
 </launch>

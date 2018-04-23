@@ -28,8 +28,7 @@ class Executor:
         web3_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(web3_provider))
 
-        self.account = rospy.get_param('~eth_account_address')
-        self.account = self.web3.eth.accounts[0] if len(self.account) == 0 else self.account
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))

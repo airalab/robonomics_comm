@@ -24,8 +24,7 @@ class Reporter:
         lighthouse_address = rospy.get_param('~lighthouse_contract')
         self.lighthouse = self.web3.eth.contract(lighthouse_address, abi=lighthouse_abi)
 
-        self.account = rospy.get_param('~eth_account_address')
-        self.account = self.web3.eth.accounts[0] if len(self.account) == 0 else self.account
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         rospy.Subscriber('infochan/incoming/result', Result, self.settlement)
 

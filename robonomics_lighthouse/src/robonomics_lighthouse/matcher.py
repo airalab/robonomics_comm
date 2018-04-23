@@ -29,8 +29,7 @@ class Matcher:
         builder_address = rospy.get_param('~builder_contract')
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
-        self.account = rospy.get_param('~eth_account_address')
-        self.account = self.web3.eth.accounts[0] if len(self.account) == 0 else self.account
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
         rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))

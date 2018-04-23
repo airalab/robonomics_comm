@@ -21,7 +21,8 @@
       <param name="run_liability_immediately" value="$(arg run_liability_immediately)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
-      <param name="eth_account_address" value="$(arg eth_account_address)" />
+      <param name="eth_account_address" value="$(arg eth_account_address)"
+             if="$(eval len(arg('eth_account_address')) > 0)"/>
     </node>
   </group>
 </launch>
