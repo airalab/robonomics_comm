@@ -46,7 +46,7 @@ def bidhash(msg):
 def reshash(msg):
     types = [ 'address'
             , 'bytes32' ]
-    return Web3.soliditySha3(types, [msg.liability, msg.result])
+    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result)[2:]])
 
 class Signer:
     def __init__(self):
@@ -56,7 +56,7 @@ class Signer:
         rospy.init_node('robonomics_signer')
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3     = Web3(HTTPProvider(http_provider))
-        self.account  = self.web3.eth.accounts[0]
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         self.signed_ask = rospy.Publisher('sending/ask', Ask, queue_size=10)
         self.signed_bid = rospy.Publisher('sending/bid', Bid, queue_size=10)

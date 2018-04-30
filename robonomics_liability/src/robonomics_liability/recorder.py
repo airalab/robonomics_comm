@@ -118,6 +118,8 @@ class Recorder(object):
             self._stop_condition.notify_all()
         
         self._write_queue.put(self)
+        self._master_check_thread.join()
+        self._write_thread.join()
 
     ## Implementation
 

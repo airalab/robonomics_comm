@@ -29,6 +29,8 @@ class Matcher:
         builder_address = rospy.get_param('~builder_contract')
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
+        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+
         rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
         rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))
 
@@ -65,9 +67,11 @@ class Matcher:
             if not ask:
                 h = hash((bid.model, bid.token, bid.cost, bid.count))
                 ask = self.asks[h].pop()
+                bid = self.bids[h].pop()
             else:
                 h = hash((ask.model, ask.token, ask.cost, ask.count))
                 bid = self.bids[h].pop()
+                ask = self.asks[h].pop()
 
             rospy.loginfo('Matched %s & %s', prlot(ask), prlot(bid))
             self.new_liability(ask, bid)
@@ -90,7 +94,7 @@ class Matcher:
                , bid.signature[0:32]
                , bid.signature[32:64] ]
         deadline = [ ask.deadline, bid.deadline ]
-        self.builder.transact({'gas': 1000000}).createLiability(
+        self.builder.transact({'gas': 1000000, 'from': self.account}).createLiability(
                 b58decode(ask.model)[2:],
                 b58decode(ask.objective)[2:],
                 ask.token,

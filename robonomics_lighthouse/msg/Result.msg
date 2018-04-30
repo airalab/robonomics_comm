@@ -1,6 +1,6 @@
 # Result liability
 string liability     # address
 # Result IPFS hash
-uint8[] result       # hex
+string result       # base58
 # Result signature
 uint8[] signature    # hex
