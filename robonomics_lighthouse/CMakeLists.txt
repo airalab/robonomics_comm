@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
     COMPONENTS
         rospy
         message_generation
+        ethereum_common
 )
 
 catkin_python_setup()

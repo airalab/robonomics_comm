@@ -3,10 +3,18 @@
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="lighthouse_contract" default="0x9c8DD1E767f54520B4fb1A6E306F172EA8492f9c" />
+  <arg name="xrt_token_address" default="0x2B3cE4c151f7c9662fdD12e5b9C7B39b0D61e7F2" />
   <arg name="eth_account_address" default="" />
 
   <!-- market group -->
   <group ns="lighthouse">
+    <group ns="xrt">
+      <include file="$(find ethereum_common)/launch/erc20.launch">
+        <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+        <arg name="erc20_token_address" value="$(arg xrt_token_address)" />
+      </include>
+    </group>
+
     <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
       <!-- <arg name="enable_signer" value="false" /> -->
       <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
