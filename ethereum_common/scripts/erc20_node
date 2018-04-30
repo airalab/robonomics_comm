@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from ethereum_common.ERC20 import Node 
+import rospy
+
+if __name__ == '__main__':
+    Node().spin()
