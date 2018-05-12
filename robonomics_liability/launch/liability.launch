@@ -2,13 +2,20 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="builder_contract_address" default="0x673b9e3b800123E95B1582c97964812389E8040C" />
+  <arg name="builder_contract_address" default="0x291cF74beAFe4A3b61F36373dbC0fEbd35C8102e" />
+  <arg name="lighthouse_contract" default="0x681Ed5c6ea99931eFff11E53Ce8e6c56bE0D643e" />
   <arg name="run_liability_immediately" default="true" />
   <arg name="enable_executor" default="true" />
   <arg name="eth_account_address" default="" />
 
   <!-- liability group -->
   <group ns="liability">
+    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
+      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    </include>
+
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
       <param name="builder_contract_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
