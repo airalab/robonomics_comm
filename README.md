@@ -14,6 +14,13 @@ mkdir -p ws/src && cd ws/src
 git clone https://github.com/airalab/robonomics_comm
 catkin_init_workspace && cd .. && catkin_make 
 ```
+Robonomics lighthouse 
+-----------------
+
+Lighthouse package implements protocol part about robonomics lighthouses functionality:
+markets, orders, deals, liabilities, results. The decentralized robonomics markets
+use IPFS and Ethereum smart contracts for order processing.
+
 
 Robonomics liability
 --------------------
@@ -21,13 +28,6 @@ Robonomics liability
 Liability package implements protocol part about robot liability
 smart contract actions. It provide methods for robot task/result
 store, delivery and interpretation.
-
-Robonomics market
------------------
-
-Market package implements protocol part about robonomics markets.
-The decentralized robonomics market use IPFS and Ethereum smart contracts
-for order processing.
 
 Robonomics control
 ------------------
@@ -37,15 +37,20 @@ This packages implements robonomics control rules described at [article](http://
 Examples
 --------
 
+**Client**
+
+```bash
+$ roslaunch robonomics_lighthouse infochan.launch
+```
+
+**Lighthouse**
+
+```bash
+$ roslaunch robonomics_lighthouse lighthouse.launch
+```
+
 **Robot**
 
 ```bash
-$ roslaunch robonomics_market market.launch
 $ roslaunch robonomics_liability liability.launch
-```
-
-**Market matcher**
-
-```bash
-$ roslaunch robonomics_market matcher.launch
 ```

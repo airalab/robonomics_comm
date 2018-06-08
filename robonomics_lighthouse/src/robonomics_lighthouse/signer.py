@@ -10,43 +10,45 @@ import rospy, os
 import binascii
 
 def askhash(msg):
-    types = [ 'bytes32'
-            , 'bytes32'
+    types = [ 'bytes'
+            , 'bytes'
             , 'address'
+            , 'uint256'
             , 'address'
             , 'uint256'
             , 'uint256'
-            , 'bytes32'
-            , 'uint256' ]
+            , 'bytes32' ]
     return Web3.soliditySha3(types,
-            [ b58decode(msg.model)[2:]
-            , b58decode(msg.objective)[2:]
+            [ b58decode(msg.model)
+            , b58decode(msg.objective)
             , msg.token
+            , msg.cost
             , msg.validator
-            , msg.cost * msg.count
             , msg.validatorFee
-            , msg.salt 
-            , msg.deadline ])
+            , msg.deadline
+            , msg.nonce ])
 
 def bidhash(msg):
-    types = [ 'bytes32'
+    types = [ 'bytes'
+            , 'bytes'
             , 'address'
             , 'uint256'
             , 'uint256'
             , 'bytes32'
             , 'uint256' ]
     return Web3.soliditySha3(types,
-            [ b58decode(msg.model)[2:]
+            [ b58decode(msg.model)
+            , b58decode(msg.objective)
             , msg.token
-            , msg.cost * msg.count
+            , msg.cost
             , msg.lighthouseFee
-            , msg.salt
-            , msg.deadline ])
+            , msg.deadline
+            , msg.nonce ])
 
 def reshash(msg):
     types = [ 'address'
-            , 'bytes32' ]
-    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result)[2:]])
+            , 'bytes' ]
+    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result)])
 
 class Signer:
     def __init__(self):
@@ -56,7 +58,7 @@ class Signer:
         rospy.init_node('robonomics_signer')
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3     = Web3(HTTPProvider(http_provider))
-        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+        self.account  = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
         self.signed_ask = rospy.Publisher('sending/ask', Ask, queue_size=10)
         self.signed_bid = rospy.Publisher('sending/bid', Bid, queue_size=10)

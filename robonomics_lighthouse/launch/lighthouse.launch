@@ -1,42 +1,56 @@
 <launch>
-  <!-- arguments -->
+
+  <!-- Arguments -->
+  <arg name="lighthouse_contract" default="airalab.lighthouse.0.robonomics.eth" />
+  <arg name="xrt_contract" default="xrt.0.robonomics.eth" />
+  <arg name="account_address" default="" />
+  <arg name="ens_contract" default="0xbf8B6Eb8D779e3a3cA5FC209Ce5b0734f2866bba" />
+
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="lighthouse_contract" default="0x291cF74beAFe4A3b61F36373dbC0fEbd35C8102e" />
-  <arg name="xrt_token_address" default="0x0Ef7fCB816fd725819e071eFB48F7EACb85c1A6A" />
-  <arg name="eth_account_address" default="" />
 
-  <!-- market group -->
+  <!-- Robonomics lighthouse -->
   <group ns="lighthouse">
+
+    <!-- XRT token interface -->
     <group ns="xrt">
       <include file="$(find ethereum_common)/launch/erc20.launch">
         <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
-        <arg name="erc20_token_address" value="$(arg xrt_token_address)" />
+        <arg name="erc20_token" value="$(arg xrt_contract)" />
+        <arg name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
       </include>
     </group>
 
+    <!-- Information channel interface -->
     <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
-      <!-- <arg name="enable_signer" value="false" /> -->
       <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
       <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
       <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     </include>
 
+    <!-- Order matcher / liability contract settler  -->
     <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" output="screen">
-      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
-      <param name="builder_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
-      <param name="builder_contract" value="$(arg lighthouse_contract)" />
-      <param name="eth_account_address" value="$(arg eth_account_address)"
-             if="$(eval len(arg('eth_account_address')) > 0)"/>
-    </node>
-
-    <node pkg="robonomics_lighthouse" type="reporter_node" name="reporter" output="screen">
+      <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
+      <param name="factory_abi" textfile="$(find robonomics_lighthouse)/abi/factory.json" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
-      <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
+      <param name="account_address" value="$(arg account_address)"
+             if="$(eval len(arg('account_address')) > 0)"/>
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+    </node>
+
+    <!-- Liability result settler -->
+    <node pkg="robonomics_lighthouse" type="reporter_node" name="reporter" output="screen">
       <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
-      <param name="eth_account_address" value="$(arg eth_account_address)"
-             if="$(eval len(arg('eth_account_address')) > 0)"/>
+      <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <param name="account_address" value="$(arg account_address)"
+             if="$(eval len(arg('account_address')) > 0)"/>
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>
   </group>
 </launch>

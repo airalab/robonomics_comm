@@ -1,25 +1,28 @@
 <launch>
-  <!-- arguments -->
+  <!-- Arguments -->
+  <arg name="enable_signer" default="true" />
+  <arg name="account_address" default="" />
+
+  <arg name="lighthouse_contract" default="airalab.lighthouse.0.robonomics.eth" />
+
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="lighthouse_contract" default="0x9c8DD1E767f54520B4fb1A6E306F172EA8492f9c" />
-  <arg name="enable_generator" default="false" />
-  <arg name="enable_signer" default="true" />
-  <arg name="eth_account_address" default="" />
 
-  <!-- market group -->
+  <!-- Robonomics information channel -->
   <group ns="infochan">
-    <node pkg="robonomics_lighthouse" type="infochan_node" name="infochan">
+
+    <!-- PubSub information channel interface -->
+    <node pkg="robonomics_lighthouse" type="infochan_node" name="channel">
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
     </node>
 
-    <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
+    <!-- Message signer heler -->
+    <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
-      <param name="eth_account_address" value="$(arg eth_account_address)"
-             if="$(eval len(arg('eth_account_address')) > 0)"/>
+      <param name="account_address" value="$(arg account_address)"
+             if="$(eval len(arg('account_address')) > 0)"/>
     </node>
 
-    <node pkg="robonomics_lighthouse" type="generator_node" name="generator" if="$(arg enable_generator)" />
   </group>
 </launch>

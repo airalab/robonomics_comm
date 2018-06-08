@@ -5,12 +5,39 @@
 
 from robonomics_lighthouse.msg import Bid, Ask
 from web3 import Web3, HTTPProvider
+from ens import ENS
 from base58 import b58decode
 from binascii import hexlify
 import rospy, json
 
 from . import signer 
 
+def encodeAsk(msg):
+    liability_abi = json.loads(rospy.get_param('~liability_abi'))
+    liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=liability_abi)
+    args = [ b58decode(msg.model)
+           , b58decode(msg.objective)
+           , msg.token
+           , msg.cost
+           , msg.validator
+           , msg.validatorFee
+           , msg.deadline
+           , msg.nonce
+           , msg.signature ]
+    return '0x' + liability.functions.ask(*args).buildTransaction()['data'][10:]
+
+def encodeBid(bid):
+    liability_abi = json.loads(rospy.get_param('~liability_abi'))
+    liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=liability_abi)
+    args = [ b58decode(msg.model)
+           , b58decode(msg.objective)
+           , msg.token
+           , msg.cost
+           , msg.lighthouseFee
+           , msg.deadline
+           , msg.nonce
+           , msg.signature ]
+    return '0x' + liability.functions.bid(*args).buildTransaction()['data'][10:]
 
 class Matcher:
     bids = {}
@@ -22,14 +49,14 @@ class Matcher:
         '''
         rospy.init_node('robonomics_matcher')
 
-        http_provider = rospy.get_param('~web3_http_provider')
-        self.web3 = Web3(HTTPProvider(http_provider))
+        http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
+        self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
 
-        builder_abi = json.loads(rospy.get_param('~builder_abi'))
-        builder_address = rospy.get_param('~builder_contract')
+        builder_abi = json.loads(rospy.get_param('~factory_abi'))
+        builder_address = rospy.get_param('~lighthouse_contract')
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
-        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+        self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
         rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
         rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))
@@ -84,20 +111,8 @@ class Matcher:
         '''
             Create liability contract for matched ask & bid.
         '''
-        exps = [ ask.cost * ask.count, bid.lighthouseFee, ask.validatorFee ]
-        sign = [ ask.salt
-               , bytes(31) + bytes([ask.signature[64]])
-               , ask.signature[0:32]
-               , ask.signature[32:64]
-               , bid.salt
-               , bytes(31) + bytes([bid.signature[64]])
-               , bid.signature[0:32]
-               , bid.signature[32:64] ]
-        deadline = [ ask.deadline, bid.deadline ]
-        self.builder.transact({'gas': 1000000, 'from': self.account}).createLiability(
-                b58decode(ask.model)[2:],
-                b58decode(ask.objective)[2:],
-                ask.token,
-                ask.validator,
-                exps, sign, deadline)
-        rospy.loginfo('Liability contract created')
+        try:
+            tx = self.builder.transact({'from': self.account}).createLiability(encodeAsk(ask), encodeBid(bid))
+            rospy.loginfo('Liability contract created at %s', tx)
+        except Exception as e:
+            rospy.logerr(e)

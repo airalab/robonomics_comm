@@ -11,31 +11,62 @@ from threading import Thread
 import rospy
 
 def bid2dict(b):
-    return { 'model'    : b.model,
-             'token'    : b.token,
-             'cost'     : b.cost,
-             'count'    : b.count,
+    return { 'model'         : b.model,
+             'objective'     : b.objective,
+             'token'         : b.token,
+             'cost'          : b.cost,
              'lighthouseFee' : b.lighthouseFee,
-             'salt'     : hexlify(b.salt).decode('utf-8'),
-             'signature': hexlify(b.signature).decode('utf-8'),
-             'deadline' : b.deadline }
+             'deadline'      : b.deadline,
+             'nonce'         : hexlify(b.nonce).decode('utf-8'),
+             'signature'     : hexlify(b.signature).decode('utf-8') }
 
 def ask2dict(a):
-    return { 'model'    : a.model,
-             'objective': a.objective,
-             'token'    : a.token,
-             'cost'     : a.cost,
-             'count'    : a.count,
+    return { 'model'        : a.model,
+             'objective'    : a.objective,
+             'token'        : a.token,
+             'cost'         : a.cost,
              'validator'    : a.validator,
              'validatorFee' : a.validatorFee,
-             'salt'     : hexlify(a.salt).decode('utf-8'),
-             'signature': hexlify(a.signature).decode('utf-8'),
-             'deadline' : a.deadline }
+             'deadline'     : a.deadline,
+             'nonce'        : hexlify(a.nonce).decode('utf-8'),
+             'signature'    : hexlify(a.signature).decode('utf-8') }
 
 def res2dict(r):
-    return { 'liability' : r.liability, 
+    return { 'liability' : r.liability,
              'result'    : r.result,
              'signature' : hexlify(r.signature).decode('utf-8') }
+
+def dict2ask(m):
+    msg = Ask()
+    msg.model        = m['model']
+    msg.objective    = m['objective']
+    msg.token        = m['token']
+    msg.cost         = m['cost']
+    msg.validator    = m['validator']
+    msg.validatorFee = m['validatorFee']
+    msg.deadline     = m['deadline']
+    msg.nonce        = unhexlify(m['nonce'].encode('utf-8'))
+    msg.signature    = unhexlify(m['signature'].encode('utf-8'))
+    return msg
+
+def dict2bid(m):
+    msg = Bid()
+    msg.model         = m['model']
+    msg.objective     = m['objective']
+    msg.token         = m['token']
+    msg.cost          = m['cost']
+    msg.lighthouseFee = m['lighthouseFee']
+    msg.deadline      = m['deadline']
+    msg.nonce         = unhexlify(m['nonce'].encode('utf-8'))
+    msg.signature     = unhexlify(m['signature'].encode('utf-8'))
+    return msg
+
+def dict2res(m):
+    msg = Result()
+    msg.liability = m['liability']
+    msg.result    = m['result']
+    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    return msg
 
 class InfoChan:
     def __init__(self):
@@ -51,51 +82,34 @@ class InfoChan:
         self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
         self.incoming_res = rospy.Publisher('incoming/result', Result, queue_size=10)
 
-        self.market_chan = '{0}_market'.format(self.lighthouse)
-        self.result_chan = '{0}_result'.format(self.lighthouse)
-        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.market_chan, bid2dict(m)))
-        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.market_chan, ask2dict(m)))
-        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_api, self.result_chan, res2dict(m)))
+        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.lighthouse, bid2dict(m)))
+        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.lighthouse, ask2dict(m)))
+        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_api, self.lighthouse, res2dict(m)))
 
     def spin(self):
         '''
             Waiting for the new messages.
         '''
-        def market_thread():
-            for m in subscribe(self.ipfs_api, self.market_chan):
-                if 'objective' in m:
-                    msg = Ask()
-                    msg.model     = m['model']
-                    msg.objective = m['objective']
-                    msg.token     = m['token']
-                    msg.cost      = m['cost']
-                    msg.count     = m['count']
-                    msg.validator    = m['validator']
-                    msg.validatorFee = m['validatorFee']
-                    msg.salt      = unhexlify(m['salt'].encode('utf-8'))
-                    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-                    msg.deadline  = m['deadline']
-                    self.incoming_ask.publish(msg)
-                else:
-                    msg = Bid()
-                    msg.model     = m['model']
-                    msg.token     = m['token']
-                    msg.cost      = m['cost']
-                    msg.count     = m['count']
-                    msg.lighthouseFee = m['lighthouseFee']
-                    msg.salt      = unhexlify(m['salt'].encode('utf-8'))
-                    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-                    msg.deadline  = m['deadline']
-                    self.incoming_bid.publish(msg)
+        def channel_thread():
+            for m in subscribe(self.ipfs_api, self.lighthouse):
+                try:
+                    self.incoming_ask.publish(dict2ask(m))
+                except KeyError:
+                    pass
+                except Exception as e:
+                    rospy.logwarn('Message parsing error: %s', e)
 
-        def result_thread():
-            for m in subscribe(self.ipfs_api, self.result_chan):
-                msg = Result()
-                msg.liability = m['liability']
-                msg.result    = m['result']
-                msg.signature = unhexlify(m['signature'].encode('utf-8'))
-                self.incoming_res.publish(msg)
+                try:
+                    self.incoming_bid.publish(dict2bid(m))
+                except KeyError:
+                    pass
+                except Exception as e:
+                    rospy.logwarn('Message parsing error: %s', e)
 
-        Thread(target=market_thread, daemon=True).start()
-        Thread(target=result_thread, daemon=True).start()
+                try:
+                    self.incoming_res.publish(dict2res(m))
+                except Exception as e:
+                    rospy.logwarn('Message parsing error: %s', e)
+
+        Thread(target=channel_thread, daemon=True).start()
         rospy.spin()

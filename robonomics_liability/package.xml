@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <package>
   <name>robonomics_liability</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>The robonomics liability nodes</description>
   <maintainer email="mail@akru.me">Alexander Krupenkin</maintainer>
   <license>BSD3</license>
   <author email="mail@akru.me">Alexander Krupenkin</author>
-
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
   <run_depend>message_runtime</run_depend>
-
 </package>

@@ -7,6 +7,7 @@
 from base64 import b64encode, b64decode
 from pexpect import spawn, EOF
 from json import dumps, loads
+import rospy
 
 def publish(api, topic, msg):
     '''
@@ -22,4 +23,8 @@ def subscribe(api, topic):
     child = spawn('ipfs --api={0} pubsub sub {1}'.format(api, topic))
     while not child.eof():
         child.expect('\r\n', timeout=None)
-        yield loads(b64decode(child.before).decode('utf-8'))
+        try:
+            yield loads(b64decode(child.before).decode('utf-8'))
+        except Exception as e:
+            rospy.logerr(e)
+            rospy.sleep(1)

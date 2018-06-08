@@ -1,9 +1,12 @@
 <launch>
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
-  <arg name="erc20_token_address" default="0x2B3cE4c151f7c9662fdD12e5b9C7B39b0D61e7F2"/>
+  <arg name="erc20_token" default="xrt.0.robonomics.eth"/>
+  <arg name="ens_contract" default="" />
 
   <node pkg="ethereum_common" type="erc20_node" name="erc20_token" output="screen">
     <param name="web3_http_provider" value="$(arg web3_http_provider)" />
-    <param name="contract_address" value="$(arg erc20_token_address)" />
+    <param name="token_contract" value="$(arg erc20_token)" />
+    <param name="ens_contract" value="$(arg ens_contract)"
+           if="$(eval len(arg('ens_contract')) > 0)"/>
   </node>
 </launch>

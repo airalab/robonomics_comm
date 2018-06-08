@@ -17,12 +17,6 @@ add_message_files(
         Result.msg
 )
 
-add_service_files(
-    FILES
-        AsksGenerator.srv
-        BidsGenerator.srv
-)
-
 generate_messages()
 
 catkin_package()
@@ -33,7 +27,6 @@ catkin_install_python(
         scripts/signer_node
         scripts/matcher_node
         scripts/reporter_node
-        scripts/generator_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -1,4 +1,5 @@
 from web3 import Web3, HTTPProvider
+from ens import ENS
 from ethereum_common.msg import *
 from ethereum_common.srv import *
 from threading import Timer
@@ -30,8 +31,9 @@ class Node:
     def __init__(self):
         rospy.init_node('erc20_node', anonymous=True)
 
-        self.web3 = Web3(HTTPProvider(rospy.get_param('~web3_http_provider')))
-        self.erc20 = self.web3.eth.contract(rospy.get_param('~contract_address'), abi=ABI)
+        http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
+        self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
+        self.erc20 = self.web3.eth.contract(rospy.get_param('~token_contract'), abi=ABI)
 
         self.transfer = rospy.Publisher('event/transfer', TransferEvent, queue_size=10)
         self.approval = rospy.Publisher('event/approval', ApprovalEvent, queue_size=10)

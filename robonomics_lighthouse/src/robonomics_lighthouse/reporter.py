@@ -5,6 +5,7 @@
 
 from robonomics_lighthouse.msg import Result
 from web3 import Web3, HTTPProvider
+from ens import ENS
 from binascii import hexlify, unhexlify
 from base58 import b58decode
 import rospy, json
@@ -17,12 +18,12 @@ class Reporter:
         rospy.init_node('robonomics_reporter')
 
         http_provider = rospy.get_param('~web3_http_provider')
-        self.web3 = Web3(HTTPProvider(http_provider))
+        self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
 
         self.liability_abi = json.loads(rospy.get_param('~liability_abi'))
         lighthouse_abi = json.loads(rospy.get_param('~lighthouse_abi'))
-        lighthouse_address = rospy.get_param('~lighthouse_contract')
-        self.lighthouse = self.web3.eth.contract(lighthouse_address, abi=lighthouse_abi)
+        lighthouse_contract = rospy.get_param('~lighthouse_contract')
+        self.lighthouse = self.web3.eth.contract(lighthouse_contract, abi=lighthouse_abi)
 
         self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
@@ -38,8 +39,10 @@ class Reporter:
         '''
             Settle incoming result.
         '''
-        v, r, s = msg.signature[64], msg.signature[0:32], msg.signature[32:64]
         liability = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
-        data = liability.functions.setResult(b58decode(msg.result)[2:], v, r, s).buildTransaction({'gas': 1000000})['data']
+        data = liability.functions.finalize(
+            b58decode(msg.result),
+            msg.signature,
+            False).buildTransaction()['data']
         self.lighthouse.transact({'gas': 300000, 'from': self.account}).to(msg.liability, data)
         rospy.loginfo('Result submitted with data: {0}'.format(data))
