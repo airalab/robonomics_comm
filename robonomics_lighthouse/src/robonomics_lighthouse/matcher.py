@@ -12,32 +12,6 @@ import rospy, json
 
 from . import signer 
 
-def encodeAsk(msg):
-    liability_abi = json.loads(rospy.get_param('~liability_abi'))
-    liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=liability_abi)
-    args = [ b58decode(msg.model)
-           , b58decode(msg.objective)
-           , msg.token
-           , msg.cost
-           , msg.validator
-           , msg.validatorFee
-           , msg.deadline
-           , msg.nonce
-           , msg.signature ]
-    return '0x' + liability.functions.ask(*args).buildTransaction()['data'][10:]
-
-def encodeBid(bid):
-    liability_abi = json.loads(rospy.get_param('~liability_abi'))
-    liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=liability_abi)
-    args = [ b58decode(msg.model)
-           , b58decode(msg.objective)
-           , msg.token
-           , msg.cost
-           , msg.lighthouseFee
-           , msg.deadline
-           , msg.nonce
-           , msg.signature ]
-    return '0x' + liability.functions.bid(*args).buildTransaction()['data'][10:]
 
 class Matcher:
     bids = {}
@@ -53,8 +27,8 @@ class Matcher:
         self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
 
         builder_abi = json.loads(rospy.get_param('~factory_abi'))
-        builder_address = rospy.get_param('~lighthouse_contract')
-        self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
+        builder_contract = rospy.get_param('~lighthouse_contract')
+        self.builder = self.web3.eth.contract(builder_contract, abi=builder_abi)
 
         self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
@@ -74,29 +48,29 @@ class Matcher:
         assert(not bid or not ask)
 
         if not ask:
-            h = hash((bid.model, bid.token, bid.cost, bid.count))
+            h = hash((bid.model, bid.objective, bid.token, bid.cost))
             if h in self.bids:
                 self.bids[h].append(bid)
             else:
                 self.bids[h] = [bid]
         else:
-            h = hash((ask.model, ask.token, ask.cost, ask.count))
+            h = hash((ask.model, ask.objective, ask.token, ask.cost))
             if h in self.asks:
                 self.asks[h].append(ask)
             else:
                 self.asks[h] = [ask]
 
-        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} Cnt: {3} |'.format(
+        prlot = lambda lot: '| {0} Mod: {1} Cst: {2} |'.format(
                             'Ask Obj: '+lot.objective if hasattr(lot, 'objective') else 'Bid',
-                            lot.model, lot.cost, lot.count)
+                            lot.model, lot.cost)
 
         try:
             if not ask:
-                h = hash((bid.model, bid.token, bid.cost, bid.count))
+                h = hash((bid.model, bid.objective, bid.token, bid.cost))
                 ask = self.asks[h].pop()
                 bid = self.bids[h].pop()
             else:
-                h = hash((ask.model, ask.token, ask.cost, ask.count))
+                h = hash((ask.model, ask.objective, ask.token, ask.cost))
                 bid = self.bids[h].pop()
                 ask = self.asks[h].pop()
 
@@ -111,8 +85,34 @@ class Matcher:
         '''
             Create liability contract for matched ask & bid.
         '''
+        liability_abi = json.loads(rospy.get_param('~liability_abi'))
+        liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=liability_abi)
+
+        def encodeAsk(msg):
+            args = [ b58decode(msg.model)
+                   , b58decode(msg.objective)
+                   , msg.token
+                   , msg.cost
+                   , msg.validator
+                   , msg.validatorFee
+                   , msg.deadline
+                   , msg.nonce
+                   , msg.signature ]
+            return '0x' + liability.functions.ask(*args).buildTransaction()['data'][10:]
+
+        def encodeBid(msg):
+            args = [ b58decode(msg.model)
+                   , b58decode(msg.objective)
+                   , msg.token
+                   , msg.cost
+                   , msg.lighthouseFee
+                   , msg.deadline
+                   , msg.nonce
+                   , msg.signature ]
+            return '0x' + liability.functions.bid(*args).buildTransaction()['data'][10:]
+
         try:
-            tx = self.builder.transact({'from': self.account}).createLiability(encodeAsk(ask), encodeBid(bid))
-            rospy.loginfo('Liability contract created at %s', tx)
+            tx = self.builder.functions.createLiability(encodeAsk(ask), encodeBid(bid)).transact({'from': self.account})
+            rospy.loginfo('Liability contract created at %s', self.web3.toHex(tx))
         except Exception as e:
-            rospy.logerr(e)
+            rospy.logerr('Liability creation error: %s', e)

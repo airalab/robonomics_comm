@@ -17,7 +17,7 @@ class Reporter:
         '''
         rospy.init_node('robonomics_reporter')
 
-        http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
         self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
 
         self.liability_abi = json.loads(rospy.get_param('~liability_abi'))
@@ -25,7 +25,7 @@ class Reporter:
         lighthouse_contract = rospy.get_param('~lighthouse_contract')
         self.lighthouse = self.web3.eth.contract(lighthouse_contract, abi=lighthouse_abi)
 
-        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+        self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
         rospy.Subscriber('infochan/incoming/result', Result, self.settlement)
 
@@ -43,6 +43,6 @@ class Reporter:
         data = liability.functions.finalize(
             b58decode(msg.result),
             msg.signature,
-            False).buildTransaction()['data']
-        self.lighthouse.transact({'gas': 300000, 'from': self.account}).to(msg.liability, data)
-        rospy.loginfo('Result submitted with data: {0}'.format(data))
+            False).buildTransaction({'gas': 1000000})['data']
+        tx = self.lighthouse.functions.to(msg.liability, data).transact({'from': self.account})
+        rospy.loginfo('Result submitted at %s', self.web3.toHex(tx))

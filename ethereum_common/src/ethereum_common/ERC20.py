@@ -32,8 +32,11 @@ class Node:
         rospy.init_node('erc20_node', anonymous=True)
 
         http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
-        self.web3 = Web3(http_provider, ens=ENS(http_provider, addr=rospy.get_param('~ens_contract', None)))
-        self.erc20 = self.web3.eth.contract(rospy.get_param('~token_contract'), abi=ABI)
+        self.ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
+        self.web3 = Web3(http_provider, ens=self.ens)
+
+        token_address = self.ens.address(rospy.get_param('~token_contract')) 
+        self.erc20 = self.web3.eth.contract(token_address, abi=ABI)
 
         self.transfer = rospy.Publisher('event/transfer', TransferEvent, queue_size=10)
         self.approval = rospy.Publisher('event/approval', ApprovalEvent, queue_size=10)

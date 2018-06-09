@@ -92,6 +92,8 @@ class InfoChan:
         '''
         def channel_thread():
             for m in subscribe(self.ipfs_api, self.lighthouse):
+                print(m)
+
                 try:
                     self.incoming_ask.publish(dict2ask(m))
                 except KeyError:

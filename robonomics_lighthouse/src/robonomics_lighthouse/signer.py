@@ -34,8 +34,8 @@ def bidhash(msg):
             , 'address'
             , 'uint256'
             , 'uint256'
-            , 'bytes32'
-            , 'uint256' ]
+            , 'uint256'
+            , 'bytes32' ]
     return Web3.soliditySha3(types,
             [ b58decode(msg.model)
             , b58decode(msg.objective)
@@ -65,14 +65,14 @@ class Signer:
         self.signed_res = rospy.Publisher('sending/result', Result, queue_size=10)
 
         def sign_ask(msg):
-            msg.salt = os.urandom(32)
+            msg.nonce = os.urandom(32)
             msg.signature = self.web3.eth.sign(self.account, askhash(msg))
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
             self.signed_ask.publish(msg)
         rospy.Subscriber('signing/ask', Ask, sign_ask)
 
         def sign_bid(msg):
-            msg.salt = os.urandom(32)
+            msg.nonce = os.urandom(32)
             msg.signature = self.web3.eth.sign(self.account, bidhash(msg))
             rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(bidhash(msg)), binascii.hexlify(msg.signature))
             self.signed_bid.publish(msg)
