@@ -44,5 +44,8 @@ class Reporter:
             b58decode(msg.result),
             msg.signature,
             False).buildTransaction({'gas': 1000000})['data']
-        tx = self.lighthouse.functions.to(msg.liability, data).transact({'from': self.account})
-        rospy.loginfo('Result submitted at %s', self.web3.toHex(tx))
+        try:
+            tx = self.lighthouse.functions.to(msg.liability, data).transact({'from': self.account})
+            rospy.loginfo('Result submitted at %s', self.web3.toHex(tx))
+        except Exception as e:
+            rospy.logerr('Result submission error %s', e)
