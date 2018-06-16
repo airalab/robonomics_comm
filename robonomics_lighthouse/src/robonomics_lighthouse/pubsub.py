@@ -20,7 +20,7 @@ def subscribe(api, topic):
     '''
         Subscribe to given topic and return generator of received messages.
     '''
-    child = spawn('ipfs --api={0} pubsub sub {1}'.format(api, topic))
+    child = spawn('ipfs --api={0} pubsub sub --discover {1}'.format(api, topic))
     while not child.eof():
         child.expect('\r\n', timeout=None)
         try:
