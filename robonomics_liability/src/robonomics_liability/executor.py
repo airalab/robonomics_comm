@@ -48,7 +48,7 @@ class Executor:
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
         self.current  = rospy.Publisher('current', Liability, queue_size=10)
-        self.result_topic = rospy.Publisher('infochan/signing/result', Result, queue_size=10)
+        self.result_topic = rospy.Publisher('result', Result, queue_size=10)
 
     def _liability_worker(self):
         while not rospy.is_shutdown():
