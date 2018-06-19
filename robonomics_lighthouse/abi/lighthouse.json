@@ -204,5 +204,28 @@
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_ask",
+          "type": "bytes"
+        },
+        {
+          "name": "_bid",
+          "type": "bytes"
+        }
+      ],
+      "name": "createLiability",
+      "outputs": [
+        {
+          "name": "liability",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
 ]

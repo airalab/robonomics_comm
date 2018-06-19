@@ -92,26 +92,27 @@ class InfoChan:
         '''
         def channel_thread():
             for m in subscribe(self.ipfs_api, self.lighthouse):
-                print(m)
-
                 try:
                     self.incoming_ask.publish(dict2ask(m))
+                    continue
                 except KeyError:
                     pass
                 except Exception as e:
-                    rospy.logwarn('Message parsing error: %s', e)
+                    rospy.logwarn('Message %s parsing error: %s', m, e)
 
                 try:
                     self.incoming_bid.publish(dict2bid(m))
+                    continue
                 except KeyError:
                     pass
                 except Exception as e:
-                    rospy.logwarn('Message parsing error: %s', e)
+                    rospy.logwarn('Message %s parsing error: %s', m, e)
 
                 try:
                     self.incoming_res.publish(dict2res(m))
+                    continue
                 except Exception as e:
-                    rospy.logwarn('Message parsing error: %s', e)
+                    rospy.logwarn('Message %s parsing error: %s', m, e)
 
         Thread(target=channel_thread, daemon=True).start()
         rospy.spin()

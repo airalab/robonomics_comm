@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from robonomics_lighthouse.nodes import lighthouse_node
+
+if __name__ == '__main__':
+    lighthouse_node()

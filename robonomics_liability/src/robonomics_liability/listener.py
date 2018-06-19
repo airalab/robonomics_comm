@@ -20,6 +20,10 @@ class Listener:
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         self.poll_interval = rospy.get_param('~poll_interval', 5)
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)

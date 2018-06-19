@@ -14,6 +14,7 @@ add_message_files(
     FILES
         Ask.msg
         Bid.msg
+        Deal.msg
         Result.msg
 )
 
@@ -26,7 +27,7 @@ catkin_install_python(
         scripts/infochan_node
         scripts/signer_node
         scripts/matcher_node
-        scripts/reporter_node
+        scripts/lighthouse_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
@@ -41,7 +42,6 @@ install(
 
 install(
     FILES
-        abi/factory.json
         abi/liability.json
         abi/lighthouse.json
     DESTINATION

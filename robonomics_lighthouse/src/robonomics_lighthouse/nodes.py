@@ -3,10 +3,10 @@
 # Robonomics market related nodes.
 #
 
+from . import lighthouse 
 from . import infochan
-from . import signer
 from . import matcher
-from . import reporter
+from . import signer
 
 def infochan_node():
     infochan.InfoChan().spin()
@@ -17,5 +17,5 @@ def signer_node():
 def matcher_node():
     matcher.Matcher().spin()
 
-def reporter_node():
-    reporter.Reporter().spin()
+def lighthouse_node():
+    lighthouse.Lighthouse().spin()

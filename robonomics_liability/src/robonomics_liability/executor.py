@@ -28,6 +28,10 @@ class Executor:
         web3_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(web3_provider))
 
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')

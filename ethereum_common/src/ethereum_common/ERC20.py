@@ -35,6 +35,11 @@ class Node:
         self.ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
         self.web3 = Web3(http_provider, ens=self.ens)
 
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         token_address = self.ens.address(rospy.get_param('~token_contract')) 
         self.erc20 = self.web3.eth.contract(token_address, abi=ABI)
 

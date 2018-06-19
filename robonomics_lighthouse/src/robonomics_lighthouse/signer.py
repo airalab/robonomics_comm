@@ -58,6 +58,11 @@ class Signer:
         rospy.init_node('robonomics_signer')
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3     = Web3(HTTPProvider(http_provider))
+
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         self.account  = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
         self.signed_ask = rospy.Publisher('sending/ask', Ask, queue_size=10)
