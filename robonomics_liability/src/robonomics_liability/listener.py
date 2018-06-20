@@ -18,9 +18,9 @@ class Listener:
         '''
         rospy.init_node('robonomics_liability_listener')
 
-        http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
         self.ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
-        self.web3 = Web3(HTTPProvider(http_provider), ens=self.ens)
+        self.web3 = Web3(http_provider, ens=self.ens)
 
         from web3.middleware import geth_poa_middleware
         # inject the poa compatibility middleware to the innermost layer
