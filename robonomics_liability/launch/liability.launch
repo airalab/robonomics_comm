@@ -27,7 +27,6 @@
     </node>
 
     <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen" if="$(arg enable_executor)">
-      <param name="run_liability_immediately" value="$(arg run_liability_immediately)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="account_address" value="$(arg account_address)"

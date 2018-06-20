@@ -7,6 +7,7 @@ from robonomics_lighthouse.msg import Result
 from robonomics_liability.msg import Liability
 from base58 import b58decode, b58encode
 from web3 import Web3, HTTPProvider
+from ens import ENS
 from threading import Timer
 import rospy, json
 
