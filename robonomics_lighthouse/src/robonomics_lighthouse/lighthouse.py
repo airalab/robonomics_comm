@@ -49,8 +49,7 @@ class Lighthouse:
         self.web3.eth.setGasPriceStrategy(gas_price_strategy)
 
     def createQuotaManager(self):
-        def transact(q):
-            tx = q.get()
+        def transact(tx):
             try:
                 tx['gas'] = self.web3.eth.estimateGas(tx)
                 rospy.loginfo('Transaction GAS %d', tx['gas'])
@@ -60,9 +59,9 @@ class Lighthouse:
                 while not self.web3.eth.getTransactionReceipt(txhash):
                     rospy.sleep(15)
                 rospy.loginfo('Transaction mined at %s', Web3.toHex(txhash))
+
             except Exception as e:
                 rospy.logerr('Broken transaction: %s', e)
-            q.task_done()
 
         def marker():
             m = self.lighthouse.call().marker()
@@ -85,14 +84,7 @@ class Lighthouse:
 
             return False
 
-        def quota():
-            if self.lighthouse.call().members(self.lighthouse.call().marker()) == self.account:
-                q = self.lighthouse.call().quota()
-                if q > 0:
-                    return q
-            return self.lighthouse.call().quotaOf(self.account)
-
-        self.manager = QuotaManager(quota, transact, marker) 
+        self.manager = QuotaManager(transact, marker) 
         self.manager.start()
 
     def spin(self):
