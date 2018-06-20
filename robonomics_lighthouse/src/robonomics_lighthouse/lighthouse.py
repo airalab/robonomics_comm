@@ -75,7 +75,7 @@ class Lighthouse:
                     m = 0
 
             keepalive = self.lighthouse.call().timeoutBlocks() + self.lighthouse.call().keepaliveBlock()
-            rospy.logdebug('Lighthouse m: %d q: %d k: %d, b: %d', m, self.lighthouse.call().quota(), keepalive, self.web3.eth.blockNumber)
+            rospy.loginfo('Lighthouse m: %d q: %d k: %d, b: %d', m, self.lighthouse.call().quota(), keepalive, self.web3.eth.blockNumber)
 
             pred = self.lighthouse.call().members(m) == self.account or self.web3.eth.blockNumber > keepalive
             return pred 

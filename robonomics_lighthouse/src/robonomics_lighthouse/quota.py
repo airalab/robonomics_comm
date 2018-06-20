@@ -23,6 +23,7 @@ class QuotaManager:
     def waitingForMarker(self):
         rospy.loginfo('Waiting for marker...')
         self.queue.join()
+        rospy.sleep(15)
         while not self.marker():
             rospy.sleep(15)
         rospy.loginfo('Marker aquired, run!')
