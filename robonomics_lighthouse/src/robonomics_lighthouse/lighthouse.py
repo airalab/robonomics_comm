@@ -53,34 +53,43 @@ class Lighthouse:
             tx = q.get()
             try:
                 tx['gas'] = self.web3.eth.estimateGas(tx)
-                rospy.loginfo('Estimated GAS %d', tx['gas'])
+                rospy.loginfo('Transaction GAS %d', tx['gas'])
                 txhash = self.web3.eth.sendTransaction(tx) 
-                rospy.loginfo('Transaction sended %s', Web3.toHex(txhash))
+                rospy.loginfo('Transaction sended at %s', Web3.toHex(txhash))
 
                 while not self.web3.eth.getTransactionReceipt(txhash):
                     rospy.sleep(15)
-                rospy.loginfo('Transaction mined %s', Web3.toHex(txhash))
+                rospy.loginfo('Transaction mined at %s', Web3.toHex(txhash))
             except Exception as e:
                 rospy.logerr('Broken transaction: %s', e)
             q.task_done()
 
         def marker():
             m = self.lighthouse.call().marker()
-
-            if self.lighthouse.call().quota() == 0:
-                try:
-                    self.lighthouse.call().members(m+1)
-                    m += 1
-                except:
-                    m = 0
-
+            q = self.lighthouse.call().quota()
             keepalive = self.lighthouse.call().timeoutBlocks() + self.lighthouse.call().keepaliveBlock()
-            rospy.loginfo('Lighthouse m: %d q: %d k: %d, b: %d', m, self.lighthouse.call().quota(), keepalive, self.web3.eth.blockNumber)
 
-            pred = self.lighthouse.call().members(m) == self.account or self.web3.eth.blockNumber > keepalive
-            return pred 
+            rospy.loginfo('Lighthouse m: %d q: %d k: %d, b: %d', m, q, keepalive, self.web3.eth.blockNumber)
+
+            if self.web3.eth.blockNumber > keepalive:
+                # Timeout
+                return True
+
+            if q == 0:
+                try:
+                    # Next is me
+                    return self.lighthouse.call().members(m + 1) == self.account
+                except:
+                    # Me on the start of list
+                    return self.lighthouse.call().members(0) == self.account
+
+            return False
 
         def quota():
+            if self.lighthouse.call().members(self.lighthouse.call().marker()) == self.account:
+                q = self.lighthouse.call().quota()
+                if q > 0:
+                    return q
             return self.lighthouse.call().quotaOf(self.account)
 
         self.manager = QuotaManager(quota, transact, marker) 
