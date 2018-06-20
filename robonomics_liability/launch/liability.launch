@@ -19,7 +19,7 @@
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
       <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
-      <param name="factory_contract_address" value="$(arg factory_contract_address)" />
+      <param name="factory_contract" value="$(arg factory_contract)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="ens_contract" value="$(arg ens_contract)"
