@@ -36,6 +36,7 @@ install(
 install(
     FILES
         abi/liability.json
+        abi/factory.json
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )

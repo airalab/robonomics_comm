@@ -18,19 +18,21 @@ class Listener:
         rospy.init_node('robonomics_liability_listener')
 
         http_provider = rospy.get_param('~web3_http_provider')
-        self.web3 = Web3(HTTPProvider(http_provider))
+        self.ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
+        self.web3 = Web3(HTTPProvider(http_provider), ens=self.ens)
 
         from web3.middleware import geth_poa_middleware
         # inject the poa compatibility middleware to the innermost layer
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
         self.poll_interval = rospy.get_param('~poll_interval', 5)
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)
 
-        builder_abi = json.loads(rospy.get_param('~builder_contract_abi'))
-        builder_address = rospy.get_param('~builder_contract_address')
-        self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
+        factory_abi = json.loads(rospy.get_param('~factory_contract_abi'))
+        factory_address = self.ens.address(rospy.get_param('~factory_contract'))
+        self.factory = self.web3.eth.contract(factory_address, abi=factory_abi)
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
 
@@ -72,7 +74,7 @@ class Listener:
         '''
             Waiting for the new liabilities.
         '''
-        liability_filter = self.builder.eventFilter('NewLiability')
+        liability_filter = self.factory.eventFilter('NewLiability')
         def liability_filter_thread():
             for entry in liability_filter.get_new_entries():
                 self.liability.publish(self.liability_read(entry['args']['liability']))

@@ -32,7 +32,7 @@ class Executor:
         # inject the poa compatibility middleware to the innermost layer
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
-        self.account = rospy.get_param('~eth_account_address', self.web3.eth.accounts[0])
+        self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
