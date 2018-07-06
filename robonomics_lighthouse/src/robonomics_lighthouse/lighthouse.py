@@ -3,6 +3,7 @@
 # Robonomics lighthouse functionality.
 #
 
+from web3.gas_strategies.time_based import medium_gas_price_strategy
 from robonomics_lighthouse.msg import Deal, Result
 from web3 import Web3, HTTPProvider
 from ens import ENS
@@ -43,10 +44,8 @@ class Lighthouse:
         self.createQuotaManager()
 
     def setupGasStrategy(self):
-        def gas_price_strategy(web3, transaction_params):
-            # TODO: adaptive gas price strategy
-            return Web3.toWei(4, 'gwei')
-        self.web3.eth.setGasPriceStrategy(gas_price_strategy)
+        # Transaction mined within 5 minutes
+        self.web3.eth.setGasPriceStrategy(medium_gas_price_strategy)
 
     def createQuotaManager(self):
         def transact(tx):
