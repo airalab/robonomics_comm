@@ -47,14 +47,20 @@ class Lighthouse:
         self.createQuotaManager()
 
     def setupGasStrategy(self):
-        # Transaction mined within 1 minute
-        self.web3.eth.setGasPriceStrategy(fast_gas_price_strategy)
+        manual_price = rospy.get_param('~gas_price_gwei', 0)
+        if manual_price == 0:
+            # Transaction mined within 1 minute
+            self.web3.eth.setGasPriceStrategy(fast_gas_price_strategy)
+        else:
+            def fixed_manual_gas_price(web3, transaction_params):
+                return Web3.toWei(manual_price, 'gwei')
+            self.web3.eth.setGasPriceStrategy(fixed_manual_gas_price)
 
     def createQuotaManager(self):
         def transact(tx):
             try:
                 tx['gas'] = self.web3.eth.estimateGas(tx)
-                rospy.loginfo('Transaction GAS %d', tx['gas'])
+                rospy.loginfo('Transaction GAS %d, price %d gwei', tx['gas'], self.web3.fromWei(tx['gasPrice'], 'gwei'))
                 txhash = self.web3.eth.sendTransaction(tx) 
                 rospy.loginfo('Transaction sended at %s', Web3.toHex(txhash))
 
