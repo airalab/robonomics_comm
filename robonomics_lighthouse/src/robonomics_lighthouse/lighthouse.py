@@ -3,9 +3,9 @@
 # Robonomics lighthouse functionality.
 #
 
-from web3.gas_strategies.time_based import medium_gas_price_strategy
+from web3.gas_strategies.time_based import fast_gas_price_strategy
 from robonomics_lighthouse.msg import Deal, Result
-from web3 import Web3, HTTPProvider
+from web3 import Web3, HTTPProvider, middleware
 from ens import ENS
 from binascii import hexlify, unhexlify
 from base58 import b58decode
@@ -24,10 +24,13 @@ class Lighthouse:
         ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
         self.web3 = Web3(http_provider, ens=ens)
 
-        from web3.middleware import geth_poa_middleware
         # inject the poa compatibility middleware to the innermost layer
-        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
-        ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.web3.middleware_stack.inject(middleware.geth_poa_middleware, layer=0)
+        ens.web3.middleware_stack.inject(middleware.geth_poa_middleware, layer=0)
+
+        self.web3.middleware_stack.add(middleware.time_based_cache_middleware)
+        self.web3.middleware_stack.add(middleware.latest_block_based_cache_middleware)
+        self.web3.middleware_stack.add(middleware.simple_cache_middleware)
 
         self.liability_abi = json.loads(rospy.get_param('~liability_abi'))
 
@@ -44,8 +47,8 @@ class Lighthouse:
         self.createQuotaManager()
 
     def setupGasStrategy(self):
-        # Transaction mined within 5 minutes
-        self.web3.eth.setGasPriceStrategy(medium_gas_price_strategy)
+        # Transaction mined within 1 minute
+        self.web3.eth.setGasPriceStrategy(fast_gas_price_strategy)
 
     def createQuotaManager(self):
         def transact(tx):
