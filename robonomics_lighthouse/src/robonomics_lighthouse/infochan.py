@@ -8,6 +8,7 @@ from binascii import hexlify, unhexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
+from .messageConverter import convertMessage
 import rospy
 
 def bid2dict(b):
@@ -36,37 +37,6 @@ def res2dict(r):
              'result'    : r.result,
              'signature' : hexlify(r.signature).decode('utf-8') }
 
-def dict2ask(m):
-    msg = Ask()
-    msg.model        = m['model']
-    msg.objective    = m['objective']
-    msg.token        = m['token']
-    msg.cost         = m['cost']
-    msg.validator    = m['validator']
-    msg.validatorFee = m['validatorFee']
-    msg.deadline     = m['deadline']
-    msg.nonce        = unhexlify(m['nonce'].encode('utf-8'))
-    msg.signature    = unhexlify(m['signature'].encode('utf-8'))
-    return msg
-
-def dict2bid(m):
-    msg = Bid()
-    msg.model         = m['model']
-    msg.objective     = m['objective']
-    msg.token         = m['token']
-    msg.cost          = m['cost']
-    msg.lighthouseFee = m['lighthouseFee']
-    msg.deadline      = m['deadline']
-    msg.nonce         = unhexlify(m['nonce'].encode('utf-8'))
-    msg.signature     = unhexlify(m['signature'].encode('utf-8'))
-    return msg
-
-def dict2res(m):
-    msg = Result()
-    msg.liability = m['liability']
-    msg.result    = m['result']
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-    return msg
 
 class InfoChan:
     def __init__(self):
@@ -92,27 +62,17 @@ class InfoChan:
         '''
         def channel_thread():
             for m in subscribe(self.ipfs_api, self.lighthouse):
-                try:
-                    self.incoming_ask.publish(dict2ask(m))
-                    continue
-                except KeyError:
-                    pass
-                except Exception as e:
-                    rospy.logwarn('Message %s parsing error: %s', m, e)
-
-                try:
-                    self.incoming_bid.publish(dict2bid(m))
-                    continue
-                except KeyError:
-                    pass
-                except Exception as e:
-                    rospy.logwarn('Message %s parsing error: %s', m, e)
-
-                try:
-                    self.incoming_res.publish(dict2res(m))
-                    continue
-                except Exception as e:
-                    rospy.logwarn('Message %s parsing error: %s', m, e)
+                converted = convertMessage(m)
+                if not (converted is None):
+                    if isinstance(converted, Ask):
+                        # rospy.logwarn('DEBUG: Publish valid Ask message %s', converted)
+                        self.incoming_ask.publish(converted)
+                    elif isinstance(converted, Bid):
+                        # rospy.logwarn('DEBUG: Publish valid Bid message %s', converted)
+                        self.incoming_bid.publish(converted)
+                    elif isinstance(converted, Result):
+                        # rospy.logwarn('DEBUG: Publish valid Result message %s', converted)
+                        self.incoming_res.publish(converted)
 
         Thread(target=channel_thread, daemon=True).start()
         rospy.spin()
