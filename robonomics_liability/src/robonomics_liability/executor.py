@@ -84,7 +84,12 @@ class Executor:
                     rospy.sleep(1)
 
                 recorder.stop()
-                msg.result = self.ipfs.add(result_file)['Hash']
+                ipfs_response = self.ipfs.add(result_file)
+                try:
+                    msg.result = ipfs_response['Hash']
+                except TypeError:
+                    rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
+                    msg.result = ipfs_response[0]['Hash']
                 result_msg = Result()
                 result_msg.liability = msg.address
                 result_msg.result = msg.result
