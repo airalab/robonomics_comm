@@ -8,7 +8,7 @@ from binascii import hexlify, unhexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
-from .messageConverter import convertMessage
+from .messageValidator import convertMessage
 import rospy
 
 def bid2dict(b):
