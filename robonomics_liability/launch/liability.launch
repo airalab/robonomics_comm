@@ -2,8 +2,8 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="factory_contract" default="factory.0.robonomics.eth" />
-  <arg name="lighthouse_contract" default="airalab.lighthouse.0.robonomics.eth" />
+  <arg name="factory_contract" default="factory.1.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
   <arg name="enable_executor" default="true" />
   <arg name="recording_topics" default="[]" />
   <arg name="account_address" default="" />

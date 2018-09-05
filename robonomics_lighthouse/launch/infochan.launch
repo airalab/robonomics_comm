@@ -3,7 +3,7 @@
   <arg name="enable_signer" default="true" />
   <arg name="account_address" default="" />
 
-  <arg name="lighthouse_contract" default="airalab.lighthouse.0.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
 
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
