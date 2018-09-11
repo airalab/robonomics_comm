@@ -39,12 +39,14 @@ import threading, time, re, sys
 import queue
 
 class Recorder(object):
-    def __init__(self, filename, bag_lock=None, all=True, topics=[], regex=False, limit=0, master_check_interval=1.0):
+    def __init__(self, filename, master_check_interval, bag_lock=None, all=True, topics=[], regex=False, limit=0):
         """
         Subscribe to ROS messages and record them to a bag file.
         
         @param filename: filename of bag to write to
         @type  filename: str
+        @param master_check_interval: period (in seconds) to check master for new topic publications [default: 0.1]
+        @type  master_check_interval: float
         @param all: all topics are to be recorded [default: True]
         @type  all: bool
         @param topics: topics (or regexes if regex is True) to record [default: empty list]
@@ -53,8 +55,6 @@ class Recorder(object):
         @type  regex: bool
         @param limit: record only this number of messages on each topic (if non-positive, then unlimited) [default: 0]
         @type  limit: int
-        @param master_check_interval: period (in seconds) to check master for new topic publications [default: 1]
-        @type  master_check_interval: float
         """
         self._all                   = all
         self._topics                = topics
@@ -84,6 +84,7 @@ class Recorder(object):
 
         self._master_check_thread = threading.Thread(target=self._run_master_check, daemon=True)
         self._write_thread        = threading.Thread(target=self._run_write, daemon=True)
+        rospy.logdebug("recorder _topics = %s", self._topics)
 
     @property
     def bag(self): return self._bag
@@ -137,7 +138,7 @@ class Recorder(object):
                     #    we don't want to subscribe 
                     if topic in self._subscriber_helpers or topic in self._failed_topics or topic in self._limited_topics or not self._should_subscribe_to(topic):
                         continue
-
+                    rospy.logdebug("RECORDER: subscribe to topic %s", topic)
                     try:
                         pytype = roslib.message.get_message_class(datatype)
                         
