@@ -5,7 +5,8 @@
   <arg name="factory_contract" default="factory.1.robonomics.eth" />
   <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
   <arg name="enable_executor" default="true" />
-  <arg name="recording_topics" default="[]" />
+  <arg name="master_check_interval" default='0.1' />
+  <arg name="recording_topics" default="" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
 
@@ -31,6 +32,7 @@
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="recording_topics" value="$(arg recording_topics)" />
+      <param name="master_check_interval" value="$(arg master_check_interval)" />
       <param name="account_address" value="$(arg account_address)"
              if="$(eval len(arg('account_address')) > 0)"/>
     </node>

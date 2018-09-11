@@ -32,7 +32,8 @@ class Executor:
         # inject the poa compatibility middleware to the innermost layer
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
-        self.recording_topics = rospy.get_param('~recording_topics')
+        self.recording_topics = list(filter(None, [x.strip() for x in rospy.get_param('~recording_topics').split(",")]))
+        self.master_check_interval = rospy.get_param('~master_check_interval')
 
         self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
 
@@ -73,8 +74,12 @@ class Executor:
 
                 result_file = os.path.join(tmpdir, 'result.bag')
                 rospy.logdebug('Start recording to %s...', result_file)
+                rospy.logdebug("Recording all topics: %s", (not self.recording_topics))
 
-                recorder = Recorder(result_file, all=(len(self.recording_topics) == 0), topics=self.recording_topics)
+                recorder = Recorder(result_file,
+                                    all=(not self.recording_topics),
+                                    topics=self.recording_topics,
+                                    master_check_interval=self.master_check_interval)
                 recorder.start()
                 rospy.logdebug('Rosbag recorder started')
 
