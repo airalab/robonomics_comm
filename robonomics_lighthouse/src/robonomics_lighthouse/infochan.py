@@ -11,6 +11,7 @@ from threading import Thread
 from .messageValidator import convertMessage
 import rospy
 
+
 def bid2dict(b):
     return { 'model'         : b.model,
              'objective'     : b.objective,
@@ -20,6 +21,7 @@ def bid2dict(b):
              'deadline'      : b.deadline,
              'nonce'         : hexlify(b.nonce).decode('utf-8'),
              'signature'     : hexlify(b.signature).decode('utf-8') }
+
 
 def ask2dict(a):
     return { 'model'        : a.model,
@@ -31,6 +33,7 @@ def ask2dict(a):
              'deadline'     : a.deadline,
              'nonce'        : hexlify(a.nonce).decode('utf-8'),
              'signature'    : hexlify(a.signature).decode('utf-8') }
+
 
 def res2dict(r):
     return { 'liability' : r.liability,

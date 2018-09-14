@@ -69,6 +69,7 @@ class Signer:
         self.signed_bid = rospy.Publisher('sending/bid', Bid, queue_size=10)
         self.signed_res = rospy.Publisher('sending/result', Result, queue_size=10)
 
+        #TODO: make tests when local sign will be implemented
         def sign_ask(msg):
             msg.nonce = os.urandom(32)
             msg.signature = self.web3.eth.sign(self.account, askhash(msg))
