@@ -1,9 +1,14 @@
-import unittest
+#!/usr/bin/env python
+
+import rostest, sys, unittest
+from robonomics_lighthouse.test import testMessages
 from robonomics_lighthouse import infochan
-from tests.robonomics_lighthouse import testMessages
+
+PKG = 'robonomics_lighthouse'
+NAME = 'test_infochan'
 
 
-class TestSigner(unittest.TestCase):
+class TestInfochan(unittest.TestCase):
     def setUp(self):
         self.multiplier = 2
 
@@ -15,3 +20,7 @@ class TestSigner(unittest.TestCase):
 
     def test_res2dict(self):
         self.assertEqual(testMessages.validResDict, infochan.res2dict(testMessages.getValidRes()))
+
+
+if __name__ == '__main__':
+    rostest.rosrun(PKG, NAME, TestInfochan, sys.argv)

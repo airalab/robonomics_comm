@@ -1,0 +1,59 @@
+<launch>
+
+  <!-- Arguments -->
+  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
+  <arg name="xrt_contract" default="xrt.1.robonomics.eth" />
+  <arg name="gas_price_gwei" default="0" />
+  <arg name="account_address" default="" />
+  <arg name="ens_contract" default="" />
+
+  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
+
+  <!-- Robonomics lighthouse -->
+  <group ns="lighthouse">
+
+    <!-- XRT token interface -->
+    <group ns="xrt">
+      <include file="$(find ethereum_common)/launch/erc20.launch">
+        <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+        <arg name="erc20_token" value="$(arg xrt_contract)" />
+        <arg name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+      </include>
+    </group>
+
+    <!-- Information channel interface -->
+    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
+      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    </include>
+
+    <!-- Robonomics order matcher -->
+    <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" output="screen" />
+
+    <!-- Robonomics transaction sender -->
+    <node pkg="robonomics_lighthouse" type="lighthouse_node" name="lighthouse" output="screen">
+      <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
+      <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <param name="gas_price_gwei" value="$(arg gas_price_gwei)" />
+      <param name="account_address" value="$(arg account_address)"
+             if="$(eval len(arg('account_address')) > 0)"/>
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+    </node>
+  </group>
+
+  <test test-name="test_infochan" pkg="robonomics_lighthouse" type="test_infochan.py">
+  </test>
+
+  <test test-name="test_messageValidator" pkg="robonomics_lighthouse" type="test_messageValidator.py">
+  </test>
+
+  <test test-name="test_signer" pkg="robonomics_lighthouse" type="test_signer.py">
+  </test>
+
+</launch>
