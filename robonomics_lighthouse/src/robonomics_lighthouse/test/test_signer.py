@@ -1,7 +1,12 @@
-import unittest
+#!/usr/bin/env python
+
+import unittest, rostest, sys
 from robonomics_lighthouse import signer
 from robonomics_lighthouse import messageValidator
-from tests.robonomics_lighthouse import testMessages
+from robonomics_lighthouse.test import testMessages
+
+PKG = 'robonomics_lighthouse'
+NAME = 'test_signer'
 
 
 class TestSigner(unittest.TestCase):
@@ -21,3 +26,6 @@ class TestSigner(unittest.TestCase):
     def test_invalidRes1_reshash(self):
         self.assertNotEqual(bytearray.fromhex('b79fade824c5785bc17347a3c6abe50de87aa4b0414281f9010c05ea3ea7c666'),
                             signer.reshash(messageValidator.dict2res(testMessages.validResDict)))
+
+if __name__ == '__main__':
+    rostest.rosrun(PKG, NAME, TestSigner, sys.argv)

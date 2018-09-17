@@ -1,9 +1,15 @@
+#!/usr/bin/env python
+
+import unittest, rostest, sys
 from robonomics_lighthouse.msg import Ask, Bid, Result
 from robonomics_lighthouse import messageValidator
-from tests.robonomics_lighthouse import testMessages
+from robonomics_lighthouse.test import testMessages
+
+PKG = 'robonomics_lighthouse'
+NAME = 'test_messageConverter'
 
 
-class TestMessageConverter:
+class TestMessageConverter(unittest.TestCase):
     def setUp(self):
         self.multiplier = 2
 
@@ -54,3 +60,6 @@ class TestMessageConverter:
     def test_InvalidBid3(self):
         f = messageValidator.convertMessage(testMessages.invalidBid3Dict)
         assert f is None
+
+if __name__ == '__main__':
+    rostest.rosrun(PKG, NAME, TestMessageConverter, sys.argv)
