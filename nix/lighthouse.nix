@@ -16,6 +16,9 @@ in mkRosPackage rec {
 
   src = ../robonomics_lighthouse;
 
+  # Enable unittests
+  doCheck = true;
+
   propagatedBuildInputs = with python3Packages;
   [ ros_comm ipfs pexpect base58 web3 voluptuous robonomics_comm_ethereum_common ];
 

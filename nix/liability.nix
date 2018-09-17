@@ -14,6 +14,9 @@ in mkRosPackage rec {
 
   src = ../robonomics_liability;
 
+  # Enable unittests
+  doCheck = true;
+
   propagatedBuildInputs = with python3Packages; [ robonomics_comm_lighthouse web3 ipfsapi ];
 
   meta = with stdenv.lib; {
