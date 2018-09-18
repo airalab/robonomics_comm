@@ -4,7 +4,7 @@
 #
 
 from robonomics_lighthouse.msg import Ask, Bid, Result
-from binascii import hexlify, unhexlify
+from binascii import hexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread

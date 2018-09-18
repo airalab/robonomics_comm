@@ -1,0 +1,46 @@
+<launch>
+  <!-- arguments -->
+  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
+  <arg name="factory_contract" default="factory.1.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
+  <arg name="enable_executor" default="true" />
+  <arg name="master_check_interval" default='0.1' />
+  <arg name="recording_topics" default="" />
+  <arg name="account_address" default="" />
+  <arg name="ens_contract" default="" />
+
+  <!-- liability group -->
+  <group ns="liability">
+    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
+      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    </include>
+
+    <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
+      <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
+      <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
+      <param name="factory_contract" value="$(arg factory_contract)" />
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+    </node>
+
+    <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen" if="$(arg enable_executor)">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <param name="recording_topics" value="$(arg recording_topics)" />
+      <param name="master_check_interval" value="$(arg master_check_interval)" />
+      <param name="account_address" value="$(arg account_address)"
+             if="$(eval len(arg('account_address')) > 0)"/>
+    </node>
+  </group>
+
+
+  <test test-name="test_executor" pkg="robonomics_liability" type="test_executor.py">
+    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+  </test>
+
+</launch>
