@@ -7,7 +7,6 @@ from web3.gas_strategies.time_based import fast_gas_price_strategy
 from robonomics_lighthouse.msg import Deal, Result
 from web3 import Web3, HTTPProvider, middleware
 from ens import ENS
-from binascii import hexlify, unhexlify
 from base58 import b58decode
 import rospy, json
 
