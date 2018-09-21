@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 
 PKG = 'robonomics_lighthouse'
-NAME = 'test_infochan'
+NAME = 'test_player'
 TEST_ROSBAG = 'Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE'
 
 

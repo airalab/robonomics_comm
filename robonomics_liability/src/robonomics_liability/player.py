@@ -26,7 +26,7 @@ class Player:
             rospy.logdebug('Player created for %s', filename)
         except Exception as e:
             rospy.logerr('Player exception: %s', e)
-            
+
     def start(self):
         self.publisher.start()
         rospy.logdebug('Player started')
