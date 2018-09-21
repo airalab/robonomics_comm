@@ -43,4 +43,8 @@
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
   </test>
 
+  <test test-name="test_executor" pkg="robonomics_liability" type="test_player.py">
+    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+  </test>
+
 </launch>
