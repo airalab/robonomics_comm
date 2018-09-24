@@ -9,6 +9,7 @@
   <arg name="recording_topics" default="" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
+  <arg name="test_token" default="" />
 
   <!-- liability group -->
   <group ns="liability">
@@ -41,6 +42,7 @@
 
   <test test-name="test_executor" pkg="robonomics_liability" type="test_executor.py">
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    <param name="test_token" value="$(arg test_token)" />
   </test>
 
   <test test-name="test_player" pkg="robonomics_liability" type="test_player.py">
