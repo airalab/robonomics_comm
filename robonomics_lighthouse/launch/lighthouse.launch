@@ -26,8 +26,9 @@
     <!-- Information channel interface -->
     <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
       <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
-      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
       <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <arg name="keyfile" value="$(arg keyfile)" />
+      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </include>
 
     <!-- Robonomics order matcher -->

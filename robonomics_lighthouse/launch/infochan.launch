@@ -1,11 +1,11 @@
 <launch>
   <!-- Arguments -->
   <arg name="enable_signer" default="true" />
-  <arg name="account_address" default="" />
+  <arg name="keyfile" default="" />
+  <arg name="keyfile_password_file" default="" />
 
   <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
 
-  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
   <!-- Robonomics information channel -->
@@ -19,9 +19,8 @@
 
     <!-- Message signer heler -->
     <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)">
-      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
-      <param name="account_address" value="$(arg account_address)"
-             if="$(eval len(arg('account_address')) > 0)"/>
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>
 
   </group>
