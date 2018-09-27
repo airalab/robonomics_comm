@@ -5,11 +5,11 @@
 
 from robonomics_lighthouse.msg import Result
 from robonomics_liability.msg import Liability
-from base58 import b58decode, b58encode
+from base58 import b58encode
 from web3 import Web3, HTTPProvider
 from ens import ENS
 from threading import Timer
-import rospy, json
+import rospy, json, time
 
 class Listener:
     def __init__(self):
@@ -31,25 +31,36 @@ class Listener:
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)
 
-        factory_abi = json.loads(rospy.get_param('~factory_contract_abi'))
-        factory_address = self.ens.address(rospy.get_param('~factory_contract'))
-        self.factory = self.web3.eth.contract(factory_address, abi=factory_abi)
+        self.factory_abi = json.loads(rospy.get_param('~factory_contract_abi'))
+        self.factory_address = self.ens.address(rospy.get_param('~factory_contract'))
+        self.factory = self.web3.eth.contract(self.factory_address, abi=self.factory_abi)
+        self.create_liability_filter()
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
 
         self.result_handler()
 
+    def create_liability_filter(self):
+        try:
+            self.liability_filter = self.factory.eventFilter('NewLiability')
+        except Exception as e:
+            rospy.logwarn("Failed to create liability filter with exception: \"%s\"", e)
+
     def result_handler(self):
         result = rospy.Publisher('infochan/signing/result', Result, queue_size=10)
 
         def liability_finalize(msg):
-            c = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
-            def try_again():
-                if not c.call().isFinalized():
-                    result.publish(msg)
-                    Timer(30, try_again).start()
-            try_again()
-
+            finalized = False
+            while not finalized:
+                try:
+                    c = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
+                    if not c.call().isFinalized():
+                        result.publish(msg)
+                    finalized = True
+                except Exception as e:
+                    rospy.logwarn("Failed to finalize liability %s with e: %s", msg.liability, e)
+                    #TODO: move sleep time to rop parameter with 30 seconds by default
+                    time.sleep(30)
         rospy.Subscriber('result', Result, liability_finalize)
 
 
@@ -75,10 +86,13 @@ class Listener:
         '''
             Waiting for the new liabilities.
         '''
-        liability_filter = self.factory.eventFilter('NewLiability')
         def liability_filter_thread():
-            for entry in liability_filter.get_new_entries():
-                self.liability.publish(self.liability_read(entry['args']['liability']))
+            try:
+                for entry in self.liability_filter.get_new_entries():
+                    self.liability.publish(self.liability_read(entry['args']['liability']))
+            except Exception as e:
+                rospy.logerr('listener liability filter exception: %s', e)
+                self.create_liability_filter()
             Timer(self.poll_interval, liability_filter_thread).start()
         liability_filter_thread()
 

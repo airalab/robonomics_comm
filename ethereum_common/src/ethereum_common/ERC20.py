@@ -4,7 +4,7 @@ from ethereum_common.msg import *
 from ethereum_common.srv import *
 from threading import Timer
 from json import loads
-import rospy
+import rospy, time
 
 ABI = loads('[{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}]')
 
@@ -46,6 +46,8 @@ class Node:
         self.transfer = rospy.Publisher('event/transfer', TransferEvent, queue_size=10)
         self.approval = rospy.Publisher('event/approval', ApprovalEvent, queue_size=10)
 
+        self.initialize_event_filters()
+
         rospy.Service('transfer', Transfer,
             lambda m: TransferResponse(self.erc20.functions.transfer(m.to.address, int(m.value.uint256)).transact()))
 
@@ -58,17 +60,25 @@ class Node:
         rospy.Service('accounts', Accounts,
             lambda m: AccountsResponse(list(map(strToAddress, self.web3.eth.accounts))))
 
+    def initialize_event_filters(self):
+        try:
+            self.transfer_filter = self.erc20.eventFilter('Transfer')
+            self.approval_filter = self.erc20.eventFilter('Approval')
+        except Exception as e:
+            rospy.logwarn("Failed to reinitialize erc20 event filters with exception: \"%s\"", e)
+
     def spin(self):
-        transfer_filter = self.erc20.eventFilter('Transfer')
-        approval_filter = self.erc20.eventFilter('Approval')
-
         def filter_thread():
-            for e in transfer_filter.get_new_entries():
-                self.transfer.publish(transferEvent(e['args']))
+            try:
+                for e in self.transfer_filter.get_new_entries():
+                    self.transfer.publish(transferEvent(e['args']))
 
-            for e in approval_filter.get_new_entries():
-                self.approval.publish(approvalEvent(e['args']))
-
+                for e in self.approval_filter.get_new_entries():
+                    self.approval.publish(approvalEvent(e['args']))
+            except Exception as e:
+                rospy.logerr('ecr20 node filters get entries exception: %s', e)
+                time.sleep(10)
+                self.initialize_event_filters()
             Timer(1, filter_thread).start()
         filter_thread()
 
