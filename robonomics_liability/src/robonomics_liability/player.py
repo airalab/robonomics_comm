@@ -3,6 +3,17 @@
 import rospy, rosbag
 from threading import Thread
 
+
+def file_is_rosbag(filename):
+    try:
+        bag = rosbag.Bag(filename, 'r')
+        bag.get_type_and_topic_info()
+        return True
+    except Exception as e:
+        rospy.logwarn("Failed to get rosbag topics info from file %s with exception: \"%s\"", filename, e)
+        return False
+
+
 def simple_publisher(msgs):
     pubs = {}
     for topic, msg, _ in msgs:

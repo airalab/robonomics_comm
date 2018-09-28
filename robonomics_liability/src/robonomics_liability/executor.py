@@ -11,7 +11,7 @@ from web3 import Web3, HTTPProvider
 from urllib.parse import urlparse
 from threading import Thread
 from .recorder import Recorder
-from .player import Player
+from .player import Player, file_is_rosbag
 from queue import Queue
 import rospy, ipfsapi, os
 
@@ -71,6 +71,11 @@ class Executor:
                 rospy.logdebug('Getting objective %s...', msg.objective)
                 self.ipfs.get(msg.objective)
                 rospy.logdebug('Objective is written to %s', tmpdir + '/' + msg.objective)
+
+                if file_is_rosbag(msg.objective) is False:
+                    rospy.logwarn("Skip %s liability", msg.address)
+                    self.liability_finish = True
+                    continue
 
                 result_file = os.path.join(tmpdir, 'result.bag')
                 rospy.logdebug('Start recording to %s...', result_file)
