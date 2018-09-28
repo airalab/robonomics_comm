@@ -4,13 +4,13 @@
 #
 
 from robonomics_lighthouse.msg import Ask, Bid, Result
-from binascii import hexlify, unhexlify
+from binascii import hexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
 from .messageValidator import convertMessage
 import rospy
-
+import ipfsapi
 
 def bid2dict(b):
     return { 'model'         : b.model,
@@ -48,23 +48,23 @@ class InfoChan:
         '''
         rospy.init_node('robonomics_infochan')
         self.lighthouse = rospy.get_param('~lighthouse_contract')
-        ipfs_api = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_api = '/ip4/{0}/tcp/{1}'.format(ipfs_api[0], ipfs_api[1])
+        ipfs_api_parts = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
+        self.ipfs_client = ipfsapi.Client(host=ipfs_api_parts[0], port=ipfs_api_parts[1])
 
         self.incoming_bid = rospy.Publisher('incoming/bid', Bid, queue_size=10)
         self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
         self.incoming_res = rospy.Publisher('incoming/result', Result, queue_size=10)
 
-        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_api, self.lighthouse, bid2dict(m)))
-        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_api, self.lighthouse, ask2dict(m)))
-        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_api, self.lighthouse, res2dict(m)))
+        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
+        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
+        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
 
     def spin(self):
         '''
             Waiting for the new messages.
         '''
         def channel_thread():
-            for m in subscribe(self.ipfs_api, self.lighthouse):
+            for m in subscribe(self.ipfs_client, self.lighthouse):
                 converted = convertMessage(m)
                 if not (converted is None):
                     if isinstance(converted, Ask):

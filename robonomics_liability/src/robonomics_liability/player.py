@@ -17,6 +17,7 @@ def simple_publisher(msgs):
     rospy.sleep(5)
     rospy.logdebug('Publish done')
 
+
 class Player:
     def __init__(self, filename):
         try:
@@ -25,7 +26,7 @@ class Player:
             rospy.logdebug('Player created for %s', filename)
         except Exception as e:
             rospy.logerr('Player exception: %s', e)
- 
+
     def start(self):
         self.publisher.start()
         rospy.logdebug('Player started')
