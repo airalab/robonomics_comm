@@ -4,14 +4,13 @@ import rospy, rosbag
 from threading import Thread
 
 
-def file_is_rosbag(filename):
+def get_rosbag_from_file(filename):
     try:
         bag = rosbag.Bag(filename, 'r')
-        bag.get_type_and_topic_info()
-        return True
+        return bag
     except Exception as e:
         rospy.logwarn("Failed to get rosbag topics info from file %s with exception: \"%s\"", filename, e)
-        return False
+        return None
 
 
 def simple_publisher(msgs):
@@ -30,11 +29,10 @@ def simple_publisher(msgs):
 
 
 class Player:
-    def __init__(self, filename):
+    def __init__(self, bag):
         try:
-            bag = rosbag.Bag(filename, 'r')
             self.publisher = Thread(target=simple_publisher, daemon=True, args=(bag.read_messages(),))
-            rospy.logdebug('Player created for %s', filename)
+            rospy.logdebug('Player created for %s', bag.filename)
         except Exception as e:
             rospy.logerr('Player exception: %s', e)
 
