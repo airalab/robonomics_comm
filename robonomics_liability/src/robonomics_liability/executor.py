@@ -11,7 +11,7 @@ from web3 import Web3, HTTPProvider
 from urllib.parse import urlparse
 from threading import Thread
 from .recorder import Recorder
-from .player import Player
+from .player import Player, get_rosbag_from_file
 from queue import Queue
 import rospy, ipfsapi, os
 
@@ -83,9 +83,13 @@ class Executor:
                 recorder.start()
                 rospy.logdebug('Rosbag recorder started')
 
-                player = Player(msg.objective)
-                player.start()
-                rospy.logdebug('Rosbag player started')
+                objective_rosbag = get_rosbag_from_file(msg.objective)
+                if objective_rosbag is not None:
+                    player = Player(objective_rosbag)
+                    player.start()
+                    rospy.logdebug('Rosbag player started')
+                else:
+                    rospy.logwarn('Skip playing objective using rosbag player in liability %s', msg.address)
 
                 while not self.liability_finish:
                     rospy.sleep(1)
