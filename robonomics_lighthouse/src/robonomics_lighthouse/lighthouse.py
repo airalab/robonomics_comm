@@ -76,8 +76,13 @@ class Lighthouse:
                 rospy.logerr('Broken transaction: %s', e)
 
         def marker():
-            m = self.lighthouse.call().marker()
-            q = self.lighthouse.call().quota()
+            try:
+                m = self.lighthouse.call().marker()
+                q = self.lighthouse.call().quota()
+            except Exception as e:
+                rospy.logwarn("Lighthouse: QuotaManager call exception \"%s\"", e)
+                return False
+
             keepalive = self.lighthouse.call().timeoutBlocks() + self.lighthouse.call().keepaliveBlock()
 
             rospy.loginfo('Lighthouse m: %d q: %d k: %d, b: %d', m, q, keepalive, self.web3.eth.blockNumber)
