@@ -9,13 +9,16 @@
   <arg name="recording_topics" default="" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
+  <arg name="keyfile" default="" />
+  <arg name="keyfile_password_file" default="" />
 
   <!-- liability group -->
   <group ns="liability">
     <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
       <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
-      <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
       <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <arg name="keyfile" value="$(arg keyfile)" />
+      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </include>
 
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">

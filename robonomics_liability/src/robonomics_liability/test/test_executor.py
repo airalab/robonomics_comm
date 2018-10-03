@@ -62,8 +62,7 @@ class TestExecutor(unittest.TestCase):
         self.test_bid_publisher.publish(self.get_test_bid())
         self.test_ask_publisher.publish(self.get_test_ask())
 
-        timeout_t = time.time() + 30.0
-        while self.incoming_liability is None and time.time() < timeout_t:
+        while self.incoming_liability is None:
             time.sleep(0.1)
 
         time.sleep(5)
