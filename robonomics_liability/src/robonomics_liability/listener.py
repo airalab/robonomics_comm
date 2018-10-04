@@ -10,6 +10,8 @@ from web3 import Web3, HTTPProvider
 from ens import ENS
 from threading import Timer
 import rospy, json, time
+from std_msgs.msg import String
+from . import finalization_checker
 
 class Listener:
     def __init__(self):
@@ -18,8 +20,11 @@ class Listener:
         '''
         rospy.init_node('robonomics_liability_listener')
 
-        http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
-        self.ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
+        web3_http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(web3_http_provider)
+        ens_contract = rospy.get_param('~ens_contract', None)
+
+        self.ens = ENS(http_provider, addr=ens_contract)
         self.web3 = Web3(http_provider, ens=self.ens)
 
         from web3.middleware import geth_poa_middleware
@@ -38,6 +43,12 @@ class Listener:
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
 
+        self.liability_finalization_checker = finalization_checker.FinalizationChecker(self.liability_abi,
+                                                                                       web3_http_provider=web3_http_provider,
+                                                                                       ens_contract=ens_contract)
+
+        self.finalized = rospy.Publisher('finalized', String, queue_size=10)
+
         self.result_handler()
 
     def create_liability_filter(self):
@@ -50,17 +61,13 @@ class Listener:
         result = rospy.Publisher('infochan/signing/result', Result, queue_size=10)
 
         def liability_finalize(msg):
-            finalized = False
-            while not finalized:
-                try:
-                    c = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
-                    if not c.call().isFinalized():
-                        result.publish(msg)
-                    finalized = True
-                except Exception as e:
-                    rospy.logwarn("Failed to finalize liability %s with e: %s", msg.liability, e)
-                    #TODO: move sleep time to rop parameter with 30 seconds by default
-                    time.sleep(30)
+            is_finalized = False
+            while is_finalized is not True:
+                result.publish(msg)
+                time.sleep(30)
+                # TODO: move sleep time to rop parameter with 30 seconds by default
+                is_finalized = self.liability_finalization_checker.finalized(msg.liability)
+            self.finalized.publish(msg.liability)
         rospy.Subscriber('result', Result, liability_finalize)
 
 
