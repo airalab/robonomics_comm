@@ -96,7 +96,8 @@ def dict2res(m):
 def validateForAskBidResultBySchema(abr_msg):
     try:
         return schemaAskBidResult(abr_msg)
-    except v.MultipleInvalid:
+    except v.MultipleInvalid as e:
+        rospy.logerr(str(e))
         return None
 
 
