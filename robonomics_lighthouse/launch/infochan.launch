@@ -12,13 +12,13 @@
   <group ns="infochan">
 
     <!-- PubSub information channel interface -->
-    <node pkg="robonomics_lighthouse" type="infochan_node" name="channel">
+    <node pkg="robonomics_lighthouse" type="infochan_node" name="channel" output="screen">
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
     </node>
 
     <!-- Message signer heler -->
-    <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)">
+    <node pkg="robonomics_lighthouse" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>
