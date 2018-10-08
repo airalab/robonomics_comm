@@ -6,8 +6,7 @@
 from robonomics_liability.msg import Liability
 from robonomics_lighthouse.msg import Result
 from std_srvs.srv import Empty, EmptyResponse
-from tempfile import TemporaryDirectory 
-from web3 import Web3, HTTPProvider
+from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 from threading import Thread
 from .recorder import Recorder
@@ -25,13 +24,6 @@ class Executor:
             Robonomics liability node initialisation.
         '''
         rospy.init_node('robonomics_liability_executor')
-
-        web3_provider = rospy.get_param('~web3_http_provider')
-        self.web3 = Web3(HTTPProvider(web3_provider))
-
-        from web3.middleware import geth_poa_middleware
-        # inject the poa compatibility middleware to the innermost layer
-        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
         self.recording_topics = list(filter(None, [x.strip() for x in rospy.get_param('~recording_topics').split(",")]))
         self.master_check_interval = rospy.get_param('~master_check_interval')

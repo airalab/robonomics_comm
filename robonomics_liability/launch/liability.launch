@@ -1,6 +1,7 @@
 <launch>
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
   <arg name="factory_contract" default="factory.1.robonomics.eth" />
   <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
@@ -25,13 +26,13 @@
       <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
       <param name="factory_contract" value="$(arg factory_contract)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="web3_ws_provider" value="$(arg web3_ws_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>
 
     <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen" if="$(arg enable_executor)">
-      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="recording_topics" value="$(arg recording_topics)" />
       <param name="master_check_interval" value="$(arg master_check_interval)" />
