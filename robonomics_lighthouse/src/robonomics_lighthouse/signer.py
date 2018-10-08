@@ -75,7 +75,7 @@ class Signer:
         #TODO: make tests when local sign will be implemented
         def sign_ask(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.__account.signHash.signHash(defunct_hash_message(askhash(msg)))
+            signed_hash = self.__account.signHash(defunct_hash_message(askhash(msg)))
             msg.signature = signed_hash.signature
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
             self.signed_ask.publish(msg)
