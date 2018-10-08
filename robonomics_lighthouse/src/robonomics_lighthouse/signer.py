@@ -75,7 +75,7 @@ class Signer:
         #TODO: make tests when local sign will be implemented
         def sign_ask(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(askhash(msg)), private_key=self.__account.privateKey)
+            signed_hash = self.__account.signHash.signHash(defunct_hash_message(askhash(msg)))
             msg.signature = signed_hash.signature
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
             self.signed_ask.publish(msg)
@@ -83,14 +83,14 @@ class Signer:
 
         def sign_bid(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(bidhash(msg)), private_key=self.__account.privateKey)
+            signed_hash = self.__account.signHash(defunct_hash_message(bidhash(msg)))
             msg.signature = signed_hash.signature
             rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(bidhash(msg)), binascii.hexlify(msg.signature))
             self.signed_bid.publish(msg)
         rospy.Subscriber('signing/bid', Bid, sign_bid)
 
         def sign_res(msg):
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(reshash(msg)), private_key=self.__account.privateKey)
+            signed_hash = self.__account.signHash(defunct_hash_message(reshash(msg)))
             msg.signature = signed_hash.signature
             rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(reshash(msg)), binascii.hexlify(msg.signature))
             self.signed_res.publish(msg)
