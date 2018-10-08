@@ -14,6 +14,7 @@ from .recorder import Recorder
 from .player import Player, get_rosbag_from_file
 from queue import Queue
 import rospy, ipfsapi, os
+from ethereum_common import eth_keyfile_helper
 
 class Executor:
     liability_queue = Queue()
@@ -35,13 +36,16 @@ class Executor:
         self.recording_topics = list(filter(None, [x.strip() for x in rospy.get_param('~recording_topics').split(",")]))
         self.master_check_interval = rospy.get_param('~master_check_interval')
 
-        self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
+        __keyfile = rospy.get_param('~keyfile')
+        __keyfile_password_file = rospy.get_param('~keyfile_password_file')
+        __keyfile_helper = eth_keyfile_helper.KeyfileHelper(__keyfile, keyfile_password_file=__keyfile_password_file)
+        self.__account = __keyfile_helper.get_local_account_from_keyfile()
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         def incoming_liability(msg):
-            if msg.promisor != self.account:
+            if msg.promisor != self.__account.address:
                 rospy.logwarn('Liability %s is not for me, SKIP.', msg.address)
             else:
                 rospy.loginfo('Append %s to liability queue.', msg.address)

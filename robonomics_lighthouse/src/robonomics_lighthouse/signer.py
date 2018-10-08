@@ -9,6 +9,7 @@ from base58 import b58decode
 import rospy, os
 import binascii
 from eth_account.messages import defunct_hash_message
+from ethereum_common import eth_keyfile_helper
 
 def askhash(msg):
     types = ['bytes',
@@ -54,13 +55,6 @@ class Signer:
         '''
             Lighthouse signer initialisation.
         '''
-        def __get_private_key_from_keyfile():
-            with open(__keyfile, 'r') as keyfile:
-                with open(__keyfile_password_file, 'r') as password_file:
-                    encrypted_key = keyfile.read()
-                    keyfile_password = str(password_file.readline()).strip('\n\r')
-                    return self.web3.eth.account.decrypt(encrypted_key, keyfile_password)
-
         rospy.init_node('robonomics_signer')
         self.web3 = Web3()
 
@@ -70,7 +64,9 @@ class Signer:
 
         __keyfile = rospy.get_param('~keyfile')
         __keyfile_password_file = rospy.get_param('~keyfile_password_file')
-        self.__eth_private_key = __get_private_key_from_keyfile()
+
+        __keyfile_helper = eth_keyfile_helper.KeyfileHelper(__keyfile, keyfile_password_file=__keyfile_password_file)
+        self.__account = __keyfile_helper.get_local_account_from_keyfile()
 
         self.signed_ask = rospy.Publisher('sending/ask', Ask, queue_size=10)
         self.signed_bid = rospy.Publisher('sending/bid', Bid, queue_size=10)
@@ -79,7 +75,7 @@ class Signer:
         #TODO: make tests when local sign will be implemented
         def sign_ask(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(askhash(msg)), private_key=self.__eth_private_key)
+            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(askhash(msg)), private_key=self.__account.privateKey)
             msg.signature = signed_hash.signature
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
             self.signed_ask.publish(msg)
@@ -87,14 +83,14 @@ class Signer:
 
         def sign_bid(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(bidhash(msg)), private_key=self.__eth_private_key)
+            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(bidhash(msg)), private_key=self.__account.privateKey)
             msg.signature = signed_hash.signature
             rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(bidhash(msg)), binascii.hexlify(msg.signature))
             self.signed_bid.publish(msg)
         rospy.Subscriber('signing/bid', Bid, sign_bid)
 
         def sign_res(msg):
-            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(reshash(msg)), private_key=self.__eth_private_key)
+            signed_hash = self.web3.eth.account.signHash(defunct_hash_message(reshash(msg)), private_key=self.__account.privateKey)
             msg.signature = signed_hash.signature
             rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(reshash(msg)), binascii.hexlify(msg.signature))
             self.signed_res.publish(msg)
