@@ -9,9 +9,10 @@ class KeyfileHelper:
         self.__keyfile = keyfile
         self.__keyfile_password_file = keyfile_password_file
         self.__password = password
+        self.__localAccount = Account.privateKeyToAccount(self.__get_private_key_from_keyfile())
 
     def get_local_account_from_keyfile(self):
-        return Account.privateKeyToAccount(self.__get_private_key_from_keyfile())
+        return self.__localAccount
 
     def __get_private_key_from_keyfile(self):
         def get_password():
