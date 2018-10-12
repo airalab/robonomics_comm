@@ -34,6 +34,7 @@ def bidhash(msg):
              'bytes',
              'address',
              'uint256',
+             'address',
              'uint256',
              'uint256',
              'bytes32']
@@ -41,6 +42,7 @@ def bidhash(msg):
                                      b58decode(msg.objective),
                                      msg.token,
                                      msg.cost,
+                                     msg.validator,
                                      msg.lighthouseFee,
                                      msg.deadline,
                                      msg.nonce])

@@ -6,6 +6,8 @@ string objective     # Base58
 string token        # address
 # Execution cost
 uint32 cost         # int
+# Validator network address
+string validator     # address
 # Settlement fee
 uint32 lighthouseFee # int 
 # Deadline block number

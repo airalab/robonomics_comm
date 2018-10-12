@@ -41,7 +41,7 @@ class Node:
                                         rospy.get_param('~ens_contract', None),
                                         rospy.get_param('~token_contract'),
                                         ABI)
-        self.erc20 = self.parity_utils.getERC20Contract()
+        self.erc20 = self.parity_utils.erc20Contract
         self.initialize_event_filters()
         self.web3 = Web3()
 

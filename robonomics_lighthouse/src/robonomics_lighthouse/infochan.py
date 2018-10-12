@@ -17,6 +17,7 @@ def bid2dict(b):
              'objective'     : b.objective,
              'token'         : b.token,
              'cost'          : b.cost,
+             'validator'     : b.validator,
              'lighthouseFee' : b.lighthouseFee,
              'deadline'      : b.deadline,
              'nonce'         : hexlify(b.nonce).decode('utf-8'),
