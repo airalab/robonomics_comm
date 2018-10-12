@@ -1,11 +1,13 @@
 <launch>
-
   <!-- Arguments -->
   <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
   <arg name="xrt_contract" default="xrt.1.robonomics.eth" />
   <arg name="gas_price_gwei" default="0" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
+  <arg name="keyfile" default="" />
+  <arg name="keyfile_password_file" default="" />
+
 
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
@@ -20,6 +22,8 @@
         <arg name="erc20_token" value="$(arg xrt_contract)" />
         <arg name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
+        <arg name="keyfile" value="$(arg keyfile)" />
+        <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
       </include>
     </group>
 
@@ -47,6 +51,7 @@
              if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>
   </group>
+
 
   <test test-name="test_infochan" pkg="robonomics_lighthouse" type="test_infochan.py">
   </test>

@@ -25,7 +25,7 @@ class TestSigner(unittest.TestCase):
                          signer.askhash(messageValidator.dict2ask(testMessages.validAskDict)))
 
     def test_bidhash(self):
-        self.assertEqual(bytearray.fromhex('1977a06ea783dfd99ee0efa85a59deadc5b80cedc15074d487e65e4bf3580828'),
+        self.assertEqual(bytearray.fromhex('9b6864a449c21212a5588c2d81863a9f3d24abe2b99d90755b5fb0a9292e977e'),
                          signer.bidhash(messageValidator.dict2bid(testMessages.validBidDict)))
 
     def test_reshash(self):
