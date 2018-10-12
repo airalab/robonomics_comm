@@ -18,11 +18,12 @@ class ParityUtils:
         self.erc20 = self.web3.eth.contract(token_address, abi=abi)
         self.__account = account
 
+    @property
+    def erc20Contract(self):
+        return self.erc20
+
     def getAccountTransactionCount(self):
         return self.web3.eth.getTransactionCount(self.__account.address)
-
-    def getERC20Contract(self):
-        return self.erc20
 
     def signTransaction(self, tx):
         return self.__account.signTransaction(tx)

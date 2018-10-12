@@ -23,5 +23,5 @@ def subscribe(ipfs_client, topic):
             try:
                 yield loads(b64decode(msg['data']).decode('utf-8'))
             except Exception as e:
-                rospy.logerr(e)
+                rospy.logerr("IPFS Client sub error: %s", e)
                 rospy.sleep(1)
