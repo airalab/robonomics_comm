@@ -49,8 +49,9 @@ def bidhash(msg):
 
 def reshash(msg):
     types = ['address',
-             'bytes']
-    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result)])
+             'bytes',
+             'bool']
+    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result), msg.success])
 
 class Signer:
     def __init__(self):

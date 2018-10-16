@@ -4,7 +4,7 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
-  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.2.robonomics.eth" />
 
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 

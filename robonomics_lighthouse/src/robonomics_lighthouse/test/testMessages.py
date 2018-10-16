@@ -54,6 +54,7 @@ def getValidBid():
 
 # res
 validResDict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
+                'success': True,
             'result': 'Qmd32ebrLAsXPFQQK2LDWY6ekcvz1yDC62jGskUFNEDSbA',
             'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'}
 
@@ -61,6 +62,7 @@ def getValidRes():
     r = Result()
     r.liability = validResDict['liability']
     r.result = validResDict['result']
+    r.success = validResDict['success']
     r.signature = unhexlify(validResDict['signature'].encode('utf-8'))
     return r
 
@@ -95,6 +97,7 @@ invalidBid1Dict = {"model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
 #res with deadline field
 invalidRes1Dict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
                 'result': 'Qmd32ebrLAsXPFQQK2LDWY6ekcvz1yDC62jGskUFNEDSbA',
+                   'succcess': False,
                 "deadline": 9999999,
                 'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'}
 
@@ -121,6 +124,7 @@ invalidBid2Dict = {"model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
 
 #res without result
 invalidRes2Dict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
+                   'success': True,
                'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'}
 
 #ask with zero nonce
@@ -145,3 +149,9 @@ invalidBid3Dict = {"model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
                "deadline": 9999999,
                "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
                "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"}
+
+# res without success flag
+invalidRes3Dict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
+            'result': 'Qmd32ebrLAsXPFQQK2LDWY6ekcvz1yDC62jGskUFNEDSbA',
+            'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'}
+

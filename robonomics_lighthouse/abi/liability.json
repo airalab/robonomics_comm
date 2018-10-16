@@ -30,11 +30,11 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "askHash",
+      "name": "isSuccess",
       "outputs": [
         {
           "name": "",
-          "type": "bytes32"
+          "type": "bool"
         }
       ],
       "payable": false,
@@ -63,20 +63,6 @@
         {
           "name": "",
           "type": "bytes"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "xrt",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ],
       "payable": false,
@@ -142,7 +128,7 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "bidHash",
+      "name": "offerHash",
       "outputs": [
         {
           "name": "",
@@ -157,20 +143,6 @@
       "constant": true,
       "inputs": [],
       "name": "isFinalized",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "isConfirmed",
       "outputs": [
         {
           "name": "",
@@ -212,6 +184,20 @@
     {
       "constant": true,
       "inputs": [],
+      "name": "demandHash",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
       "name": "token",
       "outputs": [
         {
@@ -222,6 +208,23 @@
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "name": "result",
+          "type": "bytes"
+        }
+      ],
+      "name": "Finalized",
+      "type": "event"
     },
     {
       "constant": false,
@@ -263,7 +266,7 @@
           "type": "bytes"
         }
       ],
-      "name": "ask",
+      "name": "demand",
       "outputs": [
         {
           "name": "",
@@ -294,6 +297,10 @@
           "type": "uint256"
         },
         {
+          "name": "_validator",
+          "type": "address"
+        },
+        {
           "name": "_lighthouse_fee",
           "type": "uint256"
         },
@@ -310,7 +317,7 @@
           "type": "bytes"
         }
       ],
-      "name": "bid",
+      "name": "offer",
       "outputs": [
         {
           "name": "",
@@ -327,6 +334,10 @@
         {
           "name": "_result",
           "type": "bytes"
+        },
+        {
+          "name": "_success",
+          "type": "bool"
         },
         {
           "name": "_signature",
@@ -348,4 +359,4 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-]
+  ]

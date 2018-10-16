@@ -44,6 +44,7 @@ schemaAskBid = v.All(
 schemaResult = v.Schema({
     v.Required('liability'): isHexadecimalString,
     v.Required('result'): isIpfsBase58Hash,
+    v.Required('success'): v.All(bool),
     v.Required('signature'): isHexIntNotZero()
 })
 
@@ -85,6 +86,7 @@ def dict2res(m):
     msg = Result()
     msg.liability = m['liability']
     msg.result = m['result']
+    msg.success = m['success']
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 

@@ -1,6 +1,6 @@
 <launch>
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
-  <arg name="erc20_token" default="xrt.1.robonomics.eth"/>
+  <arg name="erc20_token" default="xrt.2.robonomics.eth"/>
   <arg name="ens_contract" default="" />
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
