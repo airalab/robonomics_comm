@@ -45,8 +45,6 @@ class Executor:
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
         def finish_liability(msg):
-            rospy.logwarn("finish msg: %s", msg)
-            rospy.logwarn("finish msg.data: %s %s", type(msg), msg)
             self.liability_finish = True
             self.liability_success = msg.success
             return FinishLiabilityResponse()

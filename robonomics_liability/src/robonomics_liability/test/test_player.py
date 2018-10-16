@@ -22,10 +22,6 @@ class TestPlayer(unittest.TestCase):
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
         self.subscribers_msg_counters = {}
 
-    def get_rosbag_Bag(self, rosbag_ipfs_objective):
-        self.ipfs.get(rosbag_ipfs_objective)
-        return rosbag.Bag(rosbag_ipfs_objective, 'r')
-
     def decrement_subscriber_msg_counter(self, topic):
         dcmnt = self.subscribers_msg_counters[topic] - 1
         rospy.loginfo("Decrement topic %s counter from value %s to %s", topic, self.subscribers_msg_counters[topic], dcmnt)
