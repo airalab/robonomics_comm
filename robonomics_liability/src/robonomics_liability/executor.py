@@ -4,8 +4,8 @@
 #
 
 from robonomics_liability.msg import Liability
+from robonomics_liability.srv import FinishLiability, FinishLiabilityResponse
 from robonomics_lighthouse.msg import Result
-from std_srvs.srv import Empty, EmptyResponse
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 from threading import Thread
@@ -45,9 +45,10 @@ class Executor:
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
         def finish_liability(msg):
+            self.liability_success = msg.success
             self.liability_finish = True
-            return EmptyResponse()
-        rospy.Service('finish', Empty, finish_liability)
+            return FinishLiabilityResponse()
+        rospy.Service('finish', FinishLiability, finish_liability)
 
         self.complete = rospy.Publisher('complete', Liability, queue_size=10)
         self.current  = rospy.Publisher('current', Liability, queue_size=10)
@@ -59,6 +60,7 @@ class Executor:
             rospy.loginfo('Start work on liability %s', msg.address)
             self.current.publish(msg)
             self.liability_finish = False
+            self.liability_success = False
 
             with TemporaryDirectory() as tmpdir:
                 rospy.logdebug('Temporary directory created: %s', tmpdir)
@@ -100,6 +102,7 @@ class Executor:
                 result_msg = Result()
                 result_msg.liability = msg.address
                 result_msg.result = msg.result
+                result_msg.success = self.liability_success
 
                 self.complete.publish(msg)
                 self.result_topic.publish(result_msg)

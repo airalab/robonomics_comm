@@ -1,7 +1,7 @@
 <launch>
   <!-- Arguments -->
-  <arg name="lighthouse_contract" default="airalab.lighthouse.1.robonomics.eth" />
-  <arg name="xrt_contract" default="xrt.1.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.2.robonomics.eth" />
+  <arg name="xrt_contract" default="xrt.2.robonomics.eth" />
   <arg name="gas_price_gwei" default="0" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />

@@ -14,6 +14,12 @@ add_message_files(
         Liability.msg
 )
 
+## Generate services in the 'srv' folder
+add_service_files(
+  FILES
+    FinishLiability.srv
+)
+
 generate_messages()
 
 catkin_package()

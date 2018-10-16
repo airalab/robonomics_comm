@@ -39,6 +39,7 @@ def ask2dict(a):
 def res2dict(r):
     return { 'liability' : r.liability,
              'result'    : r.result,
+             'success'   : r.success,
              'signature' : hexlify(r.signature).decode('utf-8') }
 
 

@@ -126,7 +126,7 @@ class Lighthouse:
                    , msg.deadline
                    , msg.nonce
                    , msg.signature ]
-            return '0x' + liability.functions.ask(*args).buildTransaction()['data'][10:]
+            return '0x' + liability.functions.demand(*args).buildTransaction()['data'][10:]
 
         def encodeBid(msg):
             args = [ b58decode(msg.model)
@@ -138,7 +138,7 @@ class Lighthouse:
                    , msg.deadline
                    , msg.nonce
                    , msg.signature ]
-            return '0x' + liability.functions.bid(*args).buildTransaction()['data'][10:]
+            return '0x' + liability.functions.offer(*args).buildTransaction()['data'][10:]
 
         tx = self.lighthouse.functions.createLiability(encodeAsk(msg.ask), encodeBid(msg.bid))\
             .buildTransaction({'gas': 1000000, 'from': self.account})
@@ -151,6 +151,7 @@ class Lighthouse:
         liability = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
         data = liability.functions.finalize(
             b58decode(msg.result),
+            msg.success,
             msg.signature,
             False).buildTransaction({'gas': 1000000})['data']
         tx = self.lighthouse.functions.to(msg.liability, data)\

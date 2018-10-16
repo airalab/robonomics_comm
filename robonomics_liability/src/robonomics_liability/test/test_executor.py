@@ -4,9 +4,9 @@ import unittest, rostest, os, time, rospy, rosbag
 
 from robonomics_lighthouse.msg import Result, Bid, Ask
 from robonomics_liability.msg import Liability
+from robonomics_liability.srv import FinishLiability
 from urllib.parse import urlparse
 import ipfsapi
-import std_srvs.srv
 from tempfile import TemporaryDirectory
 from std_msgs.msg import *
 
@@ -66,8 +66,8 @@ class TestExecutor(unittest.TestCase):
             time.sleep(0.1)
 
         time.sleep(5)
-        finish_service_proxy = rospy.ServiceProxy('/liability/finish', std_srvs.srv.Empty)
-        finish_service_proxy()
+        finish_service_proxy = rospy.ServiceProxy('/liability/finish', FinishLiability)
+        finish_service_proxy(False)
 
         timeout_t = time.time() + 30.0
         while not rospy.is_shutdown() and not self.success and time.time() < timeout_t:
@@ -81,6 +81,7 @@ class TestExecutor(unittest.TestCase):
             "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
             "token": self.test_token,
             "cost": 1,
+            "validator": '0x0000000000000000000000000000000000000000',
             "lighthouseFee": 0,
             "deadline": 9999999
         }
@@ -89,6 +90,7 @@ class TestExecutor(unittest.TestCase):
         bid.objective = bidDict['objective']
         bid.token = bidDict['token']
         bid.cost = bidDict['cost']
+        bid.validator = bidDict['validator']
         bid.lighthouseFee = bidDict['lighthouseFee']
         bid.deadline = bidDict['deadline']
         return bid

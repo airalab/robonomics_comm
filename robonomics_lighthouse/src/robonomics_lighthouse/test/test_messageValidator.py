@@ -61,5 +61,9 @@ class TestMessageConverter(unittest.TestCase):
         f = messageValidator.convertMessage(testMessages.invalidBid3Dict)
         assert f is None
 
+    def test_InvalidRes3(self):
+        f = messageValidator.convertMessage(testMessages.invalidRes3Dict)
+        assert f is None
+
 if __name__ == '__main__':
     rostest.rosrun(PKG, NAME, TestMessageConverter, sys.argv)

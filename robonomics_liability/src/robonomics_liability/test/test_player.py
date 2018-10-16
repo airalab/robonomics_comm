@@ -4,11 +4,11 @@ import rospy, rostest, rosbag
 import sys, os, time
 import ipfsapi, unittest
 
-from robonomics_liability.player import Player
+from robonomics_liability.player import Player, get_rosbag_from_file
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 
-PKG = 'robonomics_lighthouse'
+PKG = 'robonomics_liability'
 NAME = 'test_player'
 TEST_ROSBAG = 'Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE'
 
@@ -22,10 +22,6 @@ class TestPlayer(unittest.TestCase):
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
         self.subscribers_msg_counters = {}
 
-    def get_rosbag_Bag(self, rosbag_ipfs_objective):
-        self.ipfs.get(rosbag_ipfs_objective)
-        return rosbag.Bag(rosbag_ipfs_objective, 'r')
-
     def decrement_subscriber_msg_counter(self, topic):
         dcmnt = self.subscribers_msg_counters[topic] - 1
         rospy.loginfo("Decrement topic %s counter from value %s to %s", topic, self.subscribers_msg_counters[topic], dcmnt)
@@ -34,7 +30,8 @@ class TestPlayer(unittest.TestCase):
     def test_player(self):
         with TemporaryDirectory() as tmpdir:
             os.chdir(tmpdir)
-            bag = self.get_rosbag_Bag(TEST_ROSBAG)
+            self.ipfs.get(TEST_ROSBAG)
+            bag = get_rosbag_from_file(TEST_ROSBAG)
             subscribers = {}
 
             bag_topics = bag.get_type_and_topic_info()
@@ -54,7 +51,7 @@ class TestPlayer(unittest.TestCase):
 
             time.sleep(3)
             rospy.loginfo("Start player")
-            player = Player(TEST_ROSBAG)
+            player = Player(bag)
             player.start()
             time.sleep(3)
 
