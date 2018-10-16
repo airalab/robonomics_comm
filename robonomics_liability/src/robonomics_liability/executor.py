@@ -45,8 +45,8 @@ class Executor:
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
         def finish_liability(msg):
-            self.liability_finish = True
             self.liability_success = msg.success
+            self.liability_finish = True
             return FinishLiabilityResponse()
         rospy.Service('finish', FinishLiability, finish_liability)
 
