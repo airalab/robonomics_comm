@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  ethereum:
+    image: "foamspace/cliquebait:latest"
+    user: ${UID}:${GID}
+    ports:
+      - "10545:8545"
+      - "10546:8546"
+    volumes:
+      - type: bind
+        source: ./cbdata
+        target: /cbdata
+    environment:
+      - ACCOUNTS_TO_CREATE=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
