@@ -9,6 +9,7 @@ from web3 import Web3, HTTPProvider, middleware
 from ens import ENS
 from base58 import b58decode
 import rospy, json
+from ethereum_common import eth_keyfile_helper
 
 from .quota import * 
 
@@ -37,7 +38,12 @@ class Lighthouse:
         lighthouse_contract = rospy.get_param('~lighthouse_contract')
         self.lighthouse = self.web3.eth.contract(lighthouse_contract, abi=lighthouse_abi)
 
-        self.account = rospy.get_param('~account_address', self.web3.eth.accounts[0])
+        __keyfile = rospy.get_param('~keyfile')
+        __keyfile_password_file = rospy.get_param('~keyfile_password_file')
+
+        __keyfile_helper = eth_keyfile_helper.KeyfileHelper(__keyfile, keyfile_password_file=__keyfile_password_file)
+        __account = __keyfile_helper.get_local_account_from_keyfile()
+        self.account_address = __account.address
 
         rospy.Subscriber('infochan/incoming/result', Result, self.settle_result)
         rospy.Subscriber('deal', Deal, self.settle_deal)
@@ -94,12 +100,12 @@ class Lighthouse:
             if q == 0:
                 try:
                     # Next is me
-                    return self.lighthouse.call().members(m + 1) == self.account
+                    return self.lighthouse.call().members(m + 1) == self.account_address
                 except:
                     # Me on the start of list
-                    return self.lighthouse.call().members(0) == self.account
+                    return self.lighthouse.call().members(0) == self.account_address
 
-            return self.lighthouse.call().members(m) == self.account
+            return self.lighthouse.call().members(m) == self.account_address
 
         self.manager = QuotaManager(transact, marker) 
         self.manager.start()
@@ -141,7 +147,7 @@ class Lighthouse:
             return '0x' + liability.functions.offer(*args).buildTransaction()['data'][10:]
 
         tx = self.lighthouse.functions.createLiability(encodeAsk(msg.ask), encodeBid(msg.bid))\
-            .buildTransaction({'gas': 1000000, 'from': self.account})
+            .buildTransaction({'gas': 1000000, 'from': self.account_address})
         self.manager.put(tx)
 
     def settle_result(self, msg):
@@ -155,5 +161,5 @@ class Lighthouse:
             msg.signature,
             False).buildTransaction({'gas': 1000000})['data']
         tx = self.lighthouse.functions.to(msg.liability, data)\
-            .buildTransaction({'gas': 1000000, 'from': self.account})
+            .buildTransaction({'gas': 1000000, 'from': self.account_address})
         self.manager.put(tx)

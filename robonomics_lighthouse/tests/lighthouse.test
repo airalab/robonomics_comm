@@ -3,7 +3,6 @@
   <arg name="lighthouse_contract" default="airalab.lighthouse.2.robonomics.eth" />
   <arg name="xrt_contract" default="xrt.2.robonomics.eth" />
   <arg name="gas_price_gwei" default="0" />
-  <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
@@ -45,8 +44,8 @@
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
       <param name="gas_price_gwei" value="$(arg gas_price_gwei)" />
-      <param name="account_address" value="$(arg account_address)"
-             if="$(eval len(arg('account_address')) > 0)"/>
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>

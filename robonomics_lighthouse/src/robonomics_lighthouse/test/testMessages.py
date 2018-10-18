@@ -56,7 +56,7 @@ def getValidBid():
 validResDict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
                 'success': True,
             'result': 'Qmd32ebrLAsXPFQQK2LDWY6ekcvz1yDC62jGskUFNEDSbA',
-            'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'}
+            'signature': 'b14567adc9078cf838233f97568075fc706459d7e874407faecc90b3b82dc7b3604643d97720da197ba7fdda7728db003f6cbae8a59f8af176dd39c3765e9d0b1c'}
 
 def getValidRes():
     r = Result()
