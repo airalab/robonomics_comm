@@ -71,8 +71,7 @@ class TestSigner(unittest.TestCase):
     def signed_res_handler(self, res):
         self.assertEqual(testMessages.validResDict['liability'], res.liability)
         self.assertEqual(testMessages.validResDict['result'], res.result)
-        self.assertEqual(testMessages.validResDict['signature'], hexlify(res.signature).decode('utf-8'))
-        # equals because result is not contain unique fields such as nonce
+        self.assertNotEqual(testMessages.validResDict['signature'], hexlify(res.signature).decode('utf-8'))
         self._test_sign_res_success = True
 
     def test_sign_res(self):
