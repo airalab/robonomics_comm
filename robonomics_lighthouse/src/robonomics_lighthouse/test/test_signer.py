@@ -29,14 +29,8 @@ class TestSigner(unittest.TestCase):
                          signer.bidhash(messageValidator.dict2bid(testMessages.validBidDict)))
 
     def test_reshash(self):
-        self.assertEqual(bytearray.fromhex('b79fade824c5785bc17347a3c6abe50de87aa4b0414281f9010c05ea3ea7c805'),
+        self.assertEqual(bytearray.fromhex('55c1a3f47762a8d67ed7c76bc140f85bdbf6eb41e70cc13aa41ed1791d939464'),
                          signer.reshash(messageValidator.dict2res(testMessages.validResDict)))
-
-    def test_invalidRes1_reshash(self):
-        self.assertNotEqual(bytearray.fromhex('b79fade824c5785bc17347a3c6abe50de87aa4b0414281f9010c05ea3ea7c666'),
-                            signer.reshash(messageValidator.dict2res(testMessages.validResDict)))
-
-
 
     def signed_ask_handler(self, ask):
         self.assertEqual(testMessages.validAskDict['model'], ask.model)
@@ -77,7 +71,6 @@ class TestSigner(unittest.TestCase):
     def signed_res_handler(self, res):
         self.assertEqual(testMessages.validResDict['liability'], res.liability)
         self.assertEqual(testMessages.validResDict['result'], res.result)
-        rospy.logwarn("sign %s", hexlify(res.signature).decode('utf-8'))
         self.assertEqual(testMessages.validResDict['signature'], hexlify(res.signature).decode('utf-8'))
         # equals because result is not contain unique fields such as nonce
         self._test_sign_res_success = True
