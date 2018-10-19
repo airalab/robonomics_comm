@@ -52,13 +52,13 @@
   </group>
 
 
-  <test test-name="test_infochan" pkg="robonomics_lighthouse" type="test_infochan.py">
+  <test test-name="test_infochan" pkg="robonomics_lighthouse" type="test_infochan.py" time-limit="300.0">
   </test>
 
-  <test test-name="test_messageValidator" pkg="robonomics_lighthouse" type="test_messageValidator.py">
+  <test test-name="test_messageValidator" pkg="robonomics_lighthouse" type="test_messageValidator.py" time-limit="300.0">
   </test>
 
-  <test test-name="test_signer" pkg="robonomics_lighthouse" type="test_signer.py">
+  <test test-name="test_signer" pkg="robonomics_lighthouse" type="test_signer.py" time-limit="300.0">
   </test>
 
 </launch>
