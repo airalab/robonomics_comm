@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest, rostest, sys, rospy, time
+from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_lighthouse import signer
 from robonomics_lighthouse import messageValidator
 from robonomics_lighthouse.test import testMessages
@@ -39,8 +40,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_ask_success = True
 
     def test_sign_ask(self):
-        rospy.Subscriber('/lighthouse/infochan/sending/ask', Ask, self.signed_ask_handler)
-        askPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/ask', Ask, queue_size=10)
+        rospy.Subscriber('/lighthouse/infochan/sending/demand', Demand, self.signed_ask_handler)
+        askPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/demand', Demand, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         askPublisherTest.publish(testMessages.getValidAsk())
@@ -57,8 +58,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_bid_success = True
 
     def test_sign_bid(self):
-        rospy.Subscriber('/lighthouse/infochan/sending/bid', Bid, self.signed_bid_handler)
-        bidPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/bid', Bid, queue_size=10)
+        rospy.Subscriber('/lighthouse/infochan/sending/offer', Offer, self.signed_bid_handler)
+        bidPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/offer', Offer, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         bidPublisherTest.publish(testMessages.getValidBid())
