@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest, rostest, sys
+from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_lighthouse import messageValidator
 from robonomics_lighthouse.test import testMessages
 
@@ -14,11 +15,11 @@ class TestMessageConverter(unittest.TestCase):
 
     def test_ValidAsk(self):
         f = messageValidator.convertMessage(testMessages.validAskDict)
-        assert isinstance(f, Ask)
+        assert isinstance(f, Demand)
 
     def test_ValidBid(self):
         f = messageValidator.convertMessage(testMessages.validBidDict)
-        assert isinstance(f, Bid)
+        assert isinstance(f, Offer)
 
     def test_ValidRes(self):
         f = messageValidator.convertMessage(testMessages.validResDict)
