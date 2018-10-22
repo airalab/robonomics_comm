@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import unittest, rostest, sys
-from robonomics_lighthouse.msg import Ask, Bid, Result
 from robonomics_lighthouse import messageValidator
 from robonomics_lighthouse.test import testMessages
 

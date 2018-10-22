@@ -1,2 +1,2 @@
-Ask ask
-Bid bid
+robonomics_msgs/Demand demand 
+robonomics_msgs/Offer  offer 

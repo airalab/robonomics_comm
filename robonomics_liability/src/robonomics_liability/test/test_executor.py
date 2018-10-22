@@ -2,7 +2,7 @@
 
 import unittest, rostest, os, time, rospy, rosbag
 
-from robonomics_lighthouse.msg import Result, Bid, Ask
+from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability
 from urllib.parse import urlparse
@@ -24,8 +24,8 @@ class TestExecutor(unittest.TestCase):
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         self.test_token = rospy.get_param('~test_token')
-        self.test_bid_publisher = rospy.Publisher('/liability/infochan/signing/bid', Bid, queue_size=10)
-        self.test_ask_publisher = rospy.Publisher('/liability/infochan/signing/ask', Ask, queue_size=10)
+        self.test_bid_publisher = rospy.Publisher('/liability/infochan/signing/offer', Offer, queue_size=10)
+        self.test_ask_publisher = rospy.Publisher('/liability/infochan/signing/demand', Demand, queue_size=10)
 
         self.test_start_time = time.time()
 
@@ -85,7 +85,7 @@ class TestExecutor(unittest.TestCase):
             "lighthouseFee": 0,
             "deadline": 9999999
         }
-        bid = Bid()
+        bid = Offer()
         bid.model = bidDict['model']
         bid.objective = bidDict['objective']
         bid.token = bidDict['token']
@@ -106,7 +106,7 @@ class TestExecutor(unittest.TestCase):
             "validatorFee": 0,
             "deadline": 9999999
         }
-        ask = Ask()
+        ask = Demand()
         ask.model = askDict['model']
         ask.objective = askDict['objective']
         ask.token = askDict['token']

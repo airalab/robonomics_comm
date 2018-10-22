@@ -3,7 +3,7 @@
 # Robonomics liability tracking node.
 #
 
-from robonomics_lighthouse.msg import Result
+from robonomics_msgs.msg import Result
 from robonomics_liability.msg import Liability
 from base58 import b58encode
 from web3 import Web3, HTTPProvider, WebsocketProvider

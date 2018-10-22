@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Robonomics Ask/Bid/Result ipfs message converter
+# Robonomics Demand/Offer/Result ipfs message converter
 #
 
-from robonomics_lighthouse.msg import Ask, Bid, Result
+from robonomics_msgs.msg import Demand, Offer, Result
 from binascii import unhexlify
 import voluptuous as v
 import rospy
@@ -55,7 +55,7 @@ schemaAskBidResult = v.Any(
 
 
 def dict2ask(m):
-    msg = Ask()
+    msg = Demand()
     msg.model = m['model']
     msg.objective = m['objective']
     msg.token = m['token']
@@ -69,7 +69,7 @@ def dict2ask(m):
 
 
 def dict2bid(m):
-    msg = Bid()
+    msg = Offer()
     msg.model = m['model']
     msg.objective = m['objective']
     msg.token = m['token']

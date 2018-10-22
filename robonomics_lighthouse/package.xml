@@ -8,7 +8,8 @@
   <author email="mail@akru.me">Alexander Krupenkin</author>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>robonomics_msgs</build_depend>
   <run_depend>message_runtime</run_depend>
-  <run_depend>pexpect</run_depend>
+  <run_depend>robonomics_msgs</run_depend>
   <run_depend>ethereum_common</run_depend>
 </package>

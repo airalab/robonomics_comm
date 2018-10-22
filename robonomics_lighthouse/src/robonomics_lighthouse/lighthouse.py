@@ -4,7 +4,8 @@
 #
 
 from web3.gas_strategies.time_based import fast_gas_price_strategy
-from robonomics_lighthouse.msg import Deal, Result
+from robonomics_lighthouse.msg import Deal
+from robonomics_msgs.msg import Result
 from web3 import Web3, HTTPProvider, middleware
 from ens import ENS
 from base58 import b58decode
@@ -146,7 +147,7 @@ class Lighthouse:
                    , msg.signature ]
             return '0x' + liability.functions.offer(*args).buildTransaction()['data'][10:]
 
-        tx = self.lighthouse.functions.createLiability(encodeAsk(msg.ask), encodeBid(msg.bid))\
+        tx = self.lighthouse.functions.createLiability(encodeAsk(msg.demand), encodeBid(msg.offer))\
             .buildTransaction({'gas': 1000000, 'from': self.account_address})
         self.manager.put(tx)
 

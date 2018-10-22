@@ -5,7 +5,7 @@
 
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, FinishLiabilityResponse
-from robonomics_lighthouse.msg import Result
+from robonomics_msgs.msg import Result
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 from threading import Thread

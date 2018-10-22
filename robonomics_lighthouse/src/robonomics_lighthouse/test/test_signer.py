@@ -3,7 +3,6 @@
 import unittest, rostest, sys, rospy, time
 from robonomics_lighthouse import signer
 from robonomics_lighthouse import messageValidator
-from robonomics_lighthouse.msg import Ask, Bid, Result
 from robonomics_lighthouse.test import testMessages
 from binascii import hexlify
 

@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
     COMPONENTS
         rospy
         message_generation
+        robonomics_msgs
         ethereum_common
 )
 
@@ -12,13 +13,13 @@ catkin_python_setup()
 
 add_message_files(
     FILES
-        Ask.msg
-        Bid.msg
         Deal.msg
-        Result.msg
 )
 
-generate_messages()
+generate_messages(
+    DEPENDENCIES
+        robonomics_msgs
+)
 
 catkin_package()
 

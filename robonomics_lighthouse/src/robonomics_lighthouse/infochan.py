@@ -3,7 +3,7 @@
 # Robonomics information channels support node.
 #
 
-from robonomics_lighthouse.msg import Ask, Bid, Result
+from robonomics_msgs.msg import Demand, Offer, Result
 from binascii import hexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
@@ -53,12 +53,12 @@ class InfoChan:
         ipfs_api_parts = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs_client = ipfsapi.Client(host=ipfs_api_parts[0], port=ipfs_api_parts[1])
 
-        self.incoming_bid = rospy.Publisher('incoming/bid', Bid, queue_size=10)
-        self.incoming_ask = rospy.Publisher('incoming/ask', Ask, queue_size=10)
-        self.incoming_res = rospy.Publisher('incoming/result', Result, queue_size=10)
+        self.incoming_offer  = rospy.Publisher('incoming/offer',  Offer, queue_size=10)
+        self.incoming_demand = rospy.Publisher('incoming/demand', Demand, queue_size=10)
+        self.incoming_result = rospy.Publisher('incoming/result', Result, queue_size=10)
 
-        rospy.Subscriber('sending/bid', Bid, lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
-        rospy.Subscriber('sending/ask', Ask, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
+        rospy.Subscriber('sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
+        rospy.Subscriber('sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
         rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
 
     def spin(self):
@@ -69,15 +69,15 @@ class InfoChan:
             for m in subscribe(self.ipfs_client, self.lighthouse):
                 converted = convertMessage(m)
                 if not (converted is None):
-                    if isinstance(converted, Ask):
+                    if isinstance(converted, Demand):
                         # rospy.logwarn('DEBUG: Publish valid Ask message %s', converted)
-                        self.incoming_ask.publish(converted)
-                    elif isinstance(converted, Bid):
+                        self.incoming_demand.publish(converted)
+                    elif isinstance(converted, Offer):
                         # rospy.logwarn('DEBUG: Publish valid Bid message %s', converted)
-                        self.incoming_bid.publish(converted)
+                        self.incoming_offer.publish(converted)
                     elif isinstance(converted, Result):
                         # rospy.logwarn('DEBUG: Publish valid Result message %s', converted)
-                        self.incoming_res.publish(converted)
+                        self.incoming_result.publish(converted)
 
         Thread(target=channel_thread, daemon=True).start()
         rospy.spin()

@@ -3,7 +3,8 @@
 # Robonomics market Bid/Ask matcher node. 
 #
 
-from robonomics_lighthouse.msg import Bid, Ask, Deal
+from robonomics_lighthouse.msg import Deal
+from robonomics_msgs.msg import Demand, Offer 
 import rospy
 
 class Matcher:
@@ -16,8 +17,8 @@ class Matcher:
         '''
         rospy.init_node('robonomics_matcher')
 
-        rospy.Subscriber('infochan/incoming/bid', Bid, lambda x: self.match(bid=x))
-        rospy.Subscriber('infochan/incoming/ask', Ask, lambda x: self.match(ask=x))
+        rospy.Subscriber('infochan/incoming/offer',  Offer,  lambda x: self.match(bid=x))
+        rospy.Subscriber('infochan/incoming/demand', Demand, lambda x: self.match(ask=x))
         self.deal = rospy.Publisher('deal', Deal, queue_size=10)
 
     def spin(self):
@@ -60,8 +61,8 @@ class Matcher:
             rospy.loginfo('Matched %s', prlot(ask))
 
             msg = Deal()
-            msg.ask = ask
-            msg.bid = bid
+            msg.demand = ask
+            msg.offer = bid
             self.deal.publish(msg)
 
         except (KeyError, IndexError):

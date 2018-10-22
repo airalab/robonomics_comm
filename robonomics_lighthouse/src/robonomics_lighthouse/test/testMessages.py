@@ -1,4 +1,4 @@
-from robonomics_lighthouse.msg import Ask, Bid, Result
+from robonomics_msgs.msg import Demand, Offer, Result
 from binascii import unhexlify
 
 #ask
@@ -14,7 +14,7 @@ validAskDict = {"model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
                 }
 
 def getValidAsk():
-    a = Ask()
+    a = Demand()
     a.model = validAskDict['model']
     a.objective = validAskDict['objective']
     a.token = validAskDict['token']
@@ -39,7 +39,7 @@ validBidDict = {"model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
 
 
 def getValidBid():
-    b = Bid()
+    b = Offer()
     b.model = validBidDict['model']
     b.objective = validBidDict['objective']
     b.token = validBidDict['token']
@@ -50,7 +50,6 @@ def getValidBid():
     b.nonce = unhexlify(validBidDict['nonce'].encode('utf-8'))
     b.signature = unhexlify(validBidDict['signature'].encode('utf-8'))
     return b
-
 
 # res
 validResDict = {'liability': '0xcC4f10c72908D7b8A0eB7fBa70f00b135b3f97d7',
