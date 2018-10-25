@@ -59,7 +59,7 @@ class Executor:
         def start_liability(msg):
             try:
                 liability_thread = self.liability_execution_threads[msg.address]
-            except Exception as e:
+            except KeyError as e:
                 rospy.logerr("Could not find liability %s for starting", msg.address)
                 return StartLiabilityResponse(False, "Could not find liability {0} for starting".format(msg.address))
             try:

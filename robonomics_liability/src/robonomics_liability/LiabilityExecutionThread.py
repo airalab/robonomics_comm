@@ -16,13 +16,15 @@ class LiabilityExecutionThread(object):
 
         self.liability = liability
 
-        self.thread = threading.Thread(target=self.execute_liability, args=())
+        self.thread = threading.Thread(target=self.__execute_liability, args=())
         self.thread.daemon = True
 
-        self.liability_finish = False
         self.__recorder = None
         self.__liability_result_file = None
         self.__liability_execution_namespace = "eth_{0}".format(self.liability.address)
+
+        self.tmp_directory = TemporaryDirectory()
+        rospy.logdebug('Temporary directory created: %s', self.tmp_directory.name)
 
     def getLiabilityMsg(self):
         return self.liability
@@ -40,8 +42,6 @@ class LiabilityExecutionThread(object):
             rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
             self.liability.result = ipfs_response[0]['Hash']
 
-        self.liability_finish = True
-
         result_msg = Result()
         result_msg.liability = self.liability.address
         result_msg.result = self.liability.result
@@ -55,31 +55,26 @@ class LiabilityExecutionThread(object):
                             master_check_interval=self.master_check_interval)
         return recorder
 
-    def execute_liability(self):
-        with TemporaryDirectory() as tmpdir:
-            rospy.logdebug('Temporary directory created: %s', tmpdir)
-            os.chdir(tmpdir)
+    def __execute_liability(self):
+        os.chdir(self.tmp_directory.name)
 
-            rospy.logdebug('Getting objective %s...', self.liability.objective)
-            self.ipfs_client.get(self.liability.objective)
-            rospy.logdebug('Objective is written to %s', tmpdir + '/' + self.liability.objective)
+        rospy.logdebug('Getting objective %s...', self.liability.objective)
+        self.ipfs_client.get(self.liability.objective)
+        rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
 
-            self.__liability_result_file = os.path.join(tmpdir, 'result.bag')
-            rospy.logdebug('Start recording to %s...', self.__liability_result_file)
-            rospy.logdebug("Recording all topics: %s", (not self.recording_topics))
+        self.__liability_result_file = os.path.join(self.tmp_directory.name, 'result.bag')
+        rospy.logdebug('Start recording to %s...', self.__liability_result_file)
+        rospy.logdebug("Recording all topics: %s", (not self.recording_topics))
 
-            self.__recorder = self.__createRecorder(self.__liability_result_file)
-            self.__recorder.start()
+        self.__recorder = self.__createRecorder(self.__liability_result_file)
+        self.__recorder.start()
 
-            rospy.logdebug('Rosbag recorder started')
+        rospy.logdebug('Rosbag recorder started')
 
-            objective_rosbag = get_rosbag_from_file(self.liability.objective)
-            if objective_rosbag is not None:
-                player = Player(objective_rosbag, self.__liability_execution_namespace)
-                player.start()
-                rospy.logdebug('Rosbag player started')
-            else:
-                rospy.logwarn('Skip playing objective using rosbag player in liability %s', self.liability.address)
-
-            while not self.liability_finish:
-                rospy.sleep(1)
+        objective_rosbag = get_rosbag_from_file(self.liability.objective)
+        if objective_rosbag is not None:
+            player = Player(objective_rosbag, self.__liability_execution_namespace)
+            player.start()
+            rospy.logdebug('Rosbag player started')
+        else:
+            rospy.logwarn('Skip playing objective using rosbag player in liability %s', self.liability.address)
