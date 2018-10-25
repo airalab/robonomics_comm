@@ -61,6 +61,11 @@ add_service_files(
     TransferFrom.srv
     Approve.srv
     Accounts.srv
+    AccountBalance.srv
+    Balance.srv
+    AccountToAddressAllowance.srv
+    Allowance.srv
+    BlockNumber.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -134,6 +139,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ros_erc20_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/ros_eth_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -185,9 +191,12 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
+catkin_package()
+
 catkin_install_python(
     PROGRAMS
         scripts/erc20_node
+        scripts/eth_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
