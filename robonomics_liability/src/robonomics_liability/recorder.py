@@ -39,7 +39,7 @@ import threading, time, re, sys
 import queue
 
 class Recorder(object):
-    def __init__(self, filename, master_check_interval, bag_lock=None, all=True, topics=[], regex=False, limit=0):
+    def __init__(self, filename, master_check_interval, bag_lock=None, regex=False, topics=[], namespace='', limit=0):
         """
         Subscribe to ROS messages and record them to a bag file.
         
@@ -47,17 +47,18 @@ class Recorder(object):
         @type  filename: str
         @param master_check_interval: period (in seconds) to check master for new topic publications [default: 0.1]
         @type  master_check_interval: float
-        @param all: all topics are to be recorded [default: True]
-        @type  all: bool
         @param topics: topics (or regexes if regex is True) to record [default: empty list]
         @type  topics: list of str
         @param regex: topics should be considered as regular expressions [default: False]
         @type  regex: bool
+        @param namespace: namespace of recording topics
+        @type  namespace: str
         @param limit: record only this number of messages on each topic (if non-positive, then unlimited) [default: 0]
         @type  limit: int
         """
-        self._all                   = all
+        self._all                   = False
         self._topics                = topics
+        self._namespace             = namespace
         self._regex                 = regex
         self._limit                 = limit
         self._master_check_interval = master_check_interval
@@ -74,17 +75,22 @@ class Recorder(object):
         self._stop_condition     = threading.Condition()
         self._stop_flag          = False
 
+        self._regexes = []
+        self._recording_topics = []
+
         # Compile regular expressions
-        if self._regex:
-            self._regexes = [re.compile(t) for t in self._topics]
+        if self._topics:
+            if self._regex:
+                self._regexes = [re.compile(namespace + t) for t in self._topics]
+            else:
+                self._recording_topics = [namespace + t for t in self._topics]
         else:
-            self._regexes = None
+            self._regexes = [re.compile(namespace)]
 
         self._message_count = {}  # topic -> int (track number of messages recorded on each topic)
 
         self._master_check_thread = threading.Thread(target=self._run_master_check, daemon=True)
         self._write_thread        = threading.Thread(target=self._run_write, daemon=True)
-        rospy.logdebug("recorder _topics = %s", self._topics)
 
     @property
     def bag(self): return self._bag
@@ -167,18 +173,14 @@ class Recorder(object):
             rospy.logerr('Error closing bag [%s]: %s', self._bag.filename, str(ex))
 
     def _should_subscribe_to(self, topic):
-        if self._all:
-            return True
-        
-        if not self._regex:
-            return topic in self._topics
+        if self._regexes:
+            for regex in self._regexes:
+                if regex.match(topic):
+                    return True
+            return False
 
-        for regex in self._regexes:
-            if regex.match(topic):
-                return True
-            
-        return False
-    
+        return topic in self._recording_topics
+
     def _unsubscribe(self, topic):
         try:
             self._subscriber_helpers[topic].subscriber.unregister()

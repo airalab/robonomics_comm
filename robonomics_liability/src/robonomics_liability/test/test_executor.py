@@ -4,7 +4,7 @@ import unittest, rostest, os, time, rospy, rosbag
 
 from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_liability.msg import Liability
-from robonomics_liability.srv import FinishLiability
+from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
 import ipfsapi
 from tempfile import TemporaryDirectory
@@ -30,17 +30,17 @@ class TestExecutor(unittest.TestCase):
         self.test_start_time = time.time()
 
         self.success = False
-        self.incoming_liability = None
+        self.ready_liability = None
 
-    def incoming_liability_handler(self, msg):
-        self.incoming_liability = msg
-        rospy.loginfo("INCOMING HANDLER: address is %s", self.incoming_liability.address)
+    def ready_liability_handler(self, msg):
+        self.ready_liability = msg
+        rospy.loginfo("READY LIABILITY HANDLER: address is %s", self.ready_liability.address)
 
     def result_handler(self, result):
         rospy.loginfo("RESULT HANDLER: liability: %s result %s", result.liability, result.result)
 
-        if self.incoming_liability is not None \
-                and self.incoming_liability.address == result.liability \
+        if self.ready_liability is not None \
+                and self.ready_liability.address == result.liability \
                 and self.check_rosbag_is_new_and_has_messages(result):
             self.success = True
 
@@ -49,31 +49,42 @@ class TestExecutor(unittest.TestCase):
             os.chdir(tmpdir)
             self.ipfs.get(result.result)
             bag = rosbag.Bag(result.result, 'r')
+            bag_topics = bag.get_type_and_topic_info()
+
+            bag_topics_dict = {}
+            for topic, topic_info in bag_topics[1].items():
+                bag_topics_dict[topic] = topic_info[1]
+                rospy.loginfo("rosbag contains %s messages of type %s in topic %s", topic_info[1], topic_info[0], topic)
             rospy.loginfo("ROSBAG: result has %s msgs", bag.get_message_count())
             rospy.loginfo("ROSBAG: result has start time %s", bag.get_start_time())
-            return bag.get_message_count() != 0 and bag.get_start_time() > self.test_start_time
-
+            return bag.get_message_count() == 2 and \
+                   bag.get_start_time() > self.test_start_time and \
+                   '/liability/eth_{0}/agent/objective/droneid'.format(self.ready_liability.address) in bag_topics_dict and \
+                   '/liability/eth_{0}/agent/objective/email'.format(self.ready_liability.address) in bag_topics_dict
 
     def test_executor(self):
-        rospy.Subscriber('liability/incoming', Liability, self.incoming_liability_handler)
+        rospy.Subscriber('liability/ready', Liability, self.ready_liability_handler)
         rospy.Subscriber('liability/result', Result, self.result_handler)
 
         time.sleep(15)
         self.test_bid_publisher.publish(self.get_test_bid())
         self.test_ask_publisher.publish(self.get_test_ask())
 
-        while self.incoming_liability is None:
+        while self.ready_liability is None:
             time.sleep(0.1)
 
+        start_service_proxy = rospy.ServiceProxy('/liability/start', StartLiability)
+        start_service_proxy(self.ready_liability.address)
+
         time.sleep(5)
+
         finish_service_proxy = rospy.ServiceProxy('/liability/finish', FinishLiability)
-        finish_service_proxy(False)
+        finish_service_proxy(self.ready_liability.address, True)
 
         timeout_t = time.time() + 30.0
         while not rospy.is_shutdown() and not self.success and time.time() < timeout_t:
             time.sleep(0.1)
         self.assert_(self.success)
-
 
     def get_test_bid(self):
         bidDict = {
@@ -94,7 +105,6 @@ class TestExecutor(unittest.TestCase):
         bid.lighthouseFee = bidDict['lighthouseFee']
         bid.deadline = bidDict['deadline']
         return bid
-
 
     def get_test_ask(self):
         askDict = {

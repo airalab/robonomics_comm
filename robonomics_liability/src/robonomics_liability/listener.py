@@ -74,6 +74,7 @@ class Listener:
                 # TODO: move sleep time to rop parameter with 30 seconds by default
                 is_finalized = self.liability_finalization_checker.finalized(msg.liability)
             self.finalized.publish(msg.liability)
+
         rospy.Subscriber('result', Result, liability_finalize)
 
     def liability_read(self, address):
@@ -101,6 +102,7 @@ class Listener:
 
         def liability_filter_thread():
             try:
+                # TODO: improve error logging
                 for entry in self.liability_filter.get_new_entries():
                     self.liability.publish(self.liability_read(entry['args']['liability']))
             except Exception as e:
