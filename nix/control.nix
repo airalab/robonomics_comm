@@ -1,7 +1,6 @@
 { stdenv
 , mkRosPackage
-, fetchFromGitHub
-, robonomics_comm_lighthouse
+, robonomics_comm_msgs
 , python3Packages
 }:
 
@@ -14,7 +13,7 @@ in mkRosPackage rec {
 
   src = ../robonomics_control; 
 
-  propagatedBuildInputs = with python3Packages; [ robonomics_comm_lighthouse web3 numpy ];
+  propagatedBuildInputs = with python3Packages; [ robonomics_comm_msgs web3 numpy ];
 
   meta = with stdenv.lib; {
     description = "Set of robonomics control algorithms";

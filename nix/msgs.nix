@@ -1,22 +1,21 @@
 { stdenv
 , mkRosPackage
-, python3Packages
 , ros_comm
 }:
 
 let
-  pname = "ethereum_common";
-  version = "0.2.0";
+  pname = "robonomics_msgs";
+  version = "0.0.0";
 
 in mkRosPackage rec {
   name = "${pname}-${version}";
 
-  src = ../ethereum_common; 
+  src = ../robonomics_msgs; 
 
-  propagatedBuildInputs = with python3Packages; [ ros_comm web3 ];
+  propagatedBuildInputs = [ ros_comm ];
 
   meta = with stdenv.lib; {
-    description = "Commonly used Ethereum communication nodes";
+    description = "Robonomics communication messages";
     homepage = http://github.com/airalab/robonomics_comm;
     license = licenses.bsd3;
     maintainers = [ maintainers.akru ];

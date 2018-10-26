@@ -1,23 +1,19 @@
 { stdenv
 , mkRosPackage
-, fetchFromGitHub
-, robonomics_comm_lighthouse
+, robonomics_comm_msgs
 , python3Packages
 }:
 
 let
   pname = "robonomics_liability";
-  version = "0.3.1";
+  version = "0.4.0";
 
 in mkRosPackage rec {
   name = "${pname}-${version}";
 
-  src = ../robonomics_liability;
+  src = ../robonomics_liability; 
 
-  # Enable unittests
-  doCheck = false;
-
-  propagatedBuildInputs = with python3Packages; [ robonomics_comm_lighthouse web3 ipfsapi ];
+  propagatedBuildInputs = with python3Packages; [ robonomics_comm_msgs web3 ipfsapi ];
 
   meta = with stdenv.lib; {
     description = "Robot liability support for ROS";
