@@ -1,16 +1,29 @@
 <launch>
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="erc20_token" default="xrt.2.robonomics.eth"/>
+  <arg name="factory_contract" default="factory.2.robonomics.eth" />
   <arg name="ens_contract" default="" />
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
-  <node pkg="ethereum_common" type="erc20_node" name="erc20_token" output="screen">
-    <param name="web3_http_provider" value="$(arg web3_http_provider)" />
-    <param name="token_contract" value="$(arg erc20_token)" />
-    <param name="ens_contract" value="$(arg ens_contract)"
-           if="$(eval len(arg('ens_contract')) > 0)"/>
-    <param name="keyfile" value="$(arg keyfile)" />
-    <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
-  </node>
+  <group ns="eth">
+    <node pkg="ethereum_common" type="erc20_node" name="erc20_token" output="screen">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="token_contract" value="$(arg erc20_token)" />
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+      <param name="factory_contract" value="factory.2.robonomics.eth" />
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+    </node>
+
+    <node pkg="ethereum_common" type="eth_node" name="eth_node" output="screen">
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="token_contract" value="$(arg erc20_token)" />
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+    </node>
+  </group>
 </launch>
