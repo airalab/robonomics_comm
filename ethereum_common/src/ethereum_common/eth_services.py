@@ -31,7 +31,7 @@ class ETHServices:
         rospy.Service('eth_balance', Balance, eth_balance_handler)
 
         def eth_current_block_number_handler(m):
-            block = self.eth_utils.getCurrentBlockNumber()
+            block = self.eth_utils.getCurrentBlockNumber
             return BlockNumberResponse(block)
         rospy.Service('current_block', BlockNumber, eth_current_block_number_handler)
 

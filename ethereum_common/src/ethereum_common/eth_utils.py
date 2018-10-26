@@ -24,6 +24,10 @@ class ETHUtils:
     def erc20Contract(self):
         return self.erc20
 
+    @property
+    def getCurrentBlockNumber(self):
+        return self.web3.eth.blockNumber
+
     def getAddressByName(self, name):
         return self.ens.address(name)
 
@@ -42,17 +46,6 @@ class ETHUtils:
 
     def getTransaction(self, tx_hash):
         return self.web3.eth.getTransaction(tx_hash)
-
-    def getCurrentBlockNumber(self):
-        block = self.getBlock('latest')
-        return self.__getBlockNumberFromBlock(block)
-
-
-    def __getBlockNumberFromBlock(self, block):
-        return block['number']
-
-    def getBlock(self, number):
-        return self.web3.eth.getBlock(number)
 
     def getBalance(self, account):
         return self.web3.fromWei(self.web3.eth.getBalance(account), 'ether')
