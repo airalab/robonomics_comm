@@ -197,6 +197,7 @@ catkin_install_python(
     PROGRAMS
         scripts/erc20_node
         scripts/eth_node
+        scripts/signer_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

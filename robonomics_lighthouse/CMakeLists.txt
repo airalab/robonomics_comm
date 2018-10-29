@@ -26,7 +26,6 @@ catkin_package()
 catkin_install_python(
     PROGRAMS
         scripts/infochan_node
-        scripts/signer_node
         scripts/matcher_node
         scripts/lighthouse_node
     DESTINATION

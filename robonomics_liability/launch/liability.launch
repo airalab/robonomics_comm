@@ -14,11 +14,15 @@
 
   <!-- liability group -->
   <group ns="liability">
+    <!-- message signer interface -->
+    <include ns="infochan" file="$(find ethereum_common)/launch/signer.launch">
+      <arg name="keyfile" value="$(arg keyfile)" />
+      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+    </include>
+
     <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
       <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
       <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
-      <arg name="keyfile" value="$(arg keyfile)" />
-      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </include>
 
     <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">

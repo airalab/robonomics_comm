@@ -1,0 +1,14 @@
+<launch>
+  <arg name="enable_signer" default="true" />
+  <arg name="keyfile" default="" />
+  <arg name="keyfile_password_file" default="" />
+
+  <group ns="eth">
+    <!-- Message signer helper -->
+    <node pkg="ethereum_common" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+    </node>
+
+  </group>
+</launch>

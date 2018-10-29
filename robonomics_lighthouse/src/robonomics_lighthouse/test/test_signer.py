@@ -2,7 +2,7 @@
 
 import unittest, rostest, sys, rospy, time
 from robonomics_msgs.msg import Result, Offer, Demand
-from robonomics_lighthouse import signer
+from ethereum_common import signer
 from robonomics_lighthouse import messageValidator
 from robonomics_lighthouse.test import testMessages
 from binascii import hexlify
@@ -20,17 +20,17 @@ class TestSigner(unittest.TestCase):
         self._test_sign_bid_success = False
         self._test_sign_res_success = False
 
-    def test_askhash(self):
+    def test_demand_hash(self):
         self.assertEqual(bytearray.fromhex('4f7cae2f478f7052b61e7bbd52cc8b70f7b483004d236ea370acd75620fd1000'),
-                         signer.askhash(messageValidator.dict2ask(testMessages.validAskDict)))
+                         signer.demand_hash(messageValidator.dict2ask(testMessages.validAskDict)))
 
-    def test_bidhash(self):
+    def test_offer_hash(self):
         self.assertEqual(bytearray.fromhex('9b6864a449c21212a5588c2d81863a9f3d24abe2b99d90755b5fb0a9292e977e'),
-                         signer.bidhash(messageValidator.dict2bid(testMessages.validBidDict)))
+                         signer.offer_hash(messageValidator.dict2bid(testMessages.validBidDict)))
 
-    def test_reshash(self):
+    def test_result_hash(self):
         self.assertEqual(bytearray.fromhex('55c1a3f47762a8d67ed7c76bc140f85bdbf6eb41e70cc13aa41ed1791d939464'),
-                         signer.reshash(messageValidator.dict2res(testMessages.validResDict)))
+                         signer.result_hash(messageValidator.dict2res(testMessages.validResDict)))
 
     def signed_ask_handler(self, ask):
         self.assertEqual(testMessages.validAskDict['model'], ask.model)
@@ -40,8 +40,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_ask_success = True
 
     def test_sign_ask(self):
-        rospy.Subscriber('/lighthouse/infochan/sending/demand', Demand, self.signed_ask_handler)
-        askPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/demand', Demand, queue_size=10)
+        rospy.Subscriber('/lighthouse/infochan/eth/sending/demand', Demand, self.signed_ask_handler)
+        askPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/demand', Demand, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         askPublisherTest.publish(testMessages.getValidAsk())
@@ -58,8 +58,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_bid_success = True
 
     def test_sign_bid(self):
-        rospy.Subscriber('/lighthouse/infochan/sending/offer', Offer, self.signed_bid_handler)
-        bidPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/offer', Offer, queue_size=10)
+        rospy.Subscriber('/lighthouse/infochan/eth/sending/offer', Offer, self.signed_bid_handler)
+        bidPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/offer', Offer, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         bidPublisherTest.publish(testMessages.getValidBid())
@@ -75,8 +75,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_res_success = True
 
     def test_sign_res(self):
-        rospy.Subscriber('/lighthouse/infochan/sending/result', Result, self.signed_res_handler)
-        resPublisherTest = rospy.Publisher('/lighthouse/infochan/signing/result', Result, queue_size=10)
+        rospy.Subscriber('/lighthouse/infochan/eth/sending/result', Result, self.signed_res_handler)
+        resPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/result', Result, queue_size=10)
 
         time.sleep(3)  # because signer node subscribers may be not registered in master
         resPublisherTest.publish(testMessages.getValidRes())

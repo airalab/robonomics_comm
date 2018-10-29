@@ -64,7 +64,7 @@ class Listener:
             rospy.logwarn("Failed to create liability filter with exception: \"%s\"", e)
 
     def result_handler(self):
-        result = rospy.Publisher('infochan/signing/result', Result, queue_size=10)
+        result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
 
         def liability_finalize(msg):
             is_finalized = False
