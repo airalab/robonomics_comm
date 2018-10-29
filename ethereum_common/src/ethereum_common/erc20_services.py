@@ -95,7 +95,7 @@ class ERC20Services:
                 for e in self.approval_filter.get_new_entries():
                     self.approval.publish(type_converter.filterEntryToApprovalEvent(e['args']))
             except Exception as e:
-                rospy.logerr('ecr20 node filters get entries exception: %s', e)
+                rospy.logerr('erc20 node filters get entries exception: %s', e)
                 time.sleep(10)
                 self.initialize_event_filters()
             Timer(1, filter_thread).start()

@@ -20,9 +20,9 @@ class TestInfochan(unittest.TestCase):
         rospy.Subscriber('/lighthouse/infochan/incoming/demand', Demand, self.infochan_published_ask_handler)
         rospy.Subscriber('/lighthouse/infochan/incoming/offer',  Offer,  self.infochan_published_bid_handler)
         rospy.Subscriber('/lighthouse/infochan/incoming/result', Result, self.infochan_published_result_handler)
-        self.infochan_Ask_subscriber_topic = rospy.Publisher('/lighthouse/infochan/sending/demand', Demand, queue_size=10)
-        self.infochan_Bid_subscriber_topic = rospy.Publisher('/lighthouse/infochan/sending/offer',  Offer,  queue_size=10)
-        self.infochan_Res_subscriber_topic = rospy.Publisher('/lighthouse/infochan/sending/result', Result, queue_size=10)
+        self.infochan_Ask_subscriber_topic = rospy.Publisher('/lighthouse/infochan/eth/sending/demand', Demand, queue_size=10)
+        self.infochan_Bid_subscriber_topic = rospy.Publisher('/lighthouse/infochan/eth/sending/offer',  Offer,  queue_size=10)
+        self.infochan_Res_subscriber_topic = rospy.Publisher('/lighthouse/infochan/eth/sending/result', Result, queue_size=10)
 
 
     def test_ask2dict(self):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Robonomics lighthouse signer node.
+# Robonomics signer node.
 #
 
 from robonomics_msgs.msg import Demand, Offer, Result
@@ -9,9 +9,10 @@ from base58 import b58decode
 import rospy, os
 import binascii
 from eth_account.messages import defunct_hash_message
-from ethereum_common import eth_keyfile_helper
+from . import eth_keyfile_helper
 
-def askhash(msg):
+
+def demand_hash(msg):
     types = ['bytes',
              'bytes',
              'address',
@@ -29,7 +30,8 @@ def askhash(msg):
                                      msg.deadline,
                                      msg.nonce])
 
-def bidhash(msg):
+
+def offer_hash(msg):
     types = ['bytes',
              'bytes',
              'address',
@@ -47,11 +49,12 @@ def bidhash(msg):
                                      msg.deadline,
                                      msg.nonce])
 
-def reshash(msg):
+def result_hash(msg):
     types = ['address',
              'bytes',
              'bool']
     return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result), msg.success])
+
 
 class Signer:
     def __init__(self):
@@ -78,24 +81,24 @@ class Signer:
         #TODO: make tests when local sign will be implemented
         def sign_demand(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.__account.signHash(defunct_hash_message(askhash(msg)))
+            signed_hash = self.__account.signHash(defunct_hash_message(demand_hash(msg)))
             msg.signature = signed_hash.signature
-            rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(askhash(msg)), binascii.hexlify(msg.signature))
+            rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(demand_hash(msg)), binascii.hexlify(msg.signature))
             self.signed_demand.publish(msg)
         rospy.Subscriber('signing/demand', Demand, sign_demand)
 
         def sign_offer(msg):
             msg.nonce = os.urandom(32)
-            signed_hash = self.__account.signHash(defunct_hash_message(bidhash(msg)))
+            signed_hash = self.__account.signHash(defunct_hash_message(offer_hash(msg)))
             msg.signature = signed_hash.signature
-            rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(bidhash(msg)), binascii.hexlify(msg.signature))
+            rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(offer_hash(msg)), binascii.hexlify(msg.signature))
             self.signed_offer.publish(msg)
         rospy.Subscriber('signing/offer', Offer, sign_offer)
 
         def sign_result(msg):
-            signed_hash = self.__account.signHash(defunct_hash_message(reshash(msg)))
+            signed_hash = self.__account.signHash(defunct_hash_message(result_hash(msg)))
             msg.signature = signed_hash.signature
-            rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(reshash(msg)), binascii.hexlify(msg.signature))
+            rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(result_hash(msg)), binascii.hexlify(msg.signature))
             self.signed_result.publish(msg)
         rospy.Subscriber('signing/result', Result, sign_result)
 

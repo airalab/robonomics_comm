@@ -14,6 +14,18 @@
   <!-- Robonomics lighthouse -->
   <group ns="lighthouse">
 
+    <!-- Information channel interface -->
+    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
+      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
+      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    </include>
+
+    <!-- message signer interface -->
+    <include ns="infochan" file="$(find ethereum_common)/launch/signer.launch">
+      <arg name="keyfile" value="$(arg keyfile)" />
+      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+    </include>
+
     <!-- XRT token interface -->
     <group ns="xrt">
       <include file="$(find ethereum_common)/launch/erc20.launch">
@@ -25,14 +37,6 @@
         <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
       </include>
     </group>
-
-    <!-- Information channel interface -->
-    <include file="$(find robonomics_lighthouse)/launch/infochan.launch">
-      <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
-      <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
-      <arg name="keyfile" value="$(arg keyfile)" />
-      <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
-    </include>
 
     <!-- Robonomics order matcher -->
     <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" output="screen" />

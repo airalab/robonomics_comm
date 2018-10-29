@@ -57,9 +57,9 @@ class InfoChan:
         self.incoming_demand = rospy.Publisher('incoming/demand', Demand, queue_size=10)
         self.incoming_result = rospy.Publisher('incoming/result', Result, queue_size=10)
 
-        rospy.Subscriber('sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
-        rospy.Subscriber('sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
-        rospy.Subscriber('sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
+        rospy.Subscriber('eth/sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
+        rospy.Subscriber('eth/sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
+        rospy.Subscriber('eth/sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
 
     def spin(self):
         '''

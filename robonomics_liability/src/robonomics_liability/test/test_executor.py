@@ -24,8 +24,8 @@ class TestExecutor(unittest.TestCase):
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         self.test_token = rospy.get_param('~test_token')
-        self.test_bid_publisher = rospy.Publisher('/liability/infochan/signing/offer', Offer, queue_size=10)
-        self.test_ask_publisher = rospy.Publisher('/liability/infochan/signing/demand', Demand, queue_size=10)
+        self.test_bid_publisher = rospy.Publisher('/liability/infochan/eth/signing/offer', Offer, queue_size=10)
+        self.test_ask_publisher = rospy.Publisher('/liability/infochan/eth/signing/demand', Demand, queue_size=10)
 
         self.test_start_time = time.time()
 
@@ -67,7 +67,9 @@ class TestExecutor(unittest.TestCase):
         rospy.Subscriber('liability/result', Result, self.result_handler)
 
         time.sleep(15)
+        rospy.logwarn("test_executor: publish test offer")
         self.test_bid_publisher.publish(self.get_test_bid())
+        rospy.logwarn("test_executor: publish test demand")
         self.test_ask_publisher.publish(self.get_test_ask())
 
         while self.ready_liability is None:
@@ -91,7 +93,7 @@ class TestExecutor(unittest.TestCase):
             "model": "QmaRmbJtyfMDBfkDETTPAxKUUcSqZKXWwFKKoZ318nrPku",
             "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
             "token": self.test_token,
-            "cost": 1,
+            "cost": 0,
             "validator": '0x0000000000000000000000000000000000000000',
             "lighthouseFee": 0,
             "deadline": 9999999
@@ -111,7 +113,7 @@ class TestExecutor(unittest.TestCase):
             "model": "QmaRmbJtyfMDBfkDETTPAxKUUcSqZKXWwFKKoZ318nrPku",
             "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
             "token": self.test_token,
-            "cost": 1,
+            "cost": 0,
             "validator": "0x0000000000000000000000000000000000000000",
             "validatorFee": 0,
             "deadline": 9999999
