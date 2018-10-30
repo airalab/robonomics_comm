@@ -128,6 +128,7 @@ class Lighthouse:
                    , b58decode(msg.objective)
                    , msg.token
                    , msg.cost
+                   , msg.lighthouse
                    , msg.validator
                    , msg.validatorFee
                    , msg.deadline
@@ -141,6 +142,7 @@ class Lighthouse:
                    , msg.token
                    , msg.cost
                    , msg.validator
+                   , msg.lighthouse
                    , msg.lighthouseFee
                    , msg.deadline
                    , msg.nonce

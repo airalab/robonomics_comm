@@ -7,6 +7,8 @@ from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
 import ipfsapi
+from web3 import Web3, HTTPProvider
+from ens import ENS
 from tempfile import TemporaryDirectory
 from std_msgs.msg import *
 
@@ -26,6 +28,20 @@ class TestExecutor(unittest.TestCase):
         self.test_token = rospy.get_param('~test_token')
         self.test_bid_publisher = rospy.Publisher('/liability/infochan/eth/signing/offer', Offer, queue_size=10)
         self.test_ask_publisher = rospy.Publisher('/liability/infochan/eth/signing/demand', Demand, queue_size=10)
+
+        web3_http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(web3_http_provider)
+        ens_contract = rospy.get_param('~ens_contract', None)
+
+        self.ens = ENS(http_provider, addr=ens_contract)
+        self.web3 = Web3(http_provider, ens=self.ens)
+
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
+        self.lighthouse_address = self.ens.address(rospy.get_param('~lighthouse_contract'))
 
         self.test_start_time = time.time()
 
@@ -95,6 +111,7 @@ class TestExecutor(unittest.TestCase):
             "token": self.test_token,
             "cost": 0,
             "validator": '0x0000000000000000000000000000000000000000',
+            "lighthouse": self.lighthouse_address,
             "lighthouseFee": 0,
             "deadline": 9999999
         }
@@ -104,6 +121,7 @@ class TestExecutor(unittest.TestCase):
         bid.token = bidDict['token']
         bid.cost = bidDict['cost']
         bid.validator = bidDict['validator']
+        bid.lighthouse = bidDict['lighthouse']
         bid.lighthouseFee = bidDict['lighthouseFee']
         bid.deadline = bidDict['deadline']
         return bid
@@ -114,6 +132,7 @@ class TestExecutor(unittest.TestCase):
             "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
             "token": self.test_token,
             "cost": 0,
+            "lighthouse": self.lighthouse_address,
             "validator": "0x0000000000000000000000000000000000000000",
             "validatorFee": 0,
             "deadline": 9999999
@@ -123,6 +142,7 @@ class TestExecutor(unittest.TestCase):
         ask.objective = askDict['objective']
         ask.token = askDict['token']
         ask.cost = askDict['cost']
+        ask.lighthouse = askDict['lighthouse']
         ask.validator = askDict['validator']
         ask.validatorFee = askDict['validatorFee']
         ask.deadline = askDict['deadline']

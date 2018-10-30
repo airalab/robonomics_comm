@@ -114,6 +114,20 @@
     {
       "constant": true,
       "inputs": [],
+      "name": "lighthouse",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
       "name": "result",
       "outputs": [
         {
@@ -246,6 +260,10 @@
           "type": "uint256"
         },
         {
+          "name": "_lighthouse",
+          "type": "address"
+        },
+        {
           "name": "_validator",
           "type": "address"
         },
@@ -298,6 +316,10 @@
         },
         {
           "name": "_validator",
+          "type": "address"
+        },
+        {
+          "name": "_lighthouse",
           "type": "address"
         },
         {

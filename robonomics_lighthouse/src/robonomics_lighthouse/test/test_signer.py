@@ -21,11 +21,11 @@ class TestSigner(unittest.TestCase):
         self._test_sign_res_success = False
 
     def test_demand_hash(self):
-        self.assertEqual(bytearray.fromhex('4f7cae2f478f7052b61e7bbd52cc8b70f7b483004d236ea370acd75620fd1000'),
+        self.assertEqual(bytearray.fromhex('70befa37eb23b512f1eec8d8cb4219ce720c5aafbb55ae043b66764870205afe'),
                          signer.demand_hash(messageValidator.dict2ask(testMessages.validAskDict)))
 
     def test_offer_hash(self):
-        self.assertEqual(bytearray.fromhex('9b6864a449c21212a5588c2d81863a9f3d24abe2b99d90755b5fb0a9292e977e'),
+        self.assertEqual(bytearray.fromhex('f371f7a55b0972dfb6d3a6d7e224f004593bb33230eab6e43a93d37ad2b5a6d5'),
                          signer.offer_hash(messageValidator.dict2bid(testMessages.validBidDict)))
 
     def test_result_hash(self):

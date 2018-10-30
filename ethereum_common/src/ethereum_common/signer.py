@@ -18,6 +18,7 @@ def demand_hash(msg):
              'address',
              'uint256',
              'address',
+             'address',
              'uint256',
              'uint256',
              'bytes32']
@@ -25,6 +26,7 @@ def demand_hash(msg):
                                      b58decode(msg.objective),
                                      msg.token,
                                      msg.cost,
+                                     msg.lighthouse,
                                      msg.validator,
                                      msg.validatorFee,
                                      msg.deadline,
@@ -37,6 +39,7 @@ def offer_hash(msg):
              'address',
              'uint256',
              'address',
+             'address',
              'uint256',
              'uint256',
              'bytes32']
@@ -45,6 +48,7 @@ def offer_hash(msg):
                                      msg.token,
                                      msg.cost,
                                      msg.validator,
+                                     msg.lighthouse,
                                      msg.lighthouseFee,
                                      msg.deadline,
                                      msg.nonce])

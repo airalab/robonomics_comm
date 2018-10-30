@@ -30,6 +30,7 @@ schemaAskBid = v.All(
         v.Exclusive('validatorFee', 'XOR1'): object,
         v.Exclusive('lighthouseFee', 'XOR1'): object,
 
+        v.Required('lighthouse'): isHexadecimalString,
         v.Required('validator'): isHexadecimalString,
         v.Required('model'): isIpfsBase58Hash,
         v.Required('objective'): isIpfsBase58Hash,
@@ -60,6 +61,7 @@ def dict2ask(m):
     msg.objective = m['objective']
     msg.token = m['token']
     msg.cost = m['cost']
+    msg.lighthouse = m['lighthouse']
     msg.validator = m['validator']
     msg.validatorFee = m['validatorFee']
     msg.deadline = m['deadline']
@@ -75,6 +77,7 @@ def dict2bid(m):
     msg.token = m['token']
     msg.cost = m['cost']
     msg.validator = m['validator']
+    msg.lighthouse = m['lighthouse']
     msg.lighthouseFee = m['lighthouseFee']
     msg.deadline = m['deadline']
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
