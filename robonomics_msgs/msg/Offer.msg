@@ -8,6 +8,8 @@ string token        # address
 uint32 cost         # int
 # Validator network address
 string validator     # address
+# lighthouse network address
+string lighthouse    #address
 # Settlement fee
 uint32 lighthouseFee # int 
 # Deadline block number

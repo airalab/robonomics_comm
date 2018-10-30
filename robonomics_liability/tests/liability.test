@@ -3,8 +3,8 @@
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="factory_contract" default="factory.2.robonomics.eth" />
-  <arg name="lighthouse_contract" default="airalab.lighthouse.2.robonomics.eth" />
+  <arg name="factory_contract" default="factory.3.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.3.robonomics.eth" />
   <arg name="enable_executor" default="true" />
   <arg name="master_check_interval" default='0.1' />
   <arg name="recording_topics" default="" />
@@ -50,6 +50,9 @@
 
 
   <test test-name="test_executor" pkg="robonomics_liability" type="test_executor.py" time-limit="300.0">
+    <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+    <param name="ens_contract" value="$(arg ens_contract)" />
+    <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     <param name="test_token" value="$(arg test_token)" />
   </test>

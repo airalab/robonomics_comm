@@ -56,33 +56,6 @@
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_minimalFreeze",
-        "type": "uint256"
-      },
-      {
-        "name": "_timeoutBlocks",
-        "type": "uint256"
-      },
-      {
-        "name": "_name",
-        "type": "string"
-      }
-    ],
-    "name": "createLighthouse",
-    "outputs": [
-      {
-        "name": "lighthouse",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "constant": true,
     "inputs": [],
     "name": "auction",
@@ -117,6 +90,20 @@
   },
   {
     "constant": true,
+    "inputs": [],
+    "name": "smmaPeriod",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [
       {
         "name": "",
@@ -138,67 +125,6 @@
     "constant": true,
     "inputs": [],
     "name": "totalGasUtilizing",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_gas",
-        "type": "uint256"
-      }
-    ],
-    "name": "liabilityFinalized",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_demand",
-        "type": "bytes"
-      },
-      {
-        "name": "_offer",
-        "type": "bytes"
-      }
-    ],
-    "name": "createLiability",
-    "outputs": [
-      {
-        "name": "liability",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_gas",
-        "type": "uint256"
-      }
-    ],
-    "name": "wnFromGas",
     "outputs": [
       {
         "name": "",
@@ -323,5 +249,93 @@
     ],
     "name": "HashConsumed",
     "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_gas",
+        "type": "uint256"
+      }
+    ],
+    "name": "wnFromGas",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_demand",
+        "type": "bytes"
+      },
+      {
+        "name": "_offer",
+        "type": "bytes"
+      }
+    ],
+    "name": "createLiability",
+    "outputs": [
+      {
+        "name": "liability",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_minimalFreeze",
+        "type": "uint256"
+      },
+      {
+        "name": "_timeoutBlocks",
+        "type": "uint256"
+      },
+      {
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "createLighthouse",
+    "outputs": [
+      {
+        "name": "lighthouse",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_gas",
+        "type": "uint256"
+      }
+    ],
+    "name": "liabilityFinalized",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]

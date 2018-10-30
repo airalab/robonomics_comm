@@ -6,6 +6,8 @@ string objective     # Base58
 string token         # address
 # Execution cost
 uint32 cost          # int
+# lighthouse network address
+string lighthouse    #address
 # Validator network address
 string validator     # address
 # Validator network fee
