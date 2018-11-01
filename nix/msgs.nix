@@ -1,18 +1,19 @@
 { stdenv
 , mkRosPackage
+, python3Packages
 , ros_comm
 }:
 
 let
   pname = "robonomics_msgs";
-  version = "0.0.0";
+  version = "0.0.1";
 
 in mkRosPackage rec {
   name = "${pname}-${version}";
 
   src = ../robonomics_msgs; 
 
-  propagatedBuildInputs = [ ros_comm ];
+  propagatedBuildInputs = with python3Packages; [ ros_comm voluptuous ];
 
   meta = with stdenv.lib; {
     description = "Robonomics communication messages";

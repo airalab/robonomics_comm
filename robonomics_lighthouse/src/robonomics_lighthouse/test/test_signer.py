@@ -3,7 +3,7 @@
 import unittest, rostest, sys, rospy, time
 from robonomics_msgs.msg import Result, Offer, Demand
 from ethereum_common import signer
-from robonomics_lighthouse import messageValidator
+from robonomics_msgs import messageValidator
 from robonomics_lighthouse.test import testMessages
 from binascii import hexlify
 

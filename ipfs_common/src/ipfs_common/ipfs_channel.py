@@ -4,11 +4,11 @@
 #
 
 from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.messageValidator import convertMessage
 from binascii import hexlify
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
-from .messageValidator import convertMessage
 import rospy
 import ipfsapi
 
@@ -45,12 +45,12 @@ def res2dict(r):
              'signature' : hexlify(r.signature).decode('utf-8') }
 
 
-class InfoChan:
+class IPFSChannel:
     def __init__(self):
         '''
             Robonomics information channel initialisation.
         '''
-        rospy.init_node('robonomics_infochan')
+        rospy.init_node('ipfs_channel')
         self.lighthouse = rospy.get_param('~lighthouse_contract')
         ipfs_api_parts = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
         self.ipfs_client = ipfsapi.Client(host=ipfs_api_parts[0], port=ipfs_api_parts[1])
