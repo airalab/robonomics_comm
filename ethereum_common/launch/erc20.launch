@@ -7,7 +7,7 @@
   <arg name="keyfile_password_file" default="" />
 
   <group ns="eth">
-    <node pkg="ethereum_common" type="erc20_node" name="erc20_token" output="screen">
+    <node pkg="ethereum_common" type="erc20_node" name="erc20_token" respawn="true" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
@@ -17,7 +17,7 @@
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>
 
-    <node pkg="ethereum_common" type="eth_node" name="eth_node" output="screen">
+    <node pkg="ethereum_common" type="eth_node" name="eth_node" respawn="true" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
