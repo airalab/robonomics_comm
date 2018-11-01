@@ -3,13 +3,8 @@
 # Robonomics market related nodes.
 #
 
-from . import lighthouse 
-from . import infochan
+from . import lighthouse
 from . import matcher
-
-
-def infochan_node():
-    infochan.InfoChan().spin()
 
 
 def matcher_node():

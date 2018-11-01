@@ -5,6 +5,7 @@
 , robonomics_comm_liability
 , robonomics_comm_lighthouse
 , robonomics_comm_ethereum_common
+, robonomics_comm_ipfs_common
 }:
 
 let
@@ -21,7 +22,9 @@ in mkRosPackage rec {
     robonomics_comm_control
     robonomics_comm_liability
     robonomics_comm_lighthouse
-    robonomics_comm_ethereum_common ];
+    robonomics_comm_ethereum_common
+    robonomics_comm_ipfs_common
+  ];
 
   meta = with stdenv.lib; {
     description = "Robonomics communication stack meta-package";

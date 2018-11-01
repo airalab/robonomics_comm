@@ -2,7 +2,7 @@
 
 import rostest, sys, unittest, rospy, time
 from robonomics_lighthouse.test import testMessages
-from robonomics_lighthouse import infochan
+from ipfs_common import ipfs_channel
 from robonomics_msgs.msg import Demand, Offer, Result
 
 PKG = 'robonomics_lighthouse'
@@ -26,13 +26,13 @@ class TestInfochan(unittest.TestCase):
 
 
     def test_ask2dict(self):
-        self.assertEqual(testMessages.validAskDict, infochan.ask2dict(testMessages.getValidAsk()))
+        self.assertEqual(testMessages.validAskDict, ipfs_channel.ask2dict(testMessages.getValidAsk()))
 
     def test_bid2dict(self):
-        self.assertEqual(testMessages.validBidDict, infochan.bid2dict(testMessages.getValidBid()))
+        self.assertEqual(testMessages.validBidDict, ipfs_channel.bid2dict(testMessages.getValidBid()))
 
     def test_res2dict(self):
-        self.assertEqual(testMessages.validResDict, infochan.res2dict(testMessages.getValidRes()))
+        self.assertEqual(testMessages.validResDict, ipfs_channel.res2dict(testMessages.getValidRes()))
 
     def infochan_published_ask_handler(self, ask):
         self.assertEqual(testMessages.getValidAsk(), ask)

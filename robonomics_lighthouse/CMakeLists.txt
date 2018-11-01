@@ -25,7 +25,6 @@ catkin_package()
 
 catkin_install_python(
     PROGRAMS
-        scripts/infochan_node
         scripts/matcher_node
         scripts/lighthouse_node
     DESTINATION
@@ -34,7 +33,6 @@ catkin_install_python(
 
 install(
     FILES
-        launch/infochan.launch
         launch/lighthouse.launch
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch

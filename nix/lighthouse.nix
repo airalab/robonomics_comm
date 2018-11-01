@@ -4,6 +4,7 @@
 , python3Packages
 , ipfs
 , robonomics_comm_ethereum_common
+, robonomics_comm_ipfs_common
 , robonomics_comm_msgs
 }:
 
@@ -18,7 +19,9 @@ in mkRosPackage rec {
 
   propagatedBuildInputs = with python3Packages;
   [ ros_comm ipfs pexpect base58 web3 voluptuous
-    robonomics_comm_ethereum_common robonomics_comm_msgs ];
+    robonomics_comm_ethereum_common
+    robonomics_comm_ipfs_common
+    robonomics_comm_msgs ];
 
   meta = with stdenv.lib; {
     description = "Robonomics lighthouse support for ROS";

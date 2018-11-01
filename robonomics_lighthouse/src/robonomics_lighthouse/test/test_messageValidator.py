@@ -2,7 +2,7 @@
 
 import unittest, rostest, sys
 from robonomics_msgs.msg import Result, Offer, Demand
-from robonomics_lighthouse import messageValidator
+from robonomics_msgs import messageValidator
 from robonomics_lighthouse.test import testMessages
 
 PKG = 'robonomics_lighthouse'
