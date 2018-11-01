@@ -41,10 +41,10 @@
     </group>
 
     <!-- Robonomics order matcher -->
-    <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" output="screen" />
+    <node pkg="robonomics_lighthouse" type="matcher_node" name="matcher" respawn="true" output="screen" />
 
     <!-- Robonomics transaction sender -->
-    <node pkg="robonomics_lighthouse" type="lighthouse_node" name="lighthouse" output="screen">
+    <node pkg="robonomics_lighthouse" type="lighthouse_node" name="lighthouse" respawn="true" output="screen">
       <param name="lighthouse_abi" textfile="$(find robonomics_lighthouse)/abi/lighthouse.json" />
       <param name="liability_abi" textfile="$(find robonomics_lighthouse)/abi/liability.json" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />

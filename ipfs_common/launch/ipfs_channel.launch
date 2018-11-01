@@ -4,7 +4,7 @@
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
   <!-- PubSub information channel interface -->
-  <node pkg="ipfs_common" type="ipfs_channel_node" name="ipfs_channel" output="screen">
+  <node pkg="ipfs_common" type="ipfs_channel_node" name="ipfs_channel" respawn="true" output="screen">
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
     <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
   </node>

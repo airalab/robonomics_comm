@@ -5,7 +5,7 @@
 
   <group ns="eth">
     <!-- Message signer helper -->
-    <node pkg="ethereum_common" type="signer_node" name="signer" if="$(arg enable_signer)" output="screen">
+    <node pkg="ethereum_common" type="signer_node" name="signer" respawn="true" output="screen" if="$(arg enable_signer)" >
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>

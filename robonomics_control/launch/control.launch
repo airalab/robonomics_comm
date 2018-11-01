@@ -12,7 +12,7 @@
       <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
     </include>
 
-    <node pkg="robonomics_control" type="distribution_node" name="distribution" output="screen">
+    <node pkg="robonomics_control" type="distribution_node" name="distribution" respawn="true" output="screen">
       <param name="investors_contract_abi" textfile="$(find robonomics_control)/abi/investors.json" />
       <param name="investors_contract_address" value="$(arg investors_contract_address)" />
       <param name="supported_models" textfile="$(arg supported_models_file)" />

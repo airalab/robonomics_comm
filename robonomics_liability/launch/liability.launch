@@ -28,7 +28,7 @@
       </include>
     </group>
 
-    <node pkg="robonomics_liability" type="listener_node" name="listener" output="screen">
+    <node pkg="robonomics_liability" type="listener_node" name="listener" respawn="true" output="screen">
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
       <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
       <param name="factory_contract" value="$(arg factory_contract)" />
@@ -39,7 +39,7 @@
              if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>
 
-    <node pkg="robonomics_liability" type="executor_node" name="executor" output="screen" if="$(arg enable_executor)">
+    <node pkg="robonomics_liability" type="executor_node" name="executor" respawn="true" output="screen" if="$(arg enable_executor)">
       <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="recording_topics" value="$(arg recording_topics)" />
       <param name="master_check_interval" value="$(arg master_check_interval)" />
