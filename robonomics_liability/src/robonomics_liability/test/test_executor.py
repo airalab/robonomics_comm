@@ -2,7 +2,7 @@
 
 import unittest, rostest, os, time, rospy, rosbag
 
-from robonomics_msgs.msg import Result, Offer, Demand
+from robonomics_msgs.msg import Result, Offer, Demand, Multihash
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
@@ -63,8 +63,8 @@ class TestExecutor(unittest.TestCase):
     def check_rosbag_is_new_and_has_messages(self, result):
         with TemporaryDirectory() as tmpdir:
             os.chdir(tmpdir)
-            self.ipfs.get(result.result)
-            bag = rosbag.Bag(result.result, 'r')
+            self.ipfs.get(result.result.multihash)
+            bag = rosbag.Bag(result.result.multihash, 'r')
             bag_topics = bag.get_type_and_topic_info()
 
             bag_topics_dict = {}
@@ -116,8 +116,14 @@ class TestExecutor(unittest.TestCase):
             "deadline": 9999999
         }
         bid = Offer()
-        bid.model = bidDict['model']
-        bid.objective = bidDict['objective']
+        model_mh = Multihash()
+        model_mh.multihash = bidDict['model']
+
+        objective_mh = Multihash()
+        objective_mh.multihash = bidDict['objective']
+
+        bid.model = model_mh
+        bid.objective = objective_mh
         bid.token = bidDict['token']
         bid.cost = bidDict['cost']
         bid.validator = bidDict['validator']
@@ -138,8 +144,15 @@ class TestExecutor(unittest.TestCase):
             "deadline": 9999999
         }
         ask = Demand()
-        ask.model = askDict['model']
-        ask.objective = askDict['objective']
+        model_mh = Multihash()
+        model_mh.multihash = askDict['model']
+
+        objective_mh = Multihash()
+        objective_mh.multihash = askDict['objective']
+
+        ask.model = model_mh
+        ask.objective = objective_mh
+
         ask.token = askDict['token']
         ask.cost = askDict['cost']
         ask.lighthouse = askDict['lighthouse']

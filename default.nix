@@ -11,11 +11,22 @@ in rec {
     inherit robonomics_comm_msgs;
    };
   robonomics_comm_lighthouse = callPackage ./nix/lighthouse.nix {
+    inherit robonomics_comm_ethereum_common;
+    inherit robonomics_comm_msgs;
     inherit robonomics_comm_ipfs_common;
   };
-  robonomics_comm_liability = callPackage ./nix/liability.nix { };
-  robonomics_comm_control = callPackage ./nix/control.nix { };
+  robonomics_comm_liability = callPackage ./nix/liability.nix {
+    inherit robonomics_comm_msgs;
+  };
+  robonomics_comm_control = callPackage ./nix/control.nix {
+    inherit robonomics_comm_msgs;
+  };
   robonomics_comm = callPackage ./nix/default.nix {
+    inherit robonomics_comm_msgs;
+    inherit robonomics_comm_control;
+    inherit robonomics_comm_liability;
+    inherit robonomics_comm_lighthouse;
+    inherit robonomics_comm_ethereum_common;
     inherit robonomics_comm_ipfs_common;
   };
 }

@@ -1,6 +1,6 @@
 import threading
 
-from robonomics_msgs.msg import Result
+from robonomics_msgs.msg import Result, Multihash
 from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
 from tempfile import TemporaryDirectory
@@ -43,8 +43,12 @@ class LiabilityExecutionThread(object):
             self.liability.result = ipfs_response[0]['Hash']
 
         result_msg = Result()
+
+        result_mh = Multihash()
+        result_mh.multihash = self.liability.result
+
         result_msg.liability = self.liability.address
-        result_msg.result = self.liability.result
+        result_msg.result = result_mh
         result_msg.success = success
         return result_msg
 
@@ -58,9 +62,11 @@ class LiabilityExecutionThread(object):
     def __execute_liability(self):
         os.chdir(self.tmp_directory.name)
 
-        rospy.logdebug('Getting objective %s...', self.liability.objective)
-        self.ipfs_client.get(self.liability.objective)
-        rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
+        #rospy.logdebug('Getting objective %s...', self.liability.objective)
+        rospy.logwarn('Getting objective %s...', self.liability.objective.multihash)
+        self.ipfs_client.get(self.liability.objective.multihash)
+        #rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
+        rospy.logwarn('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective.multihash)
 
         self.__liability_result_file = os.path.join(self.tmp_directory.name, 'result.bag')
         rospy.logdebug('Start recording to %s...', self.__liability_result_file)
@@ -71,7 +77,7 @@ class LiabilityExecutionThread(object):
 
         rospy.logdebug('Rosbag recorder started')
 
-        objective_rosbag = get_rosbag_from_file(self.liability.objective)
+        objective_rosbag = get_rosbag_from_file(self.liability.objective.multihash)
         if objective_rosbag is not None:
             player = Player(objective_rosbag, self.__liability_execution_namespace)
             player.start()

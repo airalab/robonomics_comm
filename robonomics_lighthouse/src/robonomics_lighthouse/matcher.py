@@ -34,13 +34,13 @@ class Matcher:
         assert(not bid or not ask)
 
         if not ask:
-            h = hash((bid.model, bid.objective, bid.token, bid.cost))
+            h = hash((bid.model.multihash, bid.objective.multihash, bid.token, bid.cost))
             if h in self.bids:
                 self.bids[h].append(bid)
             else:
                 self.bids[h] = [bid]
         else:
-            h = hash((ask.model, ask.objective, ask.token, ask.cost))
+            h = hash((ask.model.multihash, ask.objective.multihash, ask.token, ask.cost))
             if h in self.asks:
                 self.asks[h].append(ask)
             else:
@@ -50,11 +50,11 @@ class Matcher:
 
         try:
             if not ask:
-                h = hash((bid.model, bid.objective, bid.token, bid.cost))
+                h = hash((bid.model.multihash, bid.objective.multihash, bid.token, bid.cost))
                 ask = self.asks[h].pop()
                 bid = self.bids[h].pop()
             else:
-                h = hash((ask.model, ask.objective, ask.token, ask.cost))
+                h = hash((ask.model.multihash, ask.objective.multihash, ask.token, ask.cost))
                 bid = self.bids[h].pop()
                 ask = self.asks[h].pop()
 

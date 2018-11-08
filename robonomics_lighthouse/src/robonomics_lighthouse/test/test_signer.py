@@ -33,8 +33,8 @@ class TestSigner(unittest.TestCase):
                          signer.result_hash(messageValidator.dict2res(testMessages.validResDict)))
 
     def signed_ask_handler(self, ask):
-        self.assertEqual(testMessages.validAskDict['model'], ask.model)
-        self.assertEqual(testMessages.validAskDict['objective'], ask.objective)
+        self.assertEqual(testMessages.validAskDict['model'], ask.model.multihash)
+        self.assertEqual(testMessages.validAskDict['objective'], ask.objective.multihash)
         self.assertEqual(testMessages.validAskDict['token'], ask.token)
         self.assertNotEqual(testMessages.validAskDict['signature'], hexlify(ask.signature).decode('utf-8'))
         self._test_sign_ask_success = True
@@ -51,8 +51,8 @@ class TestSigner(unittest.TestCase):
         self.assert_(self._test_sign_ask_success)
 
     def signed_bid_handler(self, bid):
-        self.assertEqual(testMessages.validBidDict['model'], bid.model)
-        self.assertEqual(testMessages.validBidDict['objective'], bid.objective)
+        self.assertEqual(testMessages.validBidDict['model'], bid.model.multihash)
+        self.assertEqual(testMessages.validBidDict['objective'], bid.objective.multihash)
         self.assertEqual(testMessages.validBidDict['token'], bid.token)
         self.assertNotEqual(testMessages.validBidDict['signature'], hexlify(bid.signature).decode('utf-8'))
         self._test_sign_bid_success = True
@@ -70,7 +70,7 @@ class TestSigner(unittest.TestCase):
 
     def signed_res_handler(self, res):
         self.assertEqual(testMessages.validResDict['liability'], res.liability)
-        self.assertEqual(testMessages.validResDict['result'], res.result)
+        self.assertEqual(testMessages.validResDict['result'], res.result.multihash)
         self.assertNotEqual(testMessages.validResDict['signature'], hexlify(res.signature).decode('utf-8'))
         self._test_sign_res_success = True
 

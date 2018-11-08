@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
     COMPONENTS
         rospy
         message_generation
+        robonomics_msgs
 )
 
 catkin_python_setup()
@@ -21,7 +22,10 @@ add_service_files(
     StartLiability.srv
 )
 
-generate_messages()
+generate_messages(
+    DEPENDENCIES
+        robonomics_msgs
+)
 
 catkin_package()
 
