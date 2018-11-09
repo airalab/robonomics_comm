@@ -84,8 +84,8 @@ class Listener:
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
         msg.address = address
-        msg.model = b58encode(c.call().model())
-        msg.objective = b58encode(c.call().objective())
+        msg.model = b58encode(c.call().model()).decode()
+        msg.objective = b58encode(c.call().objective()).decode()
         msg.promisee = c.call().promisee()
         msg.promisor = c.call().promisor()
         msg.token = c.call().token()
