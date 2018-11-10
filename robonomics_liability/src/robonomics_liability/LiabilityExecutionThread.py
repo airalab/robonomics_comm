@@ -58,18 +58,16 @@ class LiabilityExecutionThread(object):
     def __execute_liability(self):
         os.chdir(self.tmp_directory.name)
 
-        rospy.logdebug('Getting objective %s...', self.liability.objective)
-        self.ipfs_client.get(self.liability.objective)
-        rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
-
         self.__liability_result_file = os.path.join(self.tmp_directory.name, 'result.bag')
         rospy.logdebug('Start recording to %s...', self.__liability_result_file)
         rospy.logdebug("Recording all topics: %s", (not self.recording_topics))
-
         self.__recorder = self.__createRecorder(self.__liability_result_file)
         self.__recorder.start()
-
         rospy.logdebug('Rosbag recorder started')
+
+        rospy.logdebug('Getting objective %s...', self.liability.objective)
+        self.ipfs_client.get(self.liability.objective)
+        rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
 
         objective_rosbag = get_rosbag_from_file(self.liability.objective)
         if objective_rosbag is not None:
