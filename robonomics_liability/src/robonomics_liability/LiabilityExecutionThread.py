@@ -61,12 +61,10 @@ class LiabilityExecutionThread(object):
 
     def __execute_liability(self):
         os.chdir(self.tmp_directory.name)
-
-        #rospy.logdebug('Getting objective %s...', self.liability.objective)
-        rospy.logwarn('Getting objective %s...', self.liability.objective.multihash)
+        
+        rospy.logdebug('Getting objective %s...', self.liability.objective.multihash)
         self.ipfs_client.get(self.liability.objective.multihash)
-        #rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective)
-        rospy.logwarn('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective.multihash)
+        rospy.logdebug('Objective is written to %s', self.tmp_directory.name + '/' + self.liability.objective.multihash)
 
         self.__liability_result_file = os.path.join(self.tmp_directory.name, 'result.bag')
         rospy.logdebug('Start recording to %s...', self.__liability_result_file)
@@ -74,7 +72,6 @@ class LiabilityExecutionThread(object):
 
         self.__recorder = self.__createRecorder(self.__liability_result_file)
         self.__recorder.start()
-
         rospy.logdebug('Rosbag recorder started')
 
         objective_rosbag = get_rosbag_from_file(self.liability.objective.multihash)
