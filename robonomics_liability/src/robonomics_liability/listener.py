@@ -3,13 +3,12 @@
 # Robonomics liability tracking node.
 #
 
-from robonomics_msgs.msg import Result
+from robonomics_msgs.msg import Result, Multihash
 from robonomics_liability.msg import Liability
-from base58 import b58encode
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
 from threading import Timer
-import rospy, json, time
+import rospy, json, time, multihash
 from std_msgs.msg import String
 from . import finalization_checker
 
@@ -83,9 +82,16 @@ class Listener:
         '''
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
+
+        model_mh = Multihash()
+        model_mh.multihash = multihash.decode(c.call().model()).encode('base58').decode()
+
+        objective_mh = Multihash()
+        objective_mh.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
+
         msg.address = address
-        msg.model = b58encode(c.call().model()).decode()
-        msg.objective = b58encode(c.call().objective()).decode()
+        msg.model = model_mh
+        msg.objective = objective_mh
         msg.promisee = c.call().promisee()
         msg.promisor = c.call().promisor()
         msg.token = c.call().token()

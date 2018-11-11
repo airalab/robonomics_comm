@@ -3,7 +3,7 @@
 # Robonomics Demand/Offer/Result ipfs message converter
 #
 
-from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.msg import Demand, Offer, Result, Multihash
 from binascii import unhexlify
 import voluptuous as v
 import rospy
@@ -30,10 +30,11 @@ schemaAskBid = v.All(
         v.Exclusive('validatorFee', 'XOR1'): object,
         v.Exclusive('lighthouseFee', 'XOR1'): object,
 
-        v.Required('lighthouse'): isHexadecimalString,
-        v.Required('validator'): isHexadecimalString,
         v.Required('model'): isIpfsBase58Hash,
         v.Required('objective'): isIpfsBase58Hash,
+
+        v.Required('lighthouse'): isHexadecimalString,
+        v.Required('validator'): isHexadecimalString,
         v.Required('token'): isHexadecimalString,
         v.Required('cost'): v.All(int),
         v.Required('deadline'): v.All(int),
@@ -57,8 +58,15 @@ schemaAskBidResult = v.Any(
 
 def dict2ask(m):
     msg = Demand()
-    msg.model = m['model']
-    msg.objective = m['objective']
+
+    model_mh = Multihash()
+    model_mh.multihash = m['model']
+
+    objective_mh = Multihash()
+    objective_mh.multihash = m['objective']
+
+    msg.model = model_mh
+    msg.objective = objective_mh
     msg.token = m['token']
     msg.cost = m['cost']
     msg.lighthouse = m['lighthouse']
@@ -72,8 +80,15 @@ def dict2ask(m):
 
 def dict2bid(m):
     msg = Offer()
-    msg.model = m['model']
-    msg.objective = m['objective']
+
+    model_mh = Multihash()
+    model_mh.multihash = m['model']
+
+    objective_mh = Multihash()
+    objective_mh.multihash = m['objective']
+
+    msg.model = model_mh
+    msg.objective = objective_mh
     msg.token = m['token']
     msg.cost = m['cost']
     msg.validator = m['validator']
@@ -87,8 +102,12 @@ def dict2bid(m):
 
 def dict2res(m):
     msg = Result()
+
+    result_mh = Multihash()
+    result_mh.multihash = m['result']
+
     msg.liability = m['liability']
-    msg.result = m['result']
+    msg.result = result_mh
     msg.success = m['success']
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg

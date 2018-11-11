@@ -8,8 +8,7 @@ from robonomics_lighthouse.msg import Deal
 from robonomics_msgs.msg import Result
 from web3 import Web3, HTTPProvider, middleware
 from ens import ENS
-from base58 import b58decode
-import rospy, json
+import rospy, json, multihash
 from ethereum_common import eth_keyfile_helper
 
 from .quota import * 
@@ -124,8 +123,8 @@ class Lighthouse:
         liability = self.web3.eth.contract('0x0000000000000000000000000000000000000000', abi=self.liability_abi)
 
         def encodeAsk(msg):
-            args = [ b58decode(msg.model)
-                   , b58decode(msg.objective)
+            args = [ multihash.decode(msg.model.multihash.encode(), 'base58').encode()
+                   , multihash.decode(msg.objective.multihash.encode(), 'base58').encode()
                    , msg.token
                    , msg.cost
                    , msg.lighthouse
@@ -137,8 +136,8 @@ class Lighthouse:
             return '0x' + liability.functions.demand(*args).buildTransaction()['data'][10:]
 
         def encodeBid(msg):
-            args = [ b58decode(msg.model)
-                   , b58decode(msg.objective)
+            args = [ multihash.decode(msg.model.multihash.encode(), 'base58').encode()
+                   , multihash.decode(msg.objective.multihash.encode(), 'base58').encode()
                    , msg.token
                    , msg.cost
                    , msg.validator
@@ -159,7 +158,7 @@ class Lighthouse:
         '''
         liability = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
         data = liability.functions.finalize(
-            b58decode(msg.result),
+            multihash.decode(msg.result.multihash.encode(), "base58").encode(),
             msg.success,
             msg.signature,
             False).buildTransaction({'gas': 1000000})['data']

@@ -1,0 +1,2 @@
+#Multihash
+string multihash

@@ -5,7 +5,7 @@
 
 from robonomics_msgs.msg import Demand, Offer, Result
 from web3 import Web3
-from base58 import b58decode
+import multihash
 import rospy, os
 import binascii
 from eth_account.messages import defunct_hash_message
@@ -22,8 +22,8 @@ def demand_hash(msg):
              'uint256',
              'uint256',
              'bytes32']
-    return Web3.soliditySha3(types, [b58decode(msg.model),
-                                     b58decode(msg.objective),
+    return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), "base58").encode(),
+                                     multihash.decode(msg.objective.multihash.encode(), "base58").encode(),
                                      msg.token,
                                      msg.cost,
                                      msg.lighthouse,
@@ -43,8 +43,8 @@ def offer_hash(msg):
              'uint256',
              'uint256',
              'bytes32']
-    return Web3.soliditySha3(types, [b58decode(msg.model),
-                                     b58decode(msg.objective),
+    return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), 'base58').encode(),
+                                     multihash.decode(msg.objective.multihash.encode(), 'base58').encode(),
                                      msg.token,
                                      msg.cost,
                                      msg.validator,
@@ -57,7 +57,7 @@ def result_hash(msg):
     types = ['address',
              'bytes',
              'bool']
-    return Web3.soliditySha3(types, [msg.liability, b58decode(msg.result), msg.success])
+    return Web3.soliditySha3(types, [msg.liability, multihash.decode(msg.result.multihash.encode(), 'base58').encode(), msg.success])
 
 
 class Signer:
