@@ -1,7 +1,7 @@
-# Behaviour model
-string model        # Base58 
-# Task
-string objective     # Base58
+# Behaviour model IPFS hash
+Multihash model        # Base58
+# Task IPFS hash
+Multihash objective     # Base58
 # Operational token
 string token        # address
 # Execution cost

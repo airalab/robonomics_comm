@@ -12,37 +12,44 @@ from threading import Thread
 import rospy
 import ipfsapi
 
+
 def bid2dict(b):
-    return { 'model'         : b.model,
-             'objective'     : b.objective,
-             'token'         : b.token,
-             'cost'          : b.cost,
-             'validator'     : b.validator,
-             'lighthouse'    : b.lighthouse,
-             'lighthouseFee' : b.lighthouseFee,
-             'deadline'      : b.deadline,
-             'nonce'         : hexlify(b.nonce).decode('utf-8'),
-             'signature'     : hexlify(b.signature).decode('utf-8') }
+    return {
+        'model': b.model.multihash,
+        'objective': b.objective.multihash,
+        'token': b.token,
+        'cost': b.cost,
+        'validator': b.validator,
+        'lighthouse': b.lighthouse,
+        'lighthouseFee': b.lighthouseFee,
+        'deadline': b.deadline,
+        'nonce': hexlify(b.nonce).decode('utf-8'),
+        'signature': hexlify(b.signature).decode('utf-8')
+    }
 
 
 def ask2dict(a):
-    return { 'model'        : a.model,
-             'objective'    : a.objective,
-             'token'        : a.token,
-             'cost'         : a.cost,
-             'lighthouse'   : a.lighthouse,
-             'validator'    : a.validator,
-             'validatorFee' : a.validatorFee,
-             'deadline'     : a.deadline,
-             'nonce'        : hexlify(a.nonce).decode('utf-8'),
-             'signature'    : hexlify(a.signature).decode('utf-8') }
+    return {
+        'model': a.model.multihash,
+        'objective': a.objective.multihash,
+        'token': a.token,
+        'cost': a.cost,
+        'lighthouse': a.lighthouse,
+        'validator': a.validator,
+        'validatorFee': a.validatorFee,
+        'deadline': a.deadline,
+        'nonce': hexlify(a.nonce).decode('utf-8'),
+        'signature': hexlify(a.signature).decode('utf-8')
+    }
 
 
 def res2dict(r):
-    return { 'liability' : r.liability,
-             'result'    : r.result,
-             'success'   : r.success,
-             'signature' : hexlify(r.signature).decode('utf-8') }
+    return {
+        'liability': r.liability,
+        'result': r.result.multihash,
+        'success': r.success,
+        'signature': hexlify(r.signature).decode('utf-8')
+    }
 
 
 class IPFSChannel:

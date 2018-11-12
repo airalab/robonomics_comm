@@ -1,9 +1,10 @@
 string address
-string model
-string objective
+robonomics_msgs/Multihash model
+robonomics_msgs/Multihash objective
 string result
 string promisee
 string promisor
+string lighthouse
 string token
 uint64 cost
 string validator

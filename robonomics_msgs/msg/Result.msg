@@ -1,7 +1,7 @@
 # Result liability
 string liability     # address
 # Result IPFS hash
-string result       # base58
+Multihash result       # base58
 # Executed successfully flag
 bool success
 # Result signature
