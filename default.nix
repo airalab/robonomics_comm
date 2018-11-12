@@ -7,7 +7,7 @@
 mkRosPackage rec {
   name = "${pname}-${version}";
   pname = "robonomics_comm";
-  version = "0.3.0";
+  version = "master";
 
   src = ./.;
 
