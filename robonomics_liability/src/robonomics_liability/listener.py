@@ -94,6 +94,7 @@ class Listener:
         msg.objective = objective_mh
         msg.promisee = c.call().promisee()
         msg.promisor = c.call().promisor()
+        msg.lighthouse = c.call().lighthouse()
         msg.token = c.call().token()
         msg.cost = c.call().cost()
         msg.validator = c.call().validator()
