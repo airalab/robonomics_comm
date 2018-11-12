@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robonomics_comm</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>The Robonomics communication stack</description>
   <maintainer email="mail@akru.me">Alexander Krupenkin</maintainer>
   <license>BSD3</license>
