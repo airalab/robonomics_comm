@@ -1,21 +1,23 @@
-{ lib ? import ./nix/lib.nix { }
+{ stdenv
+, ros_comm
+, mkRosPackage
+, python3Packages
 }:
 
-let
-  callPackage = lib.nixpkgs.callPackage;
+mkRosPackage rec {
+  name = "${pname}-${version}";
+  pname = "robonomics_comm";
+  version = "0.3.0";
 
-in rec {
-  robonomics_comm_msgs = callPackage ./nix/msgs.nix { };
-  robonomics_comm_ethereum_common = callPackage ./nix/ethereum_common.nix {  };
-  robonomics_comm_ipfs_common = callPackage ./nix/ipfs_common.nix {
-    inherit robonomics_comm_msgs;
-   };
-  robonomics_comm_lighthouse = callPackage ./nix/lighthouse.nix {
-    inherit robonomics_comm_ipfs_common;
-  };
-  robonomics_comm_liability = callPackage ./nix/liability.nix { };
-  robonomics_comm_control = callPackage ./nix/control.nix { };
-  robonomics_comm = callPackage ./nix/default.nix {
-    inherit robonomics_comm_ipfs_common;
+  src = ./.;
+
+  propagatedBuildInputs = with python3Packages;
+  [ ros_comm web3 base58 voluptuous ipfsapi ];
+
+  meta = with stdenv.lib; {
+    description = "Robonomics communication stack";
+    homepage = http://github.com/airalab/robonomics_comm;
+    license = licenses.bsd3;
+    maintainers = [ maintainers.akru ];
   };
 }
