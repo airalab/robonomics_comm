@@ -1,0 +1,21 @@
+<launch>
+  <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
+
+  <arg name="keyfile" default="" />
+  <arg name="keyfile_password_file" default="" />
+
+  <arg name="graph_topic" default="graph.3.robonomics.eth" />
+  <arg name="lighthouse_topic" default="airalab.lighthouse.3.robonomics.eth" />
+
+  <!-- AIRA Graph service -->
+  <node pkg="aira_graph" type="aira_graph_node" name="aira_graph" respawn="true" output="screen">
+    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+
+    <param name="keyfile" value="$(arg keyfile)" />
+    <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+
+    <param name="graph_topic" value="$(arg graph_topic)" />
+    <param name="lighthouse_topic" value="$(arg lighthouse_topic)" />
+  </node>
+
+</launch>
