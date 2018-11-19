@@ -6,9 +6,10 @@
 
   <arg name="graph_topic" default="graph.3.robonomics.eth" />
   <arg name="lighthouse_topic" default="airalab.lighthouse.3.robonomics.eth" />
+  <arg name="enable_aira_graph" default="true" />
 
   <!-- AIRA Graph service -->
-  <node pkg="aira_graph" type="aira_graph_node" name="aira_graph" respawn="true" output="screen">
+  <node pkg="aira_graph" type="aira_graph_node" name="aira_graph" respawn="true" output="screen" if="$(arg enable_aira_graph)">
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
 
     <param name="keyfile" value="$(arg keyfile)" />

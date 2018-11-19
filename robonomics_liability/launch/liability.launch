@@ -12,6 +12,21 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
+  <arg name="enable_aira_graph" default="true" />
+  <arg name="graph_topic" default="graph.3.robonomics.eth" />
+  <arg name="lighthouse_topic" default="airalab.lighthouse.3.robonomics.eth" />
+
+  <group ns="graph">
+    <include  file="$(find aira_graph)/launch/aira_graph.launch">
+          <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+          <arg name="keyfile" value="$(arg keyfile)" />
+          <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+          <arg name="graph_topic" value="$(arg graph_topic)" />
+          <arg name="lighthouse_topic" value="$(arg lighthouse_topic)" />
+          <arg name="enable_aira_graph" value="$(arg enable_aira_graph)" />
+    </include>
+  </group>
+
   <!-- liability group -->
   <group ns="liability">
     <!-- Information channel interface -->
