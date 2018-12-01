@@ -11,6 +11,7 @@ from threading import Timer
 import rospy, json, time, multihash
 from std_msgs.msg import String
 from . import finalization_checker
+from persistent_queue import PersistentQueue
 
 
 class Listener:
@@ -50,6 +51,8 @@ class Listener:
                                                                                        web3_http_provider=web3_http_provider,
                                                                                        ens_contract=ens_contract)
         self.finalized = rospy.Publisher('finalized', String, queue_size=10)
+
+        self.liabilities_queue = PersistentQueue('robonomics_liability_listener.queue')
 
         self.result_handler()
 
@@ -109,14 +112,26 @@ class Listener:
 
         def liability_filter_thread():
             try:
-                # TODO: improve error logging
                 for entry in self.liability_filter.get_new_entries():
-                    self.liability.publish(self.liability_read(entry['args']['liability']))
+                    liability_address = entry['args']['liability']
+                    self.liabilities_queue.push(liability_address)
+                    rospy.loginfo("New liability added to queue: %s", liability_address)
             except Exception as e:
                 rospy.logerr('listener liability filter exception: %s', e)
                 self.create_liability_filter()
             Timer(self.poll_interval, liability_filter_thread).start()
 
-        liability_filter_thread()
+        def liabilities_queue_handler():
+            entry = self.liabilities_queue.peek()
+            if entry is not None:
+                try:
+                    self.liability.publish(self.liability_read(entry))
+                    self.liabilities_queue.pop()
+                    rospy.loginfo("Liability read successfully: %s", entry)
+                except Exception as e:
+                    rospy.logerr('Liability %s read exception: %s', entry, e)
+            Timer(self.poll_interval, liabilities_queue_handler).start()
 
+        liability_filter_thread()
+        liabilities_queue_handler()
         rospy.spin()

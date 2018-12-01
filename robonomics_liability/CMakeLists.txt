@@ -51,3 +51,21 @@ install(
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )
+
+
+
+install(
+    FILES
+        tests/liability.test
+    DESTINATION
+        ${CATKIN_PACKAGE_SHARE_DESTINATION}/tests
+)
+
+catkin_install_python(
+    PROGRAMS
+        tests/test_executor.py
+        tests/test_player.py
+        tests/test_recorder.py
+    DESTINATION
+        ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

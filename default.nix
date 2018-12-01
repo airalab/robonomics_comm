@@ -12,7 +12,7 @@ mkRosPackage rec {
   src = ./.;
 
   propagatedBuildInputs = with python3Packages;
-  [ ros_comm web3 multihash voluptuous ipfsapi ];
+  [ ros_comm web3 multihash voluptuous ipfsapi python-persistent-queue ];
 
   meta = with stdenv.lib; {
     description = "Robonomics communication stack";
