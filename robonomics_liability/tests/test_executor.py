@@ -47,6 +47,26 @@ class TestExecutor(unittest.TestCase):
         self.success = False
         self.ready_liability = None
 
+        self.test_objective = self.create_test_objective()
+        rospy.logwarn("TEST EXECUTOR: CURRENT OBJECTIVE is %s", self.test_objective)
+
+
+    def create_test_objective(self):
+        with TemporaryDirectory() as tmpdir:
+            os.chdir(tmpdir)
+            test_objective_bag = rosbag.Bag('output.bag', 'w')
+            email_data = String(data='test@mail')
+            droneid_data = String(data='test_drone_000')
+
+            test_objective_bag.write('/agent/objective/droneid', droneid_data, rospy.Time().now())
+            test_objective_bag.write('/agent/objective/email', email_data, rospy.Time().now())
+
+            test_objective_bag.close()
+
+            ipfs_objective = self.ipfs.add(test_objective_bag.filename)
+            rospy.logwarn("TEST_EXECUTOR: ADD TEST OBJECTIVE TO IPFS is %s", ipfs_objective)
+            return ipfs_objective['Hash']
+
     def ready_liability_handler(self, msg):
         self.ready_liability = msg
         rospy.loginfo("READY LIABILITY HANDLER: address is %s", self.ready_liability.address)
@@ -105,7 +125,7 @@ class TestExecutor(unittest.TestCase):
     def get_test_bid(self):
         bidDict = {
             "model": "QmaRmbJtyfMDBfkDETTPAxKUUcSqZKXWwFKKoZ318nrPku",
-            "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
+            "objective": self.test_objective,
             "token": self.test_token,
             "cost": 0,
             "validator": '0x0000000000000000000000000000000000000000',
@@ -133,7 +153,7 @@ class TestExecutor(unittest.TestCase):
     def get_test_ask(self):
         askDict = {
             "model": "QmaRmbJtyfMDBfkDETTPAxKUUcSqZKXWwFKKoZ318nrPku",
-            "objective": "Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE",
+            "objective": self.test_objective,
             "token": self.test_token,
             "cost": 0,
             "lighthouse": self.lighthouse_address,

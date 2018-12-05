@@ -2,15 +2,15 @@
 
 import rospy, rostest, rosbag
 import sys, os, time
-import ipfsapi, unittest
+import unittest
 
-from robonomics_liability.player import Player, get_rosbag_from_file
+from robonomics_liability.player import Player
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
+from std_msgs.msg import *
 
 PKG = 'robonomics_liability'
 NAME = 'test_player'
-TEST_ROSBAG = 'Qmb3H3tHZ1QutcrLq7WEtQWbEWjA11aPqVmeatMSrmFXvE'
 
 
 class TestPlayer(unittest.TestCase):
@@ -18,8 +18,6 @@ class TestPlayer(unittest.TestCase):
     def __init__(self, *args):
         rospy.init_node(NAME)
         super(TestPlayer, self).__init__(*args)
-        ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
         self.subscribers_msg_counters = {}
 
     def decrement_subscriber_msg_counter(self, topic):
@@ -30,8 +28,16 @@ class TestPlayer(unittest.TestCase):
     def test_player(self):
         with TemporaryDirectory() as tmpdir:
             os.chdir(tmpdir)
-            self.ipfs.get(TEST_ROSBAG)
-            bag = get_rosbag_from_file(TEST_ROSBAG)
+
+            test_bag = rosbag.Bag('output.bag', 'w')
+            email_data = String(data='test@mail')
+            droneid_data = String(data='test_drone_000')
+            test_bag.write('/agent/objective/droneid', droneid_data, rospy.Time().now())
+            test_bag.write('/agent/objective/email', email_data, rospy.Time().now())
+            test_bag.close()
+
+            bag = rosbag.Bag('output.bag', 'r')
+
             subscribers = {}
 
             bag_topics = bag.get_type_and_topic_info()
