@@ -16,7 +16,6 @@
   </test>
 
   <test test-name="test_player" pkg="robonomics_liability" type="test_player.py" time-limit="300.0">
-    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
   </test>
 
   <test test-name="test_recorder" pkg="robonomics_liability" type="test_recorder.py" time-limit="300.0">
