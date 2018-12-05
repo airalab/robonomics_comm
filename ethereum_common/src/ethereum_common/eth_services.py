@@ -15,8 +15,9 @@ class ETHServices:
         self.__account = __keyfile_helper.get_local_account_from_keyfile()
 
         self.eth_utils = ETHUtils(self.__account,
-                                        rospy.get_param('~web3_http_provider'),
-                                        rospy.get_param('~ens_contract', None))
+                                  rospy.get_param('~web3_http_provider'),
+                                  rospy.get_param('~web3_ws_provider'),
+                                  rospy.get_param('~ens_contract', None))
 
         def accounts_handler(m):
             return AccountsResponse([type_converter.strToAddress(self.__account.address)])
