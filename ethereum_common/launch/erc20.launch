@@ -1,5 +1,6 @@
 <launch>
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
   <arg name="erc20_token" default="xrt.3.robonomics.eth"/>
   <arg name="factory_contract" default="factory.3.robonomics.eth" />
   <arg name="ens_contract" default="" />
@@ -9,6 +10,7 @@
   <group ns="eth">
     <node pkg="ethereum_common" type="erc20_node" name="erc20_token" respawn="true" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="web3_ws_provider" value="$(arg web3_ws_provider)" />
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
@@ -19,6 +21,7 @@
 
     <node pkg="ethereum_common" type="eth_node" name="eth_node" respawn="true" output="screen">
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="web3_ws_provider" value="$(arg web3_ws_provider)" />
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>

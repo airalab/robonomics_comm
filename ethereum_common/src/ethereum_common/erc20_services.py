@@ -21,10 +21,12 @@ class ERC20Services:
 
         self.eth_utils = ETHUtils(self.__account,
                                   rospy.get_param('~web3_http_provider'),
+                                  rospy.get_param('~web3_ws_provider'),
                                   rospy.get_param('~ens_contract', None),
                                   rospy.get_param('~token_contract'),
                                   XRT_ABI)
         self.erc20 = self.eth_utils.erc20Contract
+        self.erc20_ws = self.eth_utils.erc20ContractWS
         self.factory_address = self.eth_utils.getAddressByName(rospy.get_param('~factory_contract'))
 
         self.initialize_event_filters()
@@ -81,8 +83,8 @@ class ERC20Services:
 
     def initialize_event_filters(self):
         try:
-            self.transfer_filter = self.erc20.eventFilter('Transfer')
-            self.approval_filter = self.erc20.eventFilter('Approval')
+            self.transfer_filter = self.erc20_ws.eventFilter('Transfer')
+            self.approval_filter = self.erc20_ws.eventFilter('Approval')
         except Exception as e:
             rospy.logwarn("Failed to reinitialize erc20 event filters with exception: \"%s\"", e)
 

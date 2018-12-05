@@ -1,12 +1,15 @@
-from web3 import Web3, HTTPProvider
+from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
 
 
 class ETHUtils:
-    def __init__(self, account, web3_http_provider, ens_contract, erc20_token=None, abi=None):
+    def __init__(self, account, web3_http_provider, web3_ws_provider, ens_contract, erc20_token=None, abi=None):
         http_provider = HTTPProvider(web3_http_provider)
         self.ens = ENS(http_provider,  addr=ens_contract)
         self.web3 = Web3(http_provider, ens=self.ens)
+
+        ws_provider = WebsocketProvider(web3_ws_provider)
+        self.web3ws = Web3(ws_provider, ens=self.ens)
 
         from web3.middleware import geth_poa_middleware
         # inject the poa compatibility middleware to the innermost layer
@@ -16,6 +19,7 @@ class ETHUtils:
         if erc20_token is not None and abi is not None:
             token_address = self.ens.address(erc20_token)
             self.erc20 = self.web3.eth.contract(token_address, abi=abi)
+            self.erc20_ws = self.web3ws.eth.contract(token_address, abi=abi)
             self.erc20_balance_delimiter = (10 ** self.erc20.functions.decimals().call())
 
         self.__account = account
@@ -23,6 +27,10 @@ class ETHUtils:
     @property
     def erc20Contract(self):
         return self.erc20
+
+    @property
+    def erc20ContractWS(self):
+        return self.erc20_ws
 
     @property
     def getCurrentBlockNumber(self):
