@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 import ipfsapi
 from tempfile import TemporaryDirectory
 from std_msgs.msg import *
+from web3 import Web3, HTTPProvider
+from ens import ENS
 
 PKG = 'robonomics_liability'
 NAME = 'test_executor'
@@ -27,7 +29,18 @@ class TestExecutor(unittest.TestCase):
         self.test_bid_publisher = rospy.Publisher('/liability/infochan/eth/signing/offer', Offer, queue_size=10)
         self.test_ask_publisher = rospy.Publisher('/liability/infochan/eth/signing/demand', Demand, queue_size=10)
 
-        self.lighthouse_address = rospy.get_param('~lighthouse_contract_address')
+        web3_http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(web3_http_provider)
+        ens_contract = rospy.get_param('~ens_contract', None)
+
+        self.ens = ENS(http_provider, addr=ens_contract)
+        self.web3 = Web3(http_provider, ens=self.ens)
+
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.lighthouse_address = self.ens.address(rospy.get_param('~lighthouse_contract'))
 
         self.test_start_time = time.time()
 
