@@ -2,67 +2,11 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "robotLiabilityLib",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "gasEpoch",
     "outputs": [
       {
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "xrt",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "ens",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "auction",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
       }
     ],
     "payable": false,
@@ -77,21 +21,7 @@
         "type": "address"
       }
     ],
-    "name": "gasUtilizing",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "smmaPeriod",
+    "name": "gasConsumedOf",
     "outputs": [
       {
         "name": "",
@@ -124,44 +54,11 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "totalGasUtilizing",
+    "name": "totalGasConsumed",
     "outputs": [
       {
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "lighthouseLib",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isHashConsumed",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
       }
     ],
     "payable": false,
@@ -181,33 +78,6 @@
     "payable": false,
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "name": "_robot_liability_lib",
-        "type": "address"
-      },
-      {
-        "name": "_lighthouse_lib",
-        "type": "address"
-      },
-      {
-        "name": "_auction",
-        "type": "address"
-      },
-      {
-        "name": "_xrt",
-        "type": "address"
-      },
-      {
-        "name": "_ens",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
   },
   {
     "anonymous": false,
@@ -239,18 +109,6 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "HashConsumed",
-    "type": "event"
-  },
-  {
     "constant": true,
     "inputs": [
       {
@@ -273,6 +131,33 @@
     "constant": false,
     "inputs": [
       {
+        "name": "_minimalStake",
+        "type": "uint256"
+      },
+      {
+        "name": "_timeoutInBlocks",
+        "type": "uint256"
+      },
+      {
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "createLighthouse",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "_demand",
         "type": "bytes"
       },
@@ -284,7 +169,7 @@
     "name": "createLiability",
     "outputs": [
       {
-        "name": "liability",
+        "name": "",
         "type": "address"
       }
     ],
@@ -296,23 +181,19 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_minimalFreeze",
-        "type": "uint256"
+        "name": "_liability",
+        "type": "address"
       },
       {
-        "name": "_timeoutBlocks",
+        "name": "_start_gas",
         "type": "uint256"
-      },
-      {
-        "name": "_name",
-        "type": "string"
       }
     ],
-    "name": "createLighthouse",
+    "name": "liabilityCreated",
     "outputs": [
       {
-        "name": "lighthouse",
-        "type": "address"
+        "name": "",
+        "type": "bool"
       }
     ],
     "payable": false,
@@ -323,7 +204,11 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_gas",
+        "name": "_liability",
+        "type": "address"
+      },
+      {
+        "name": "_start_gas",
         "type": "uint256"
       }
     ],

@@ -184,20 +184,6 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "factory",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
       "name": "demandHash",
       "outputs": [
         {
@@ -364,10 +350,6 @@
         {
           "name": "_signature",
           "type": "bytes"
-        },
-        {
-          "name": "_agree",
-          "type": "bool"
         }
       ],
       "name": "finalize",

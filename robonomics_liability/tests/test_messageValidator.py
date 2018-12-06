@@ -3,13 +3,13 @@
 import unittest, rostest, sys
 from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_msgs import messageValidator
-from robonomics_lighthouse.test import testMessages
+import testMessages
 
-PKG = 'robonomics_lighthouse'
-NAME = 'test_messageConverter'
+PKG = 'robonomics_liability'
+NAME = 'test_messageValidator'
 
 
-class TestMessageConverter(unittest.TestCase):
+class TestMessageValidator(unittest.TestCase):
     def setUp(self):
         self.multiplier = 2
 
@@ -75,4 +75,4 @@ class TestMessageConverter(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    rostest.rosrun(PKG, NAME, TestMessageConverter, sys.argv)
+    rostest.rosrun(PKG, NAME, TestMessageValidator, sys.argv)

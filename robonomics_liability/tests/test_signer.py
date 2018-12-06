@@ -4,10 +4,10 @@ import unittest, rostest, sys, rospy, time
 from robonomics_msgs.msg import Result, Offer, Demand
 from ethereum_common import signer
 from robonomics_msgs import messageValidator
-from robonomics_lighthouse.test import testMessages
+import testMessages
 from binascii import hexlify
 
-PKG = 'robonomics_lighthouse'
+PKG = 'robonomics_liability'
 NAME = 'test_signer'
 
 
@@ -40,8 +40,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_ask_success = True
 
     def test_sign_ask(self):
-        rospy.Subscriber('/lighthouse/infochan/eth/sending/demand', Demand, self.signed_ask_handler)
-        askPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/demand', Demand, queue_size=10)
+        rospy.Subscriber('/liability/infochan/eth/sending/demand', Demand, self.signed_ask_handler)
+        askPublisherTest = rospy.Publisher('/liability/infochan/eth/signing/demand', Demand, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         askPublisherTest.publish(testMessages.getValidAsk())
@@ -58,8 +58,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_bid_success = True
 
     def test_sign_bid(self):
-        rospy.Subscriber('/lighthouse/infochan/eth/sending/offer', Offer, self.signed_bid_handler)
-        bidPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/offer', Offer, queue_size=10)
+        rospy.Subscriber('/liability/infochan/eth/sending/offer', Offer, self.signed_bid_handler)
+        bidPublisherTest = rospy.Publisher('/liability/infochan/eth/signing/offer', Offer, queue_size=10)
 
         time.sleep(3) #because signer node subscribers may be not registered in master
         bidPublisherTest.publish(testMessages.getValidBid())
@@ -75,8 +75,8 @@ class TestSigner(unittest.TestCase):
         self._test_sign_res_success = True
 
     def test_sign_res(self):
-        rospy.Subscriber('/lighthouse/infochan/eth/sending/result', Result, self.signed_res_handler)
-        resPublisherTest = rospy.Publisher('/lighthouse/infochan/eth/signing/result', Result, queue_size=10)
+        rospy.Subscriber('/liability/infochan/eth/sending/result', Result, self.signed_res_handler)
+        resPublisherTest = rospy.Publisher('/liability/infochan/eth/signing/result', Result, queue_size=10)
 
         time.sleep(3)  # because signer node subscribers may be not registered in master
         resPublisherTest.publish(testMessages.getValidRes())

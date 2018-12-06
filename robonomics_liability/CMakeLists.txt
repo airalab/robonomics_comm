@@ -66,6 +66,10 @@ catkin_install_python(
         tests/test_executor.py
         tests/test_player.py
         tests/test_recorder.py
+        tests/test_infochan.py
+        tests/test_messageValidator.py
+        tests/test_signer.py
+        tests/testMessages.py
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

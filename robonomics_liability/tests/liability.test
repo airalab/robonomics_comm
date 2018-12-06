@@ -2,7 +2,7 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="lighthouse_contract" default="airalab.lighthouse.3.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.4.robonomics.eth" />
   <arg name="ens_contract" default="" />
 
   <arg name="test_token" default="" />
@@ -19,6 +19,15 @@
   </test>
 
   <test test-name="test_recorder" pkg="robonomics_liability" type="test_recorder.py" time-limit="300.0">
+  </test>
+
+  <test test-name="test_infochan" pkg="robonomics_liability" type="test_infochan.py" time-limit="300.0">
+  </test>
+
+  <test test-name="test_messageValidators" pkg="robonomics_liability" type="test_messageValidator.py" time-limit="300.0">
+  </test>
+
+  <test test-name="test_signer" pkg="robonomics_liability" type="test_signer.py" time-limit="300.0">
   </test>
 
 </launch>

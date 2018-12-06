@@ -4,8 +4,8 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
-  <arg name="graph_topic" default="graph.3.robonomics.eth" />
-  <arg name="lighthouse_topic" default="airalab.lighthouse.3.robonomics.eth" />
+  <arg name="graph_topic" default="graph.4.robonomics.eth" />
+  <arg name="lighthouse_topic" default="airalab.lighthouse.4.robonomics.eth" />
   <arg name="enable_aira_graph" default="true" />
 
   <!-- AIRA Graph service -->
