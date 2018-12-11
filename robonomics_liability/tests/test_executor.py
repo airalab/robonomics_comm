@@ -70,7 +70,7 @@ class TestExecutor(unittest.TestCase):
 
     def ready_liability_handler(self, msg):
         self.ready_liability = msg
-        rospy.logwarn("EXECUTOR: READY LIABILITY address is %s", self.ready_liability.address)
+        rospy.logwarn("EXECUTOR: READY LIABILITY address is %s", self.ready_liability.address.address)
 
     def result_handler(self, msg):
         rospy.logwarn("EXECUTOR: liability: %s result %s", msg.liability, msg.result)
@@ -95,8 +95,8 @@ class TestExecutor(unittest.TestCase):
             rospy.loginfo("ROSBAG: result has start time %s", bag.get_start_time())
             return bag.get_message_count() == 2 and \
                    bag.get_start_time() > self.test_start_time and \
-                   '/liability/eth_{0}/agent/objective/droneid'.format(self.ready_liability.address) in bag_topics_dict and \
-                   '/liability/eth_{0}/agent/objective/email'.format(self.ready_liability.address) in bag_topics_dict
+                   '/liability/eth_{0}/agent/objective/droneid'.format(self.ready_liability.address.address) in bag_topics_dict and \
+                   '/liability/eth_{0}/agent/objective/email'.format(self.ready_liability.address.address) in bag_topics_dict
 
     def test_executor(self):
         rospy.Subscriber('liability/ready', Liability, self.ready_liability_handler)

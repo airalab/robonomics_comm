@@ -22,7 +22,7 @@ class LiabilityExecutionThread(object):
 
         self.__recorder = None
         self.__liability_result_file = None
-        self.__liability_execution_namespace = "eth_{0}".format(self.liability.address)
+        self.__liability_execution_namespace = "eth_{0}".format(self.liability.address.address)
 
         self.tmp_directory = TemporaryDirectory()
         rospy.logdebug('Temporary directory created: %s', self.tmp_directory.name)
