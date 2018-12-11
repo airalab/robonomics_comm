@@ -3,7 +3,7 @@
 import unittest, rostest, os, time, rospy, rosbag
 
 from robonomics_msgs.msg import Result, Offer, Demand
-from ipfs_common.msg import Multihash
+from robonomics_msgs import messageValidator
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
@@ -70,21 +70,21 @@ class TestExecutor(unittest.TestCase):
 
     def ready_liability_handler(self, msg):
         self.ready_liability = msg
-        rospy.loginfo("READY LIABILITY HANDLER: address is %s", self.ready_liability.address)
+        rospy.logwarn("EXECUTOR: READY LIABILITY address is %s", self.ready_liability.address)
 
-    def result_handler(self, result):
-        rospy.loginfo("RESULT HANDLER: liability: %s result %s", result.liability, result.result)
+    def result_handler(self, msg):
+        rospy.logwarn("EXECUTOR: liability: %s result %s", msg.liability, msg.result)
 
         if self.ready_liability is not None \
-                and self.ready_liability.address == result.liability \
-                and self.check_rosbag_is_new_and_has_messages(result):
+                and self.ready_liability.address.address == msg.liability.address \
+                and self.check_rosbag_is_new_and_has_messages(msg):
             self.success = True
 
-    def check_rosbag_is_new_and_has_messages(self, result):
+    def check_rosbag_is_new_and_has_messages(self, msg):
         with TemporaryDirectory() as tmpdir:
             os.chdir(tmpdir)
-            self.ipfs.get(result.result.multihash)
-            bag = rosbag.Bag(result.result.multihash, 'r')
+            self.ipfs.get(msg.result.multihash)
+            bag = rosbag.Bag(msg.result.multihash, 'r')
             bag_topics = bag.get_type_and_topic_info()
 
             bag_topics_dict = {}
@@ -112,12 +112,12 @@ class TestExecutor(unittest.TestCase):
             time.sleep(0.1)
 
         start_service_proxy = rospy.ServiceProxy('/liability/start', StartLiability)
-        start_service_proxy(self.ready_liability.address)
+        start_service_proxy(self.ready_liability.address.address)
 
         time.sleep(5)
 
         finish_service_proxy = rospy.ServiceProxy('/liability/finish', FinishLiability)
-        finish_service_proxy(self.ready_liability.address, True)
+        finish_service_proxy(self.ready_liability.address.address, True)
 
         while not rospy.is_shutdown() and not self.success:
             time.sleep(0.1)
@@ -132,53 +132,26 @@ class TestExecutor(unittest.TestCase):
             "validator": '0x0000000000000000000000000000000000000000',
             "lighthouse": self.lighthouse_address,
             "lighthouseFee": 0,
-            "deadline": 9999999
+            "deadline": 9999999,
+            "nonce": "",
+            "signature": ""
         }
-        bid = Offer()
-        model_mh = Multihash()
-        model_mh.multihash = bidDict['model']
-
-        objective_mh = Multihash()
-        objective_mh.multihash = bidDict['objective']
-
-        bid.model = model_mh
-        bid.objective = objective_mh
-        bid.token = bidDict['token']
-        bid.cost = bidDict['cost']
-        bid.validator = bidDict['validator']
-        bid.lighthouse = bidDict['lighthouse']
-        bid.lighthouseFee = bidDict['lighthouseFee']
-        bid.deadline = bidDict['deadline']
-        return bid
+        return messageValidator.dict2bid(bidDict)
 
     def get_test_ask(self):
         askDict = {
             "model": "QmaRmbJtyfMDBfkDETTPAxKUUcSqZKXWwFKKoZ318nrPku",
             "objective": self.test_objective,
             "token": self.test_token,
-            "cost": 0,
+            "cost": "0",
             "lighthouse": self.lighthouse_address,
             "validator": "0x0000000000000000000000000000000000000000",
             "validatorFee": 0,
-            "deadline": 9999999
+            "deadline": 9999999,
+            "nonce": "",
+            "signature": ""
         }
-        ask = Demand()
-        model_mh = Multihash()
-        model_mh.multihash = askDict['model']
-
-        objective_mh = Multihash()
-        objective_mh.multihash = askDict['objective']
-
-        ask.model = model_mh
-        ask.objective = objective_mh
-
-        ask.token = askDict['token']
-        ask.cost = askDict['cost']
-        ask.lighthouse = askDict['lighthouse']
-        ask.validator = askDict['validator']
-        ask.validatorFee = askDict['validatorFee']
-        ask.deadline = askDict['deadline']
-        return ask
+        return messageValidator.dict2ask(askDict)
 
 
 if __name__ == '__main__':
