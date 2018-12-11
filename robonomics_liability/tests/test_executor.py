@@ -2,7 +2,8 @@
 
 import unittest, rostest, os, time, rospy, rosbag
 
-from robonomics_msgs.msg import Result, Offer, Demand, Multihash
+from robonomics_msgs.msg import Result, Offer, Demand
+from ipfs_common.msg import Multihash
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse

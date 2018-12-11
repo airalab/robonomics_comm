@@ -1,6 +1,7 @@
 import threading
 
-from robonomics_msgs.msg import Result, Multihash
+from robonomics_msgs.msg import Result
+from ipfs_common.msg import Multihash
 from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
 from tempfile import TemporaryDirectory

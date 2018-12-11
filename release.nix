@@ -1,5 +1,12 @@
-{ nixpkgs ? import ./fetchNixpkgs.nix { } }:
+{ nixpkgs ? import ./fetchNixpkgs.nix { }
+, system ? builtins.currentSystem
+}:
 
-rec {
-  robonomics_comm = nixpkgs.callPackage ./default.nix { };
+let
+  makeTest = import "${nixpkgs}/nixos/tests/make-test.nix";
+  pkgs = import nixpkgs { inherit system; };
+
+in rec {
+  package = pkgs.callPackage ./default.nix { };
+  test = makeTest (import ./tests.nix { robonomics_comm = package; });
 }

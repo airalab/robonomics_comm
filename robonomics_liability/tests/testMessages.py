@@ -1,4 +1,6 @@
-from robonomics_msgs.msg import Demand, Offer, Result, Multihash
+from robonomics_msgs.msg import Demand, Offer, Result
+from ethereum_common.msg import Address, UInt256
+from ipfs_common.msg import Multihash
 from binascii import unhexlify
 
 # ask
@@ -17,18 +19,22 @@ validAskDict = {
 
 def getValidAsk():
     a = Demand()
-    model = Multihash()
-    model.multihash = validAskDict['model']
-    objective = Multihash()
-    objective.multihash = validAskDict['objective']
-    a.model = model
-    a.objective = objective
-    a.token = validAskDict['token']
-    a.cost = validAskDict['cost']
-    a.lighthouse = validAskDict['lighthouse']
-    a.validator = validAskDict['validator']
-    a.validatorFee = validAskDict['validatorFee']
-    a.deadline = validAskDict['deadline']
+    a.model = Multihash()
+    a.model.multihash = validAskDict['model']
+    a.objective = Multihash()
+    a.objective.multihash = validAskDict['objective']
+    a.token = Address()
+    a.token.address = validAskDict['token']
+    a.cost = UInt256()
+    a.cost.uint256 = str(validAskDict['cost'])
+    a.lighthouse = Address()
+    a.lighthouse.address = validAskDict['lighthouse']
+    a.validator = Address()
+    a.validator.address = validAskDict['validator']
+    a.validatorFee = UInt256()
+    a.validatorFee.uint256 = str(validAskDict['validatorFee'])
+    a.deadline = UInt256()
+    a.deadline.uint256 = str(validAskDict['deadline'])
     a.nonce = unhexlify(validAskDict['nonce'].encode('utf-8'))
     a.signature = unhexlify(validAskDict['signature'].encode('utf-8'))
     return a
@@ -50,18 +56,22 @@ validBidDict = {
 
 def getValidBid():
     b = Offer()
-    model = Multihash()
-    model.multihash = validBidDict['model']
-    objective = Multihash()
-    objective.multihash = validBidDict['objective']
-    b.model = model
-    b.objective = objective
-    b.token = validBidDict['token']
-    b.cost = validBidDict['cost']
-    b.validator = validBidDict['validator']
-    b.lighthouse = validBidDict['lighthouse']
-    b.lighthouseFee = validBidDict['lighthouseFee']
-    b.deadline = validBidDict['deadline']
+    b.model = Multihash()
+    b.model.multihash = validBidDict['model']
+    b.objective = Multihash()
+    b.objective.multihash = validBidDict['objective']
+    b.token = Address()
+    b.token.address = validBidDict['token']
+    b.cost = UInt256()
+    b.cost.uint256 = str(validBidDict['cost'])
+    b.validator = Address()
+    b.validator.address = validBidDict['validator']
+    b.lighthouse = Address()
+    b.lighthouse.address = validBidDict['lighthouse']
+    b.lighthouseFee = UInt256()
+    b.lighthouseFee.uint256 = str(validBidDict['lighthouseFee'])
+    b.deadline = UInt256()
+    b.deadline.uint256 = str(validBidDict['deadline'])
     b.nonce = unhexlify(validBidDict['nonce'].encode('utf-8'))
     b.signature = unhexlify(validBidDict['signature'].encode('utf-8'))
     return b
@@ -76,10 +86,10 @@ validResDict = {
 
 def getValidRes():
     r = Result()
-    result = Multihash()
-    result.multihash = validResDict['result']
-    r.liability = validResDict['liability']
-    r.result = result
+    r.liability = Address()
+    r.liability.address = validResDict['liability']
+    r.result = Multihash()
+    r.result.multihash = validResDict['result']
     r.success = validResDict['success']
     r.signature = unhexlify(validResDict['signature'].encode('utf-8'))
     return r

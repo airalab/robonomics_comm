@@ -3,7 +3,8 @@
 # Robonomics liability tracking node.
 #
 
-from robonomics_msgs.msg import Result, Multihash
+from robonomics_msgs.msg import Result
+from ipfs_common.msg import Multihash
 from robonomics_liability.msg import Liability
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
