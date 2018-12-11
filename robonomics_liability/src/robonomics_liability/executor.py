@@ -52,7 +52,7 @@ class Executor:
 
             self.complete.publish(liability_msg)
             self.result_topic.publish(result)
-            rospy.loginfo('Liability %s finished with %s', liability_msg.address, result.result)
+            rospy.loginfo('Liability %s finished with %s', liability_msg.address.address, result.result)
             return FinishLiabilityResponse()
         rospy.Service('finish', FinishLiability, finish_liability)
 

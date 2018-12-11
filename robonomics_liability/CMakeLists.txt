@@ -4,8 +4,10 @@ project(robonomics_liability)
 find_package(catkin REQUIRED
     COMPONENTS
         rospy
-        message_generation
+        ipfs_common
+        ethereum_common
         robonomics_msgs
+        message_generation
 )
 
 catkin_python_setup()
@@ -17,13 +19,15 @@ add_message_files(
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-    FinishLiability.srv
-    StartLiability.srv
+    FILES
+        FinishLiability.srv
+        StartLiability.srv
 )
 
 generate_messages(
     DEPENDENCIES
+        ipfs_common
+        ethereum_common
         robonomics_msgs
 )
 
@@ -51,8 +55,6 @@ install(
     DESTINATION
         ${CATKIN_PACKAGE_SHARE_DESTINATION}/abi
 )
-
-
 
 install(
     FILES

@@ -10,6 +10,8 @@ project(robonomics_msgs)
 find_package(catkin REQUIRED
     COMPONENTS
         rospy
+        ipfs_common
+        ethereum_common
         message_generation
 )
 
@@ -49,7 +51,6 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
 add_message_files(
     FILES
-        Multihash.msg
         Demand.msg
         Offer.msg
         Result.msg
@@ -70,7 +71,11 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages()
+generate_messages(
+    DEPENDENCIES
+        ipfs_common
+        ethereum_common
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

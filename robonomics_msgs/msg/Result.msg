@@ -1,8 +1,8 @@
 # Result liability
-string liability     # address
+ethereum_common/Address liability     # address
 # Result IPFS hash
-Multihash result       # base58
+ipfs_common/Multihash   result       # base58
 # Executed successfully flag
-bool success
+bool                    success
 # Result signature
-uint8[] signature    # hex
+uint8[]                 signature    # hex

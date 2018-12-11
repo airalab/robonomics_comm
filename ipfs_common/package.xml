@@ -47,9 +47,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
-  <build_depend>robonomics_msgs</build_depend>
 
   <exec_depend>message_runtime</exec_depend>
-  <exec_depend>robonomics_msgs</exec_depend>
 
 </package>
