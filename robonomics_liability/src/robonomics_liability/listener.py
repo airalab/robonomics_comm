@@ -95,13 +95,13 @@ class Listener:
         msg.address = address
         msg.model = model_mh
         msg.objective = objective_mh
-        msg.promisee = c.call().promisee()
-        msg.promisor = c.call().promisor()
-        msg.lighthouse = c.call().lighthouse()
-        msg.token = c.call().token()
-        msg.cost = c.call().cost()
-        msg.validator = c.call().validator()
-        msg.validatorFee = c.call().validatorFee()
+        msg.promisee.address = c.call().promisee()
+        msg.promisor.address = c.call().promisor()
+        msg.lighthouse.address = c.call().lighthouse()
+        msg.token.address = c.call().token()
+        msg.cost.uint256 = c.call().cost()
+        msg.validator.address = c.call().validator()
+        msg.validatorFee.address = c.call().validatorFee()
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 

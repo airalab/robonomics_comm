@@ -49,6 +49,8 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>ipfs_common</build_depend>
+  <build_depend>ethereum_common</build_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

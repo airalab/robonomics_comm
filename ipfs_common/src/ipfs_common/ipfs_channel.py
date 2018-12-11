@@ -17,12 +17,12 @@ def bid2dict(b):
     return {
         'model': b.model.multihash,
         'objective': b.objective.multihash,
-        'token': b.token,
-        'cost': b.cost,
-        'validator': b.validator,
-        'lighthouse': b.lighthouse,
-        'lighthouseFee': b.lighthouseFee,
-        'deadline': b.deadline,
+        'token': b.token.address,
+        'cost': b.cost.uint256,
+        'validator': b.validator.address,
+        'lighthouse': b.lighthouse.address,
+        'lighthouseFee': b.lighthouseFee.uint256,
+        'deadline': b.deadline.uint256,
         'nonce': hexlify(b.nonce).decode('utf-8'),
         'signature': hexlify(b.signature).decode('utf-8')
     }
@@ -32,12 +32,12 @@ def ask2dict(a):
     return {
         'model': a.model.multihash,
         'objective': a.objective.multihash,
-        'token': a.token,
-        'cost': a.cost,
-        'lighthouse': a.lighthouse,
-        'validator': a.validator,
-        'validatorFee': a.validatorFee,
-        'deadline': a.deadline,
+        'token': a.token.address,
+        'cost': a.cost.uint256,
+        'lighthouse': a.lighthouse.address,
+        'validator': a.validator.address,
+        'validatorFee': a.validatorFee.uint256,
+        'deadline': a.deadline.uint256,
         'nonce': hexlify(a.nonce).decode('utf-8'),
         'signature': hexlify(a.signature).decode('utf-8')
     }
@@ -45,7 +45,7 @@ def ask2dict(a):
 
 def res2dict(r):
     return {
-        'liability': r.liability,
+        'liability': r.liability.address,
         'result': r.result.multihash,
         'success': r.success,
         'signature': hexlify(r.signature).decode('utf-8')

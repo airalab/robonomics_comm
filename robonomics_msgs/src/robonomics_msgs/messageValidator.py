@@ -67,12 +67,12 @@ def dict2ask(m):
 
     msg.model = model_mh
     msg.objective = objective_mh
-    msg.token = m['token']
-    msg.cost = m['cost']
-    msg.lighthouse = m['lighthouse']
-    msg.validator = m['validator']
-    msg.validatorFee = m['validatorFee']
-    msg.deadline = m['deadline']
+    msg.token.address = m['token']
+    msg.cost.uint256 = m['cost']
+    msg.lighthouse.address = m['lighthouse']
+    msg.validator.address = m['validator']
+    msg.validatorFee.uint256 = m['validatorFee']
+    msg.deadline.uint256 = m['deadline']
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -89,12 +89,12 @@ def dict2bid(m):
 
     msg.model = model_mh
     msg.objective = objective_mh
-    msg.token = m['token']
-    msg.cost = m['cost']
-    msg.validator = m['validator']
-    msg.lighthouse = m['lighthouse']
-    msg.lighthouseFee = m['lighthouseFee']
-    msg.deadline = m['deadline']
+    msg.token.address = m['token']
+    msg.cost.uint256 = m['cost']
+    msg.validator.address = m['validator']
+    msg.lighthouse.address = m['lighthouse']
+    msg.lighthouseFee.uint256 = m['lighthouseFee']
+    msg.deadline.uint256 = m['deadline']
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -106,7 +106,7 @@ def dict2res(m):
     result_mh = Multihash()
     result_mh.multihash = m['result']
 
-    msg.liability = m['liability']
+    msg.liability.address = m['liability']
     msg.result = result_mh
     msg.success = m['success']
     msg.signature = unhexlify(m['signature'].encode('utf-8'))

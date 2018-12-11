@@ -1,19 +1,19 @@
 # Behaviour model IPFS hash
-Multihash model        # Base58
+ipfs_common/Multihash   model        # Base58
 # Task IPFS hash
-Multihash objective     # Base58
+ipfs_common/Multihash   objective     # Base58
 # Operational token
-string token        # address
+ethereum_common/Address token        # address
 # Execution cost
-uint32 cost         # int
+ethereum_common/UInt256 cost         # int
 # Validator network address
-string validator     # address
+ethereum_common/Address validator     # address
 # lighthouse network address
-string lighthouse    #address
+ethereum_common/Address lighthouse    #address
 # Settlement fee
-uint32 lighthouseFee # int 
+ethereum_common/UInt256 lighthouseFee # int 
 # Deadline block number
-uint32 deadline
+ethereum_common/UInt256 deadline
 # Order nonce value 
 uint8[] nonce       # hex
 # Order signature
