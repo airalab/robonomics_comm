@@ -71,7 +71,7 @@ def dict2ask(m):
     msg.token.address = m['token']
 
     msg.cost = UInt256()
-    msg.cost.uint256 = m['cost']
+    msg.cost.uint256 = str(m['cost'])
 
     msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
@@ -80,10 +80,10 @@ def dict2ask(m):
     msg.validator.address = m['validator']
 
     msg.validatorFee = UInt256()
-    msg.validatorFee.uint256 = m['validatorFee']
+    msg.validatorFee.uint256 = str(m['validatorFee'])
 
     msg.deadline = UInt256()
-    msg.deadline.uint256 = m['deadline']
+    msg.deadline.uint256 = str(m['deadline'])
 
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
@@ -103,7 +103,7 @@ def dict2bid(m):
     msg.token.address = m['token']
 
     msg.cost = UInt256()
-    msg.cost.uint256 = m['cost']
+    msg.cost.uint256 = str(m['cost'])
 
     msg.validator = Address()
     msg.validator.address = m['validator']
@@ -112,10 +112,10 @@ def dict2bid(m):
     msg.lighthouse.address = m['lighthouse']
 
     msg.lighthouseFee = UInt256()
-    msg.lighthouseFee.uint256 = m['lighthouseFee']
+    msg.lighthouseFee.uint256 = str(m['lighthouseFee'])
 
     msg.deadline = UInt256()
-    msg.deadline.uint256 = m['deadline']
+    msg.deadline.uint256 = str(m['deadline'])
 
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))

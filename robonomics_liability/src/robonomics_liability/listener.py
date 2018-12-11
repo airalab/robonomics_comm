@@ -86,23 +86,18 @@ class Listener:
         '''
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
-
-        model_mh = Multihash()
-        model_mh.multihash = multihash.decode(c.call().model()).encode('base58').decode()
-
-        objective_mh = Multihash()
-        objective_mh.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
-
-        msg.address = address
-        msg.model = model_mh
-        msg.objective = objective_mh
+        msg.address.address = address
+        msg.model = Multihash()
+        msg.model.multihash = multihash.decode(c.call().model()).encode('base58').decode()
+        msg.objective = Multihash()
+        msg.objective.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()
         msg.lighthouse.address = c.call().lighthouse()
         msg.token.address = c.call().token()
-        msg.cost.uint256 = c.call().cost()
+        msg.cost.uint256 = str(c.call().cost())
         msg.validator.address = c.call().validator()
-        msg.validatorFee.address = c.call().validatorFee()
+        msg.validatorFee.uint256 = str(c.call().validatorFee())
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 
