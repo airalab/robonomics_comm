@@ -75,8 +75,8 @@ class Listener:
                 result.publish(msg)
                 time.sleep(30)
                 # TODO: move sleep time to rop parameter with 30 seconds by default
-                is_finalized = self.liability_finalization_checker.finalized(msg.liability)
-            self.finalized.publish(msg.liability)
+                is_finalized = self.liability_finalization_checker.finalized(msg.liability.address)
+            self.finalized.publish(msg.liability.address)
 
         rospy.Subscriber('result', Result, liability_finalize)
 
