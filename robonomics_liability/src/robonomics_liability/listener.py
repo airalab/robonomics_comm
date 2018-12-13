@@ -55,7 +55,18 @@ class Listener:
 
         self.liabilities_queue = PersistentQueue('robonomics_liability_listener.queue')
 
-        self.result_handler()
+        self.result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
+
+        def liability_finalize(msg):
+            rospy.logdebug("liability_finalize: msg is: %s", msg)
+            is_finalized = False
+            while is_finalized is not True:
+                self.result.publish(msg)
+                time.sleep(30)
+                # TODO: move sleep time to rop parameter with 30 seconds by default
+                is_finalized = self.liability_finalization_checker.finalized(msg.liability.address)
+            self.finalized.publish(msg.liability.address)
+        rospy.Subscriber('result', Result, liability_finalize)
 
     def create_liability_filter(self):
         try:
@@ -66,20 +77,6 @@ class Listener:
         except Exception as e:
             rospy.logwarn("Failed to create liability filter with exception: \"%s\"", e)
 
-    def result_handler(self):
-        result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
-
-        def liability_finalize(msg):
-            is_finalized = False
-            while is_finalized is not True:
-                result.publish(msg)
-                time.sleep(30)
-                # TODO: move sleep time to rop parameter with 30 seconds by default
-                is_finalized = self.liability_finalization_checker.finalized(msg.liability.address)
-            self.finalized.publish(msg.liability.address)
-
-        rospy.Subscriber('result', Result, liability_finalize)
-
     def liability_read(self, address):
         '''
             Read liability from blockchain to message.
@@ -87,9 +84,7 @@ class Listener:
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
         msg.address.address = address
-        msg.model = Multihash()
         msg.model.multihash = multihash.decode(c.call().model()).encode('base58').decode()
-        msg.objective = Multihash()
         msg.objective.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()

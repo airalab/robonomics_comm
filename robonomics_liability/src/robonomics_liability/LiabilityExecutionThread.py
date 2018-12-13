@@ -38,18 +38,14 @@ class LiabilityExecutionThread(object):
 
         ipfs_response = self.ipfs_client.add(self.__liability_result_file)
         try:
-            self.liability.result = ipfs_response['Hash']
+            self.liability.result.multihash = ipfs_response['Hash']
         except TypeError:
             rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
-            self.liability.result = ipfs_response[0]['Hash']
+            self.liability.result.multihash = ipfs_response[0]['Hash']
 
         result_msg = Result()
-
-        result_mh = Multihash()
-        result_mh.multihash = self.liability.result
-
         result_msg.liability = self.liability.address
-        result_msg.result = result_mh
+        result_msg.result = self.liability.result
         result_msg.success = success
         return result_msg
 
