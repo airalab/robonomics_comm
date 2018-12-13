@@ -3,7 +3,8 @@
 # Robonomics liability tracking node.
 #
 
-from robonomics_msgs.msg import Result, Multihash
+from robonomics_msgs.msg import Result
+from ipfs_common.msg import Multihash
 from robonomics_liability.msg import Liability
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
@@ -54,7 +55,18 @@ class Listener:
 
         self.liabilities_queue = PersistentQueue('robonomics_liability_listener.queue')
 
-        self.result_handler()
+        self.result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
+
+        def liability_finalize(msg):
+            rospy.logdebug("liability_finalize: msg is: %s", msg)
+            is_finalized = False
+            while is_finalized is not True:
+                self.result.publish(msg)
+                time.sleep(30)
+                # TODO: move sleep time to rop parameter with 30 seconds by default
+                is_finalized = self.liability_finalization_checker.finalized(msg.liability.address)
+            self.finalized.publish(msg.liability.address)
+        rospy.Subscriber('result', Result, liability_finalize)
 
     def create_liability_filter(self):
         try:
@@ -65,43 +77,22 @@ class Listener:
         except Exception as e:
             rospy.logwarn("Failed to create liability filter with exception: \"%s\"", e)
 
-    def result_handler(self):
-        result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
-
-        def liability_finalize(msg):
-            is_finalized = False
-            while is_finalized is not True:
-                result.publish(msg)
-                time.sleep(30)
-                # TODO: move sleep time to rop parameter with 30 seconds by default
-                is_finalized = self.liability_finalization_checker.finalized(msg.liability)
-            self.finalized.publish(msg.liability)
-
-        rospy.Subscriber('result', Result, liability_finalize)
-
     def liability_read(self, address):
         '''
             Read liability from blockchain to message.
         '''
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
-
-        model_mh = Multihash()
-        model_mh.multihash = multihash.decode(c.call().model()).encode('base58').decode()
-
-        objective_mh = Multihash()
-        objective_mh.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
-
-        msg.address = address
-        msg.model = model_mh
-        msg.objective = objective_mh
+        msg.address.address = address
+        msg.model.multihash = multihash.decode(c.call().model()).encode('base58').decode()
+        msg.objective.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()
         msg.lighthouse.address = c.call().lighthouse()
         msg.token.address = c.call().token()
-        msg.cost.uint256 = c.call().cost()
+        msg.cost.uint256 = str(c.call().cost())
         msg.validator.address = c.call().validator()
-        msg.validatorFee.address = c.call().validatorFee()
+        msg.validatorFee.uint256 = str(c.call().validatorFee())
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 

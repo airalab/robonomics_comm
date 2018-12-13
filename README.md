@@ -41,3 +41,16 @@ roslaunch robonomics_liability liability.launch \
     web3_http_provider:="https://mainnet.infura.io/v3/cd7368514cbd4135b06e2c5581a4fff7" \
     web3_ws_provider:="wss://mainnet.infura.io/ws"
 ```
+
+Testing
+-------
+
+[Rostest](http://wiki.ros.org/rostest) framework is used for Robonomics communication stack testing.
+
+Run test command:
+
+```
+make test
+```
+
+> [Nix](https://nixos.org/nix/) is requred for testing.

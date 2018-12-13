@@ -37,7 +37,7 @@ class Executor:
         self.liability_execution_threads = {}
 
         def incoming_liability(msg):
-            if msg.promisor != self.__account.address:
+            if msg.promisor.address != self.__account.address:
                 rospy.logwarn('Liability %s is not for me, SKIP.', msg.address)
             else:
                 rospy.loginfo('Append %s to liability queue.', msg.address)
@@ -79,11 +79,11 @@ class Executor:
     def _liability_worker(self):
         while not rospy.is_shutdown():
             msg = self.liability_queue.get()
-            rospy.loginfo('Prepare to start liability %s', msg.address)
+            rospy.loginfo('Prepare to start liability %s', msg.address.address)
 
             try:
                 thread = LiabilityExecutionThread(self.ipfs_client, self.master_check_interval, self.recording_topics, msg)
-                self.liability_execution_threads[msg.address] = thread
+                self.liability_execution_threads[msg.address.address] = thread
                 self.ready.publish(msg)
             except Exception as e:
                 rospy.logerr("Failed to prepare liability execution thread for %s with exception \"%s\"", msg.address, e)

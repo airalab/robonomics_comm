@@ -3,7 +3,9 @@
 # Robonomics Demand/Offer/Result ipfs message converter
 #
 
-from robonomics_msgs.msg import Demand, Offer, Result, Multihash
+from robonomics_msgs.msg import Demand, Offer, Result
+from ethereum_common.msg import Address, UInt256
+from ipfs_common.msg import Multihash
 from binascii import unhexlify
 import voluptuous as v
 import rospy
@@ -59,20 +61,30 @@ schemaAskBidResult = v.Any(
 def dict2ask(m):
     msg = Demand()
 
-    model_mh = Multihash()
-    model_mh.multihash = m['model']
+    msg.model = Multihash() 
+    msg.model.multihash = m['model']
 
-    objective_mh = Multihash()
-    objective_mh.multihash = m['objective']
+    msg.objective = Multihash()
+    msg.objective.multihash = m['objective']
 
-    msg.model = model_mh
-    msg.objective = objective_mh
+    msg.token = Address()
     msg.token.address = m['token']
-    msg.cost.uint256 = m['cost']
+
+    msg.cost = UInt256()
+    msg.cost.uint256 = str(m['cost'])
+
+    msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
+ 
+    msg.validator = Address()
     msg.validator.address = m['validator']
-    msg.validatorFee.uint256 = m['validatorFee']
-    msg.deadline.uint256 = m['deadline']
+
+    msg.validatorFee = UInt256()
+    msg.validatorFee.uint256 = str(m['validatorFee'])
+
+    msg.deadline = UInt256()
+    msg.deadline.uint256 = str(m['deadline'])
+
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -81,20 +93,30 @@ def dict2ask(m):
 def dict2bid(m):
     msg = Offer()
 
-    model_mh = Multihash()
-    model_mh.multihash = m['model']
+    msg.model = Multihash()
+    msg.model.multihash = m['model']
 
-    objective_mh = Multihash()
-    objective_mh.multihash = m['objective']
+    msg.objective = Multihash()
+    msg.objective.multihash = m['objective']
 
-    msg.model = model_mh
-    msg.objective = objective_mh
+    msg.token = Address()
     msg.token.address = m['token']
-    msg.cost.uint256 = m['cost']
+
+    msg.cost = UInt256()
+    msg.cost.uint256 = str(m['cost'])
+
+    msg.validator = Address()
     msg.validator.address = m['validator']
+
+    msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
-    msg.lighthouseFee.uint256 = m['lighthouseFee']
-    msg.deadline.uint256 = m['deadline']
+
+    msg.lighthouseFee = UInt256()
+    msg.lighthouseFee.uint256 = str(m['lighthouseFee'])
+
+    msg.deadline = UInt256()
+    msg.deadline.uint256 = str(m['deadline'])
+
     msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -103,11 +125,12 @@ def dict2bid(m):
 def dict2res(m):
     msg = Result()
 
-    result_mh = Multihash()
-    result_mh.multihash = m['result']
-
+    msg.liability = Address()
     msg.liability.address = m['liability']
-    msg.result = result_mh
+
+    msg.result = Multihash()
+    msg.result.multihash = m['result']
+
     msg.success = m['success']
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg

@@ -18,11 +18,11 @@ def bid2dict(b):
         'model': b.model.multihash,
         'objective': b.objective.multihash,
         'token': b.token.address,
-        'cost': b.cost.uint256,
+        'cost': int(b.cost.uint256),
         'validator': b.validator.address,
         'lighthouse': b.lighthouse.address,
-        'lighthouseFee': b.lighthouseFee.uint256,
-        'deadline': b.deadline.uint256,
+        'lighthouseFee': int(b.lighthouseFee.uint256),
+        'deadline': int(b.deadline.uint256),
         'nonce': hexlify(b.nonce).decode('utf-8'),
         'signature': hexlify(b.signature).decode('utf-8')
     }
@@ -33,11 +33,11 @@ def ask2dict(a):
         'model': a.model.multihash,
         'objective': a.objective.multihash,
         'token': a.token.address,
-        'cost': a.cost.uint256,
+        'cost': int(a.cost.uint256),
         'lighthouse': a.lighthouse.address,
         'validator': a.validator.address,
-        'validatorFee': a.validatorFee.uint256,
-        'deadline': a.deadline.uint256,
+        'validatorFee': int(a.validatorFee.uint256),
+        'deadline': int(a.deadline.uint256),
         'nonce': hexlify(a.nonce).decode('utf-8'),
         'signature': hexlify(a.signature).decode('utf-8')
     }

@@ -1,6 +1,7 @@
 import threading
 
-from robonomics_msgs.msg import Result, Multihash
+from robonomics_msgs.msg import Result
+from ipfs_common.msg import Multihash
 from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
 from tempfile import TemporaryDirectory
@@ -21,7 +22,7 @@ class LiabilityExecutionThread(object):
 
         self.__recorder = None
         self.__liability_result_file = None
-        self.__liability_execution_namespace = "eth_{0}".format(self.liability.address)
+        self.__liability_execution_namespace = "eth_{0}".format(self.liability.address.address)
 
         self.tmp_directory = TemporaryDirectory()
         rospy.logdebug('Temporary directory created: %s', self.tmp_directory.name)
@@ -37,18 +38,14 @@ class LiabilityExecutionThread(object):
 
         ipfs_response = self.ipfs_client.add(self.__liability_result_file)
         try:
-            self.liability.result = ipfs_response['Hash']
+            self.liability.result.multihash = ipfs_response['Hash']
         except TypeError:
             rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
-            self.liability.result = ipfs_response[0]['Hash']
+            self.liability.result.multihash = ipfs_response[0]['Hash']
 
         result_msg = Result()
-
-        result_mh = Multihash()
-        result_mh.multihash = self.liability.result
-
         result_msg.liability = self.liability.address
-        result_msg.result = result_mh
+        result_msg.result = self.liability.result
         result_msg.success = success
         return result_msg
 

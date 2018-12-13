@@ -24,12 +24,12 @@ def demand_hash(msg):
              'bytes32']
     return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), "base58").encode(),
                                      multihash.decode(msg.objective.multihash.encode(), "base58").encode(),
-                                     msg.token,
-                                     msg.cost,
-                                     msg.lighthouse,
-                                     msg.validator,
-                                     msg.validatorFee,
-                                     msg.deadline,
+                                     msg.token.address,
+                                     int(msg.cost.uint256),
+                                     msg.lighthouse.address,
+                                     msg.validator.address,
+                                     int(msg.validatorFee.uint256),
+                                     int(msg.deadline.uint256),
                                      msg.nonce])
 
 
@@ -45,19 +45,19 @@ def offer_hash(msg):
              'bytes32']
     return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), 'base58').encode(),
                                      multihash.decode(msg.objective.multihash.encode(), 'base58').encode(),
-                                     msg.token,
-                                     msg.cost,
-                                     msg.validator,
-                                     msg.lighthouse,
-                                     msg.lighthouseFee,
-                                     msg.deadline,
+                                     msg.token.address,
+                                     int(msg.cost.uint256),
+                                     msg.validator.address,
+                                     msg.lighthouse.address,
+                                     int(msg.lighthouseFee.uint256),
+                                     int(msg.deadline.uint256),
                                      msg.nonce])
 
 def result_hash(msg):
     types = ['address',
              'bytes',
              'bool']
-    return Web3.soliditySha3(types, [msg.liability, multihash.decode(msg.result.multihash.encode(), 'base58').encode(), msg.success])
+    return Web3.soliditySha3(types, [msg.liability.address, multihash.decode(msg.result.multihash.encode(), 'base58').encode(), msg.success])
 
 
 class Signer:
