@@ -36,11 +36,16 @@ class Executor:
 
         self.liability_execution_threads = {}
 
+        #persistence publishers
+        self.persistence_add = rospy.Publisher('persistence/add', Liability, queue_size=10)
+        self.persistence_del = rospy.Publisher('persistence/del', Liability, queue_size=10)
+
         def incoming_liability(msg):
             if msg.promisor.address != self.__account.address:
                 rospy.logwarn('Liability %s is not for me, SKIP.', msg.address)
             else:
                 rospy.loginfo('Append %s to liability queue.', msg.address)
+                self.persistence_add.publish(msg)
                 self.liability_queue.put(msg)
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
@@ -49,6 +54,7 @@ class Executor:
 
             liability_msg = liability_thread.getLiabilityMsg()
             result = liability_thread.finish(msg.success)
+            self.persistence_del.publish(liability_msg)
 
             self.complete.publish(liability_msg)
             self.result_topic.publish(result)
