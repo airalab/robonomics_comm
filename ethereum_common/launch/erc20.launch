@@ -1,8 +1,8 @@
 <launch>
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
-  <arg name="erc20_token" default="xrt.3.robonomics.eth"/>
-  <arg name="factory_contract" default="factory.3.robonomics.eth" />
+  <arg name="erc20_token" default="xrt.4.robonomics.eth"/>
+  <arg name="factory_contract" default="factory.4.robonomics.eth" />
   <arg name="ens_contract" default="" />
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
@@ -14,7 +14,7 @@
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
-      <param name="factory_contract" value="factory.3.robonomics.eth" />
+      <param name="factory_contract" value="factory.4.robonomics.eth" />
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>

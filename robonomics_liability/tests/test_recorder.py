@@ -8,7 +8,7 @@ from robonomics_liability.recorder import Recorder
 from tempfile import TemporaryDirectory
 from std_msgs.msg import String, Float32
 
-PKG = 'robonomics_lighthouse'
+PKG = 'robonomics_liability'
 NAME = 'test_recorder'
 
 
