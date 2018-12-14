@@ -21,6 +21,7 @@ class LiabilityExecutionThread(object):
         self.thread.daemon = True
 
         self.__recorder = None
+        self.__player = None
         self.__liability_result_file = None
         self.__liability_execution_namespace = "eth_{0}".format(self.liability.address.address)
 
@@ -35,6 +36,7 @@ class LiabilityExecutionThread(object):
 
     def finish(self, success):
         self.__recorder.stop()
+        self.__player.stop()
 
         ipfs_response = self.ipfs_client.add(self.__liability_result_file)
         try:
@@ -73,8 +75,8 @@ class LiabilityExecutionThread(object):
 
         objective_rosbag = get_rosbag_from_file(self.liability.objective.multihash)
         if objective_rosbag is not None:
-            player = Player(objective_rosbag, self.__liability_execution_namespace)
-            player.start()
+            self.__player = Player(objective_rosbag, self.__liability_execution_namespace)
+            self.__player.start()
             rospy.logdebug('Rosbag player started')
         else:
             rospy.logwarn('Skip playing objective using rosbag player in liability %s', self.liability.address)
