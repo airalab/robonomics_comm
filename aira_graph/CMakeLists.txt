@@ -10,7 +10,6 @@ project(aira_graph)
 find_package(catkin REQUIRED
     COMPONENTS
         rospy
-        ipfs_common
         message_generation
 )
 

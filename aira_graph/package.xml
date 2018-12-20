@@ -47,6 +47,5 @@
   <build_depend>message_generation</build_depend>
 
   <exec_depend>message_runtime</exec_depend>
-  <exec_depend>ipfs_common</exec_depend>
 
 </package>
