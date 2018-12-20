@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>aira_graph</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <description>AIRA Graph service node</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -47,5 +47,6 @@
   <build_depend>message_generation</build_depend>
 
   <exec_depend>message_runtime</exec_depend>
+  <exec_depend>ipfs_common</exec_depend>
 
 </package>

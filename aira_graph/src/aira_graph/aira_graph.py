@@ -4,13 +4,15 @@
 #
 
 from eth_account.messages import defunct_hash_message
+from ipfs_common.pubsub import subscribe, publish
 from time import sleep, time
 import ipfsapi
 from urllib.parse import urlparse
 from web3.auto import w3
-from json import dumps
+from json import dumps, loads
 from threading import Thread
 from ethereum_common.eth_keyfile_helper import KeyfileHelper
+from std_msgs.msg import String
 import rospy
 
 
@@ -26,6 +28,7 @@ class AIRAGraph:
 
         self.graph_topic = rospy.get_param('~graph_topic')
         self.lighthouse_topic = rospy.get_param('~lighthouse_topic')
+        self.greeting = rospy.Publisher('greeting', String, queue_size=10)
 
     def __sign(self, json):
         msg = dumps(json)
@@ -37,16 +40,26 @@ class AIRAGraph:
         stat = {'id': self.ipfs_client.id()['ID'], 'addresses': self.ipfs_client.id()['Addresses'], 'lighthouse': self.lighthouse_topic}
 
         def graph_thread():
-            with self.ipfs_client.pubsub_sub(self.lighthouse_topic, discover=True) as sub:
-                with self.ipfs_client.pubsub_sub(self.graph_topic, discover=True) as graph_sub:
-                    while True:
-                        stat['peers'] = self.ipfs_client.pubsub_peers(self.lighthouse_topic)['Strings']
-                        stat['timestamp'] = int(time())
-                        stat_hash = '/ipfs/{}'.format(self.ipfs_client.add_str(self.__sign(stat)))
-                        name = self.ipfs_client.name_publish(stat_hash)['Name']
-                        rospy.loginfo('Published to /ipns/{}'.format(name))
-                        self.ipfs_client.pubsub_pub(self.graph_topic, '{}\r\n'.format(name))
-                        sleep(5)
+            while not rospy.is_shutdown():
+                stat['peers'] = self.ipfs_client.pubsub_peers(self.lighthouse_topic)['Strings']
+                stat['timestamp'] = int(time())
+                stat_hash = '/ipfs/{}'.format(self.ipfs_client.add_str(self.__sign(stat)))
+                name = self.ipfs_client.name_publish(stat_hash)['Name']
+                rospy.loginfo('Published to /ipns/{}'.format(name))
+                publish(self.ipfs_client, self.graph_topic, name)
+                sleep(5)
 
+        def greeting_thread():
+            m = String()
+            for msg in subscribe(self.ipfs_client, self.graph_topic):
+                try:
+                    path = self.ipfs_client.resolve('/ipns/{}'.format(msg))['Path']
+                    payload, signature = self.ipfs_client.cat(path).decode('utf8').split('---')
+                    json = loads(payload)
+                    m.data = 'aira {}..{} online'.format(json['id'][:4], json['id'][-4:])
+                    self.greeting.publish(m)
+                except Exception as e:
+                    rospy.logerr(e)
         Thread(target=graph_thread, daemon=True).start()
+        Thread(target=greeting_thread, daemon=True).start()
         rospy.spin()
