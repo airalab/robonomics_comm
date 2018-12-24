@@ -1,2 +1,2 @@
 language: nix 
-script: make test
+script: make package 
