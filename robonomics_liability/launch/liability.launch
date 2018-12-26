@@ -12,6 +12,8 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
+  <arg name="persistence_update_interval" default='0.1' />
+
   <arg name="enable_aira_graph" default="true" />
   <arg name="graph_topic" default="graph.4.robonomics.eth" />
   <arg name="lighthouse_topic" default="airalab.lighthouse.4.robonomics.eth" />
@@ -63,6 +65,7 @@
     </node>
 
     <node pkg="robonomics_liability" type="persistence_node" name="persistence" respawn="true" output="screen">
+      <param name="persistence_update_interval" value="$(arg persistence_update_interval)" />
     </node>
   </group>
 </launch>

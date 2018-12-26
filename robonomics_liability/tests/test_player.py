@@ -57,8 +57,9 @@ class TestPlayer(unittest.TestCase):
 
             time.sleep(3)
             rospy.loginfo("Start player")
-            player = Player(bag)
-            player.start()
+            test_player_start_timestamp = rospy.Time.from_sec(0)
+            player = Player(bag, "0x0000000000000000000000000000000000000000")
+            player.start(test_player_start_timestamp)
             time.sleep(3)
 
             for topic in self.subscribers_msg_counters:
