@@ -1,0 +1,2 @@
+ethereum_common/Address address
+time timestamp
