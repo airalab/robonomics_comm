@@ -61,5 +61,8 @@
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>
+
+    <node pkg="robonomics_liability" type="persistence_node" name="persistence" respawn="true" output="screen">
+    </node>
   </group>
 </launch>

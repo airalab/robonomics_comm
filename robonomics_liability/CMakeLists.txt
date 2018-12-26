@@ -22,6 +22,7 @@ add_service_files(
     FILES
         FinishLiability.srv
         StartLiability.srv
+        PersistenceContainsLiability.srv
 )
 
 generate_messages(
@@ -37,6 +38,7 @@ catkin_install_python(
     PROGRAMS
         scripts/listener_node
         scripts/executor_node
+        scripts/persistence_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

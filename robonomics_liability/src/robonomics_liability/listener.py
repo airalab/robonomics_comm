@@ -6,6 +6,7 @@
 from robonomics_msgs.msg import Result
 from ipfs_common.msg import Multihash
 from robonomics_liability.msg import Liability
+from robonomics_liability.srv import PersistenceContainsLiability, PersistenceContainsLiabilityResponse
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
 from threading import Timer
@@ -57,6 +58,8 @@ class Listener:
 
         self.result = rospy.Publisher('infochan/eth/signing/result', Result, queue_size=10)
 
+        self.persistence_contains_liability = rospy.ServiceProxy('persistence/exists', PersistenceContainsLiability)
+
         def liability_finalize(msg):
             rospy.logdebug("liability_finalize: msg is: %s", msg)
             is_finalized = False
@@ -106,7 +109,7 @@ class Listener:
                 for entry in self.liability_filter.get_new_entries():
                     liability_address = entry['args']['liability']
                     self.liabilities_queue.push(liability_address)
-                    rospy.loginfo("New liability added to queue: %s", liability_address)
+                    rospy.loginfo("New liability added to persistence queue: %s", liability_address)
             except Exception as e:
                 rospy.logerr('listener liability filter exception: %s', e)
                 self.create_liability_filter()
@@ -116,7 +119,13 @@ class Listener:
             entry = self.liabilities_queue.peek()
             if entry is not None:
                 try:
-                    self.liability.publish(self.liability_read(entry))
+                    rospy.wait_for_service(self.persistence_contains_liability.resolved_name)
+                    liability_already_in_persistence = self.persistence_contains_liability(entry)
+
+                    #TODO: verify that liability for my saved in persistence before pop them from liabilities_queue
+                    if not liability_already_in_persistence.exists:
+                        self.liability.publish(self.liability_read(entry))
+
                     self.liabilities_queue.pop()
                     rospy.loginfo("Liability read successfully: %s", entry)
                 except Exception as e:
