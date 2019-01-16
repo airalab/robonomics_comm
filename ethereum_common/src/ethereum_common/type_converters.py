@@ -1,14 +1,10 @@
-from ethereum_common.msg import *
+from ethereum_common.msg import Address, UInt256, ApprovalEvent, TransferEvent
 
 def strToAddress(s):
-    a = Address()
-    a.address = s
-    return a
+    return Address(s)
 
 def strToUInt256(s):
-    u = UInt256()
-    u.uint256 = str(s)
-    return u
+    return UInt256(str(s))
 
 def filterEntryToTransferEvent(args):
     m = TransferEvent()
