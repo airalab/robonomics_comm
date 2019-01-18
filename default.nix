@@ -2,6 +2,7 @@
 , ros_comm
 , mkRosPackage
 , python3Packages
+, python3
 }:
 
 mkRosPackage rec {
@@ -13,6 +14,10 @@ mkRosPackage rec {
 
   propagatedBuildInputs = with python3Packages;
   [ ros_comm web3 multihash voluptuous ipfsapi python-persistent-queue ];
+
+  postInstall = ''
+    patch $out/lib/${python3.libPrefix}/site-packages/ethereum_common/msg/_UInt256.py $src/ethereum_common/msg/_UInt256.py.patch
+  '';
 
   meta = with stdenv.lib; {
     description = "Robonomics communication stack";

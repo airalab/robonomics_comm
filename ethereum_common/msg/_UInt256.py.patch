@@ -1,0 +1,54 @@
+--- _UInt256.py	2019-01-16 10:50:03.382925478 +0300
++++ _UInt256.py	2019-01-16 10:51:23.251234649 +0300
+@@ -5,6 +5,7 @@
+ import genpy
+ import struct
+ 
++UINT256_MAX_VALUE = 2**256 - 1
+ 
+ class UInt256(genpy.Message):
+   _md5sum = "d3e47bf4311da2c63d362b5eea4c389b"
+@@ -117,6 +118,43 @@
+     except struct.error as e:
+       raise genpy.DeserializationError(e) #most likely buffer underfill
+ 
++  def __add__(self, other):
++      if isinstance(other, int):
++          self_int = int(self.uint256)
++          result_int = self_int + other
++          if result_int > UINT256_MAX_VALUE:
++              raise OverflowError("Result is larger then UInt256")
++          return UInt256(str(result_int))
++      elif isinstance(other, UInt256):
++          self_int = int(self.uint256)
++          other_int = int(other.uint256)
++          result_int = self_int + other_int
++          if result_int > UINT256_MAX_VALUE:
++              raise OverflowError("Result is larger then UInt256")
++          return UInt256(str(result_int))
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++
++  def __iadd__(self, other):
++      if isinstance(other, int):
++          self_int = int(self.uint256)
++          result_int = self_int + other
++          if result_int > UINT256_MAX_VALUE:
++              raise OverflowError("Result is larger then UInt256")
++          self.uint256 = str(result_int)
++          return self
++      elif isinstance(other, UInt256):
++          self_int = int(self.uint256)
++          other_int = int(other.uint256)
++          result_int = self_int + other_int
++          if result_int > UINT256_MAX_VALUE:
++              raise OverflowError("Result is larger then UInt256")
++          self.uint256 = str(result_int)
++          return self
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++
++
+ _struct_I = genpy.struct_I
+ def _get_struct_I():
+     global _struct_I

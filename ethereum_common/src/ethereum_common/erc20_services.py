@@ -1,5 +1,5 @@
 from web3 import Web3
-from ethereum_common.msg import *
+from ethereum_common.msg import ApprovalEvent, TransferEvent
 from ethereum_common.srv import *
 from threading import Timer
 from json import loads
