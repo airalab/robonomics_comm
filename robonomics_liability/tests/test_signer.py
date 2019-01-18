@@ -2,7 +2,8 @@
 
 import unittest, rostest, sys, rospy, time
 from robonomics_msgs.msg import Result, Offer, Demand
-from ethereum_common import signer
+from robonomics_msgs import robonomicsMessageUtils
+from ethereum_common import eth_keyfile_helper
 from robonomics_msgs import messageValidator
 import testMessages
 from binascii import hexlify
@@ -20,23 +21,32 @@ class TestSigner(unittest.TestCase):
         self._test_sign_bid_success = False
         self._test_sign_res_success = False
 
+        __keyfile = rospy.get_param('~keyfile')
+        __keyfile_password_file = rospy.get_param('~keyfile_password_file')
+
+        __keyfile_helper = eth_keyfile_helper.KeyfileHelper(__keyfile, keyfile_password_file=__keyfile_password_file)
+        self.__account = __keyfile_helper.get_local_account_from_keyfile()
+
+
     def test_demand_hash(self):
         self.assertEqual(bytearray.fromhex('70befa37eb23b512f1eec8d8cb4219ce720c5aafbb55ae043b66764870205afe'),
-                         signer.demand_hash(messageValidator.dict2ask(testMessages.validAskDict)))
+                         robonomicsMessageUtils.demand_hash(messageValidator.dict2ask(testMessages.validAskDict)))
 
     def test_offer_hash(self):
         self.assertEqual(bytearray.fromhex('f371f7a55b0972dfb6d3a6d7e224f004593bb33230eab6e43a93d37ad2b5a6d5'),
-                         signer.offer_hash(messageValidator.dict2bid(testMessages.validBidDict)))
+                         robonomicsMessageUtils.offer_hash(messageValidator.dict2bid(testMessages.validBidDict)))
 
     def test_result_hash(self):
         self.assertEqual(bytearray.fromhex('55c1a3f47762a8d67ed7c76bc140f85bdbf6eb41e70cc13aa41ed1791d939464'),
-                         signer.result_hash(messageValidator.dict2res(testMessages.validResDict)))
+                         robonomicsMessageUtils.result_hash(messageValidator.dict2res(testMessages.validResDict)))
 
     def signed_ask_handler(self, ask):
         self.assertEqual(testMessages.validAskDict['model'], ask.model.multihash)
         self.assertEqual(testMessages.validAskDict['objective'], ask.objective.multihash)
         self.assertEqual(testMessages.validAskDict['token'], ask.token.address)
         self.assertNotEqual(testMessages.validAskDict['signature'], hexlify(ask.signature).decode('utf-8'))
+
+        self.assertEqual(self.__account.address, robonomicsMessageUtils.get_signer_account_address(ask))
         self._test_sign_ask_success = True
 
     def test_sign_ask(self):
@@ -55,6 +65,9 @@ class TestSigner(unittest.TestCase):
         self.assertEqual(testMessages.validBidDict['objective'], bid.objective.multihash)
         self.assertEqual(testMessages.validBidDict['token'], bid.token.address)
         self.assertNotEqual(testMessages.validBidDict['signature'], hexlify(bid.signature).decode('utf-8'))
+
+        self.assertEqual(self.__account.address, robonomicsMessageUtils.get_signer_account_address(bid))
+
         self._test_sign_bid_success = True
 
     def test_sign_bid(self):
@@ -72,6 +85,9 @@ class TestSigner(unittest.TestCase):
         self.assertEqual(testMessages.validResDict['liability'], res.liability.address)
         self.assertEqual(testMessages.validResDict['result'], res.result.multihash)
         self.assertNotEqual(testMessages.validResDict['signature'], hexlify(res.signature).decode('utf-8'))
+
+        self.assertEqual(self.__account.address, robonomicsMessageUtils.get_signer_account_address(res))
+
         self._test_sign_res_success = True
 
     def test_sign_res(self):
