@@ -4,13 +4,15 @@
 #
 
 from robonomics_msgs.msg import Result
-from ipfs_common.msg import Multihash
 from robonomics_liability.msg import Liability
-from robonomics_liability.srv import PersistenceContainsLiability, PersistenceContainsLiabilityResponse
+from robonomics_liability.srv import PersistenceContainsLiability
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
 from threading import Timer
-import rospy, json, time, multihash
+import rospy
+import json
+import time
+import multihash
 from std_msgs.msg import String
 from . import finalization_checker
 from persistent_queue import PersistentQueue
@@ -122,7 +124,7 @@ class Listener:
                     rospy.wait_for_service(self.persistence_contains_liability.resolved_name)
                     liability_already_in_persistence = self.persistence_contains_liability(entry)
 
-                    #TODO: verify that liability for my saved in persistence before pop them from liabilities_queue
+                    # TODO: verify that liability for my saved in persistence before pop them from liabilities_queue
                     if not liability_already_in_persistence.exists:
                         self.liability.publish(self.liability_read(entry))
 

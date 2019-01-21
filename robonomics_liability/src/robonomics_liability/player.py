@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import rospy, rosbag
+import rospy
+import rosbag
 from threading import Thread
 from robonomics_liability.msg import LiabilityExecutionTimestamp
 
@@ -31,7 +32,7 @@ class Player:
 
     def simple_publisher(self, msgs):
         for topic, msg, timestamp in msgs:
-            if not topic in self.pubs:
+            if topic not in self.pubs:
                 rospy.logdebug('New publisher %s of %s', topic, msg.__class__)
                 self.pubs[topic] = rospy.Publisher(self.namespace + topic, msg.__class__, queue_size=10)
                 rospy.sleep(1)
