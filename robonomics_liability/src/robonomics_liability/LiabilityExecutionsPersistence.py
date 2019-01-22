@@ -1,4 +1,6 @@
-import rospy, shelve, time
+import rospy
+import shelve
+import time
 from threading import Lock, Timer
 from robonomics_liability.msg import Liability, LiabilityExecutionTimestamp
 from robonomics_liability.srv import PersistenceContainsLiability, PersistenceContainsLiabilityResponse, PersistenceLiabilityTimestamp, PersistenceLiabilityTimestampResponse

@@ -50,6 +50,7 @@ def offer_hash(msg):
                                      int(msg.deadline.uint256),
                                      msg.nonce])
 
+
 def result_hash(msg):
     types = ['address',
              'bytes',

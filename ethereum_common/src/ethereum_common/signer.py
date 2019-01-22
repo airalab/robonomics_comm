@@ -6,10 +6,12 @@
 from robonomics_msgs.msg import Demand, Offer, Result
 from web3 import Web3
 from robonomics_msgs import robonomicsMessageUtils
-import rospy, os
+import rospy
+import os
 import binascii
 from eth_account.messages import defunct_hash_message
 from . import eth_keyfile_helper
+
 
 class Signer:
     def __init__(self):
@@ -33,7 +35,7 @@ class Signer:
         self.signed_offer  = rospy.Publisher('sending/offer',  Offer, queue_size=10)
         self.signed_result = rospy.Publisher('sending/result', Result, queue_size=10)
 
-        #TODO: make tests when local sign will be implemented
+        # TODO: make tests when local sign will be implemented
         def sign_demand(msg):
             msg.nonce = os.urandom(32)
             message_hash = robonomicsMessageUtils.demand_hash(msg)

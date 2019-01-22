@@ -1,7 +1,6 @@
-from ethereum_common.srv import *
+from ethereum_common.srv import Accounts, AccountsResponse, AccountBalance, AccountBalanceResponse, Balance, BalanceResponse, BlockNumber, BlockNumberResponse
 from ethereum_common.eth_keyfile_helper import KeyfileHelper
 from ethereum_common.eth_utils import ETHUtils
-from ethereum_common.type_converters import *
 import rospy
 import ethereum_common.type_converters as type_converter
 

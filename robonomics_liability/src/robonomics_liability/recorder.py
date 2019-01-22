@@ -34,15 +34,21 @@
 Recorder subscribes to ROS messages and writes them to a bag file.
 """
 
-import roslib, rospy, rosbag, rosgraph.masterapi
-import threading, time, re, sys
+import roslib
+import rospy
+import rosbag
+import rosgraph.masterapi
+import threading
+import time
+import re
 import queue
+
 
 class Recorder(object):
     def __init__(self, filename, master_check_interval, bag_lock=None, regex=False, topics=[], namespace='', limit=0):
         """
         Subscribe to ROS messages and record them to a bag file.
-        
+
         @param filename: filename of bag to write to
         @type  filename: str
         @param master_check_interval: period (in seconds) to check master for new topic publications [default: 0.1]
@@ -68,7 +74,7 @@ class Recorder(object):
         self._listeners          = []
         self._subscriber_helpers = {}
         self._limited_topics     = set()
-        self._failed_topics      = set()       
+        self._failed_topics      = set()
         self._last_update        = time.time()
         self._write_queue        = queue.Queue()
         self._paused             = False
@@ -111,9 +117,13 @@ class Recorder(object):
         self._write_thread.start()
 
     @property
-    def paused(self):        return self._paused
+    def paused(self):
+        return self._paused
+
     def pause(self):         self._paused = True
+
     def unpause(self):       self._paused = False
+
     def toggle_paused(self): self._paused = not self._paused
 
     def stop(self):
@@ -123,12 +133,12 @@ class Recorder(object):
         with self._stop_condition:
             self._stop_flag = True
             self._stop_condition.notify_all()
-        
+
         self._write_queue.put(self)
         self._master_check_thread.join()
         self._write_thread.join()
 
-    ## Implementation
+    # Implementation
 
     def _run_master_check(self):
         master = rosgraph.masterapi.Master('rxbag.recorder')
@@ -137,17 +147,17 @@ class Recorder(object):
             while not self._stop_flag:
                 # Check for new topics
                 for topic, datatype in master.getPublishedTopics(''):
-                    # Check if: 
+                    # Check if:
                     #    the topic is already subscribed to, or
                     #    we've failed to subscribe to it already, or
                     #    we've already reached the message limit, or
-                    #    we don't want to subscribe 
+                    #    we don't want to subscribe
                     if topic in self._subscriber_helpers or topic in self._failed_topics or topic in self._limited_topics or not self._should_subscribe_to(topic):
                         continue
                     rospy.logdebug("RECORDER: subscribe to topic %s", topic)
                     try:
                         pytype = roslib.message.get_message_class(datatype)
-                        
+
                         self._message_count[topic] = 0
 
                         self._subscriber_helpers[topic] = _SubscriberHelper(self, topic, pytype)
@@ -165,7 +175,7 @@ class Recorder(object):
         # Unsubscribe from all topics
         for topic in list(self._subscriber_helpers.keys()):
             self._unsubscribe(topic)
-        
+
         # Close the bag file so that the index gets written
         try:
             self._bag.close()
@@ -206,12 +216,12 @@ class Recorder(object):
             while not self._stop_flag:
                 # Wait for a message
                 item = self._write_queue.get()
-                
+
                 if item == self:
                     continue
-                
+
                 topic, m, t = item
-                
+
                 # Write to the bag
                 with self._bag_lock:
                     self._bag.write(topic, m, t)
@@ -222,6 +232,7 @@ class Recorder(object):
 
         except Exception as ex:
             rospy.logerr('Error write to bag: %s', str(ex))
+
 
 class _SubscriberHelper(object):
     def __init__(self, recorder, topic, pytype):

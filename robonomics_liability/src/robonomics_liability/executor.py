@@ -10,9 +10,10 @@ from urllib.parse import urlparse
 from threading import Thread
 from .LiabilityExecutionThread import LiabilityExecutionThread
 from queue import Queue
-import rospy, ipfsapi
-from ethereum_common import eth_keyfile_helper
+import rospy
+import ipfsapi
 import os
+from ethereum_common import eth_keyfile_helper
 
 
 class Executor:
@@ -38,10 +39,10 @@ class Executor:
 
         self.liability_execution_threads = {}
 
-        #persistence publishers
+        # persistence publishers
         self.persistence_add = rospy.Publisher('persistence/add', Liability, queue_size=10)
         self.persistence_del = rospy.Publisher('persistence/del', Liability, queue_size=10)
-        #persistence services
+        # persistence services
         self.persistence_get_liability_timestamp = rospy.ServiceProxy('persistence/get_liability_timestamp', PersistenceLiabilityTimestamp)
 
         self.executions_work_directory = os.path.join(os.getcwd(), 'liabilities_executions')
@@ -124,7 +125,6 @@ class Executor:
 
             return StartLiabilityResponse(True, "Liability {0} resumed".format(liability_thread.getLiabilityMsg().address.address))
         rospy.Service('resume', StartLiability, resume_liability)
-
 
         self.complete =     rospy.Publisher('complete', Liability, queue_size=10)
         self.ready  =       rospy.Publisher('ready', Liability, queue_size=10)

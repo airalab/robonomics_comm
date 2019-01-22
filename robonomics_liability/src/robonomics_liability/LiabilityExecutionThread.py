@@ -3,7 +3,8 @@ import threading
 from robonomics_msgs.msg import Result
 from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
-import rospy, os
+import rospy
+import os
 
 
 class LiabilityExecutionThread(object):
@@ -53,7 +54,7 @@ class LiabilityExecutionThread(object):
         if self.thread.isAlive():
             self.__recorder.stop()
             self.__player.stop()
-            if delete_result is True and os.path.exists(self.__liability_result_file) :
+            if delete_result is True and os.path.exists(self.__liability_result_file):
                 os.remove(self.__liability_result_file)
 
     def __initializeRecorder(self):
