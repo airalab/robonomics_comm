@@ -4,10 +4,10 @@
 #
 
 from robonomics_msgs.msg import Demand, Offer, Result
+from ethereum_common.msg import Address
 from web3 import Web3
 from robonomics_msgs import robonomicsMessageUtils
 import rospy
-import os
 import binascii
 from eth_account.messages import defunct_hash_message
 from . import eth_keyfile_helper
@@ -37,7 +37,7 @@ class Signer:
 
         # TODO: make tests when local sign will be implemented
         def sign_demand(msg):
-            msg.nonce = os.urandom(32)
+            msg.sender = Address(self.__account.address)
             message_hash = robonomicsMessageUtils.demand_hash(msg)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature
@@ -46,7 +46,7 @@ class Signer:
         rospy.Subscriber('signing/demand', Demand, sign_demand)
 
         def sign_offer(msg):
-            msg.nonce = os.urandom(32)
+            msg.sender = Address(self.__account.address)
             message_hash = robonomicsMessageUtils.offer_hash(msg)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature

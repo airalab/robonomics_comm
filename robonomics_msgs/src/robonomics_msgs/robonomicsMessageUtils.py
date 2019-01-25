@@ -18,7 +18,7 @@ def demand_hash(msg):
              'address',
              'uint256',
              'uint256',
-             'bytes32']
+             'address']
     return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), "base58").encode(),
                                      multihash.decode(msg.objective.multihash.encode(), "base58").encode(),
                                      msg.token.address,
@@ -27,7 +27,7 @@ def demand_hash(msg):
                                      msg.validator.address,
                                      int(msg.validatorFee.uint256),
                                      int(msg.deadline.uint256),
-                                     msg.nonce])
+                                     msg.sender.address])
 
 
 def offer_hash(msg):
@@ -39,7 +39,7 @@ def offer_hash(msg):
              'address',
              'uint256',
              'uint256',
-             'bytes32']
+             'address']
     return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), 'base58').encode(),
                                      multihash.decode(msg.objective.multihash.encode(), 'base58').encode(),
                                      msg.token.address,
@@ -48,7 +48,7 @@ def offer_hash(msg):
                                      msg.lighthouse.address,
                                      int(msg.lighthouseFee.uint256),
                                      int(msg.deadline.uint256),
-                                     msg.nonce])
+                                     msg.sender.address])
 
 
 def result_hash(msg):

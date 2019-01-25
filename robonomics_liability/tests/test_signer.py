@@ -29,11 +29,13 @@ class TestSigner(unittest.TestCase):
 
 
     def test_demand_hash(self):
-        self.assertEqual(bytearray.fromhex('70befa37eb23b512f1eec8d8cb4219ce720c5aafbb55ae043b66764870205afe'),
+        rospy.logwarn("test_demand_hash: %s", hexlify(robonomicsMessageUtils.demand_hash(messageValidator.dict2ask(testMessages.validAskDict))))
+        self.assertEqual(bytearray.fromhex('e5654bdb492877c1fef99e3fe0fabaa4b3094c3d3156e367425485fbf7d004be'),
                          robonomicsMessageUtils.demand_hash(messageValidator.dict2ask(testMessages.validAskDict)))
 
     def test_offer_hash(self):
-        self.assertEqual(bytearray.fromhex('f371f7a55b0972dfb6d3a6d7e224f004593bb33230eab6e43a93d37ad2b5a6d5'),
+        rospy.logwarn("test_offer_hash: %s", hexlify(robonomicsMessageUtils.offer_hash(messageValidator.dict2bid(testMessages.validBidDict))))
+        self.assertEqual(bytearray.fromhex('e5654bdb492877c1fef99e3fe0fabaa4b3094c3d3156e367425485fbf7d004be'),
                          robonomicsMessageUtils.offer_hash(messageValidator.dict2bid(testMessages.validBidDict)))
 
     def test_result_hash(self):
