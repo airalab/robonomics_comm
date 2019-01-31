@@ -26,7 +26,6 @@
 
           <arg name="factory_contract" value="$(arg factory_contract)" />
           <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
-          <arg name="web3_ws_provider" value="$(arg web3_ws_provider)" />
           <arg name="ens_contract" value="$(arg ens_contract)" />
         </include>
       </group>
@@ -42,7 +41,6 @@
 
           <arg name="factory_contract" value="$(arg factory_contract)" />
           <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
-          <arg name="web3_ws_provider" value="$(arg web3_ws_provider)" />
           <arg name="ens_contract" value="$(arg ens_contract)" />
         </include>
       </group>
