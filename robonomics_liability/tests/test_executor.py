@@ -27,8 +27,8 @@ class TestExecutor(unittest.TestCase):
         self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         self.test_token = rospy.get_param('~test_token')
-        self.test_bid_publisher = rospy.Publisher('/liability/infochan/eth/signing/offer', Offer, queue_size=10)
-        self.test_ask_publisher = rospy.Publisher('/liability/infochan/eth/signing/demand', Demand, queue_size=10)
+        self.test_bid_publisher = rospy.Publisher('/liability/test_executor/o/eth/signing/offer', Offer, queue_size=10)
+        self.test_ask_publisher = rospy.Publisher('/liability/test_executor/d/eth/signing/demand', Demand, queue_size=10)
 
         web3_http_provider = rospy.get_param('~web3_http_provider')
         http_provider = HTTPProvider(web3_http_provider)
@@ -50,7 +50,6 @@ class TestExecutor(unittest.TestCase):
 
         self.test_objective = self.create_test_objective()
         rospy.logwarn("TEST EXECUTOR: CURRENT OBJECTIVE is %s", self.test_objective)
-
 
     def create_test_objective(self):
         with TemporaryDirectory() as tmpdir:
@@ -133,7 +132,7 @@ class TestExecutor(unittest.TestCase):
             "lighthouse": self.lighthouse_address,
             "lighthouseFee": 0,
             "deadline": 9999999,
-            "nonce": "",
+            "sender": "",
             "signature": ""
         }
         return messageValidator.dict2bid(bidDict)
@@ -148,7 +147,7 @@ class TestExecutor(unittest.TestCase):
             "validator": "0x0000000000000000000000000000000000000000",
             "validatorFee": 0,
             "deadline": 9999999,
-            "nonce": "",
+            "sender": "",
             "signature": ""
         }
         return messageValidator.dict2ask(askDict)

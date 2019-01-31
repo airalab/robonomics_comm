@@ -1,13 +1,26 @@
 <launch>
   <arg name="enable_signer" default="true" />
+
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
+
+  <arg name="factory_contract" default="factory.4.robonomics.eth" />
+  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="ens_contract" default="" />
 
   <group ns="eth">
     <!-- Message signer helper -->
     <node pkg="ethereum_common" type="signer_node" name="signer" respawn="true" output="screen" if="$(arg enable_signer)" >
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+
+      <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
+
+      <param name="factory_contract" value="$(arg factory_contract)" />
+      <param name="web3_http_provider" value="$(arg web3_http_provider)" />
+      <param name="ens_contract" value="$(arg ens_contract)"
+             if="$(eval len(arg('ens_contract')) > 0)"/>
+
     </node>
 
   </group>

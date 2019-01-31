@@ -4,11 +4,13 @@
 #
 
 from robonomics_msgs.msg import Demand, Offer, Result
-from web3 import Web3
+from ethereum_common.msg import Address, UInt256
+from web3 import Web3, HTTPProvider
+from ens import ENS
 from robonomics_msgs import robonomicsMessageUtils
 import rospy
-import os
 import binascii
+import json
 from eth_account.messages import defunct_hash_message
 from . import eth_keyfile_helper
 
@@ -19,11 +21,17 @@ class Signer:
             Lighthouse signer initialisation.
         '''
         rospy.init_node('robonomics_signer')
-        self.web3 = Web3()
 
-        from web3.middleware import geth_poa_middleware
-        # inject the poa compatibility middleware to the innermost layer
-        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        ens_contract = rospy.get_param('~ens_contract', None)
+        web3_http_provider = rospy.get_param('~web3_http_provider')
+        http_provider = HTTPProvider(web3_http_provider)
+
+        self.ens = ENS(http_provider, addr=ens_contract)
+        self.web3 = Web3(http_provider, ens=self.ens)
+
+        factory_abi = json.loads(rospy.get_param('~factory_contract_abi'))
+        factory_address = self.ens.address(rospy.get_param('~factory_contract'))
+        factory = self.web3.eth.contract(factory_address, abi=factory_abi)
 
         __keyfile = rospy.get_param('~keyfile')
         __keyfile_password_file = rospy.get_param('~keyfile_password_file')
@@ -35,10 +43,14 @@ class Signer:
         self.signed_offer  = rospy.Publisher('sending/offer',  Offer, queue_size=10)
         self.signed_result = rospy.Publisher('sending/result', Result, queue_size=10)
 
-        # TODO: make tests when local sign will be implemented
+        def get_nonce_by_address(address):
+            nonce = factory.call().nonceOf(address.address)
+            return UInt256(nonce)
+
         def sign_demand(msg):
-            msg.nonce = os.urandom(32)
-            message_hash = robonomicsMessageUtils.demand_hash(msg)
+            msg.sender = Address(self.__account.address)
+            current_nonce = get_nonce_by_address(msg.sender)
+            message_hash = robonomicsMessageUtils.demand_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
@@ -46,8 +58,9 @@ class Signer:
         rospy.Subscriber('signing/demand', Demand, sign_demand)
 
         def sign_offer(msg):
-            msg.nonce = os.urandom(32)
-            message_hash = robonomicsMessageUtils.offer_hash(msg)
+            msg.sender = Address(self.__account.address)
+            current_nonce = get_nonce_by_address(msg.sender)
+            message_hash = robonomicsMessageUtils.offer_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature
             rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))

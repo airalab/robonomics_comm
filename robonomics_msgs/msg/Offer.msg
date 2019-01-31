@@ -14,7 +14,7 @@ ethereum_common/Address lighthouse    #address
 ethereum_common/UInt256 lighthouseFee # int 
 # Deadline block number
 ethereum_common/UInt256 deadline
-# Order nonce value 
-uint8[] nonce       # hex
+# Offer sender address
+ethereum_common/Address sender     # address
 # Order signature
 uint8[] signature   # hex

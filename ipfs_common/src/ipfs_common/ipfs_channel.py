@@ -23,7 +23,7 @@ def bid2dict(b):
         'lighthouse': b.lighthouse.address,
         'lighthouseFee': int(b.lighthouseFee.uint256),
         'deadline': int(b.deadline.uint256),
-        'nonce': hexlify(b.nonce).decode('utf-8'),
+        'sender': b.sender.address,
         'signature': hexlify(b.signature).decode('utf-8')
     }
 
@@ -38,7 +38,7 @@ def ask2dict(a):
         'validator': a.validator.address,
         'validatorFee': int(a.validatorFee.uint256),
         'deadline': int(a.deadline.uint256),
-        'nonce': hexlify(a.nonce).decode('utf-8'),
+        'sender': a.sender.address,
         'signature': hexlify(a.signature).decode('utf-8')
     }
 

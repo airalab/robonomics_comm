@@ -262,8 +262,8 @@
           "type": "uint256"
         },
         {
-          "name": "_nonce",
-          "type": "bytes32"
+          "name": "_sender",
+          "type": "address"
         },
         {
           "name": "_signature",
@@ -317,8 +317,8 @@
           "type": "uint256"
         },
         {
-          "name": "_nonce",
-          "type": "bytes32"
+          "name": "_sender",
+          "type": "address"
         },
         {
           "name": "_signature",

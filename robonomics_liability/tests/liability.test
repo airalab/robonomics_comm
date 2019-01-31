@@ -7,7 +7,47 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
+  <arg name="demand_signer_keyfile" default="" />
+  <arg name="demand_signer_keyfile_password_file" default="" />
+
   <arg name="test_token" default="" />
+
+  <group ns="liability">
+    <group ns="test_executor">
+      <!-- message signer interface -->
+      <group ns="d">
+        <remap from="/liability/test_executor/d/eth/sending/demand" to="/liability/infochan/eth/sending/demand"/>
+        <remap from="/liability/test_executor/d/eth/sending/offer" to="/liability/infochan/eth/sending/offer"/>
+        <remap from="/liability/test_executor/d/eth/sending/result" to="/liability/infochan/eth/sending/result"/>
+
+        <include file="$(find ethereum_common)/launch/signer.launch">
+          <arg name="keyfile" value="$(arg demand_signer_keyfile)" />
+          <arg name="keyfile_password_file" value="$(arg demand_signer_keyfile_password_file)" />
+
+          <arg name="factory_contract" value="$(arg factory_contract)" />
+          <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+          <arg name="ens_contract" value="$(arg ens_contract)" />
+        </include>
+      </group>
+
+      <group ns="o">
+        <remap from="/liability/test_executor/o/eth/sending/demand" to="/liability/infochan/eth/sending/demand"/>
+        <remap from="/liability/test_executor/o/eth/sending/offer" to="/liability/infochan/eth/sending/offer"/>
+        <remap from="/liability/test_executor/o/eth/sending/result" to="/liability/infochan/eth/sending/result"/>
+
+        <include file="$(find ethereum_common)/launch/signer.launch">
+          <arg name="keyfile" value="$(arg keyfile)" />
+          <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+
+          <arg name="factory_contract" value="$(arg factory_contract)" />
+          <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+          <arg name="ens_contract" value="$(arg ens_contract)" />
+        </include>
+      </group>
+    </group>
+  </group>
+
+
 
   <test test-name="test_executor" pkg="robonomics_liability" type="test_executor.py" time-limit="900.0">
     <param name="web3_http_provider" value="$(arg web3_http_provider)" />

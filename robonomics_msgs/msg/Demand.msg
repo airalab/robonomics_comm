@@ -14,7 +14,7 @@ ethereum_common/Address validator     # address
 ethereum_common/UInt256 validatorFee  # int 
 # Deadline block number
 ethereum_common/UInt256 deadline      # int
-# Order nonce value
-uint8[]                 nonce        # hex 
+# Demand sender address
+ethereum_common/Address sender     # address
 # Order signature
 uint8[]                 signature    # hex

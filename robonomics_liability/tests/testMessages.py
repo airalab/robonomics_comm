@@ -13,7 +13,7 @@ validAskDict = {
     "validator": "0x0000000000000000000000000000000000000000",
     "validatorFee": 0,
     "deadline": 9999999,
-    "nonce": "0ae083b24c0fe66711a43f374296aaee523d0b0c0546bf7164d743196efa1847",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b"
 }
 
@@ -35,7 +35,8 @@ def getValidAsk():
     a.validatorFee.uint256 = str(validAskDict['validatorFee'])
     a.deadline = UInt256()
     a.deadline.uint256 = str(validAskDict['deadline'])
-    a.nonce = unhexlify(validAskDict['nonce'].encode('utf-8'))
+    a.sender = Address()
+    a.sender.address = validAskDict['sender']
     a.signature = unhexlify(validAskDict['signature'].encode('utf-8'))
     return a
 
@@ -49,7 +50,7 @@ validBidDict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "lighthouseFee": 0,
     "deadline": 9999999,
-    "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -72,7 +73,8 @@ def getValidBid():
     b.lighthouseFee.uint256 = str(validBidDict['lighthouseFee'])
     b.deadline = UInt256()
     b.deadline.uint256 = str(validBidDict['deadline'])
-    b.nonce = unhexlify(validBidDict['nonce'].encode('utf-8'))
+    b.sender = Address()
+    b.sender.address = validAskDict['sender']
     b.signature = unhexlify(validBidDict['signature'].encode('utf-8'))
     return b
 
@@ -107,7 +109,7 @@ invalidAsk1Dict = {
     "deadline": 9999999,
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "lighthouseFee": 0,
-    "nonce": "0ae083b24c0fe66711a43f374296aaee523d0b0c0546bf7164d743196efa1847",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
     "validator": "0x0000000000000000000000000000000000000000",
     "validatorFee": 0
@@ -124,7 +126,7 @@ invalidBid1Dict = {
     "validatorFee": 0,
     "lighthouseFee": 0,
     "deadline": 9999999,
-    "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"}
 
 #res with deadline field
@@ -143,7 +145,7 @@ invalidAsk2Dict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "cost": 1,
     "deadline": 9999999,
-    "nonce": "0ae083b24c0fe66711a43f374296aaee523d0b0c0546bf7164d743196efa1847",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
     "validatorFee": 0
 }
@@ -157,7 +159,7 @@ invalidBid2Dict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "validator": '0x0000000000000000000000000000000000000000',
     "deadline": 9999999,
-    "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -168,14 +170,14 @@ invalidRes2Dict = {
     'signature': '1392513328b145d7ce53b7cedb0bb6064fe5f85c740e3d3c98610303345390aa5a6250ea7751bc72a6ef37caab19adc14e5cde027c4ffb183a7c0895a3d82f7c1b'
 }
 
-#ask with zero nonce
+#ask with wrong sender
 invalidAsk3Dict = {
     "model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
     "objective": "Qmbm3o2wkqseSEi5F69CPAuDrsKnrwTJ3HN5FVLPgLHKUm",
     "token": "0x3cBAF1d511Adf5098511B5c5B39e1F1b506C1AFE",
     "cost": 1,
     "deadline": 9999999,
-    "nonce": "0",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F3",
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
     "validator": "0x0000000000000000000000000000000000000000",
@@ -192,7 +194,7 @@ invalidBid3Dict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "lighthouseFee": 0,
     "deadline": 9999999,
-    "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -213,7 +215,7 @@ invalidAsk4Dict = {
     "validator": "0x0000000000000000000000000000000000000000",
     "validatorFee": 0,
     "deadline": 9999999,
-    "nonce": "0ae083b24c0fe66711a43f374296aaee523d0b0c0546bf7164d743196efa1847",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b"
 }
 
@@ -226,6 +228,6 @@ invalidBid4Dict = {
     "validator": '0x0000000000000000000000000000000000000000',
     "lighthouseFee": 0,
     "deadline": 9999999,
-    "nonce": "3f24032d1b02ab7a095bd1113be3eaf7ef4f84af0b32bd91acaf1b7d457dc5e4",
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }

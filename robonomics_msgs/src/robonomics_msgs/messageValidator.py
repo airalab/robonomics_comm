@@ -19,7 +19,7 @@ def isHexIntNotZero(arg):
 
 
 isIpfsBase58Hash = v.All(str, v.Length(min=46, max=46), v.Match(r'^[a-zA-Z0-9]+$'))
-isHexadecimalString = v.All(str, v.Match(r'^0x[a-fA-F0-9]+$'))
+isAddress = v.All(str, v.Length(min=42, max=42), v.Match(r'^0x[a-fA-F0-9]+$'))
 
 schemaAskBid = v.All(
     v.Any(
@@ -35,18 +35,18 @@ schemaAskBid = v.All(
         v.Required('model'): isIpfsBase58Hash,
         v.Required('objective'): isIpfsBase58Hash,
 
-        v.Required('lighthouse'): isHexadecimalString,
-        v.Required('validator'): isHexadecimalString,
-        v.Required('token'): isHexadecimalString,
+        v.Required('lighthouse'): isAddress,
+        v.Required('validator'): isAddress,
+        v.Required('token'): isAddress,
         v.Required('cost'): v.All(int),
         v.Required('deadline'): v.All(int),
-        v.Required('nonce'): isHexIntNotZero(),
+        v.Required('sender'): isAddress,
         v.Required('signature'): isHexIntNotZero()
     })
 )
 
 schemaResult = v.Schema({
-    v.Required('liability'): isHexadecimalString,
+    v.Required('liability'): isAddress,
     v.Required('result'): isIpfsBase58Hash,
     v.Required('success'): v.All(bool),
     v.Required('signature'): isHexIntNotZero()
@@ -85,7 +85,9 @@ def dict2ask(m):
     msg.deadline = UInt256()
     msg.deadline.uint256 = str(m['deadline'])
 
-    msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
+    msg.sender = Address()
+    msg.sender.address = m['sender']
+
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
@@ -117,7 +119,9 @@ def dict2bid(m):
     msg.deadline = UInt256()
     msg.deadline.uint256 = str(m['deadline'])
 
-    msg.nonce = unhexlify(m['nonce'].encode('utf-8'))
+    msg.sender = Address()
+    msg.sender.address = m['sender']
+
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
