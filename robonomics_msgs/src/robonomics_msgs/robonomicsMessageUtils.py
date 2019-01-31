@@ -4,18 +4,19 @@
 #
 from web3 import Web3
 from web3.auto import w3
-from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.msg import Result
 from eth_account.messages import defunct_hash_message
 import multihash
 
 
-def demand_hash(msg):
+def demand_hash(msg, nonce):
     types = ['bytes',
              'bytes',
              'address',
              'uint256',
              'address',
              'address',
+             'uint256',
              'uint256',
              'uint256',
              'address']
@@ -27,16 +28,18 @@ def demand_hash(msg):
                                      msg.validator.address,
                                      int(msg.validatorFee.uint256),
                                      int(msg.deadline.uint256),
+                                     int(nonce.uint256),
                                      msg.sender.address])
 
 
-def offer_hash(msg):
+def offer_hash(msg, nonce):
     types = ['bytes',
              'bytes',
              'address',
              'uint256',
              'address',
              'address',
+             'uint256',
              'uint256',
              'uint256',
              'address']
@@ -48,6 +51,7 @@ def offer_hash(msg):
                                      msg.lighthouse.address,
                                      int(msg.lighthouseFee.uint256),
                                      int(msg.deadline.uint256),
+                                     int(nonce.uint256),
                                      msg.sender.address])
 
 
@@ -55,19 +59,17 @@ def result_hash(msg):
     types = ['address',
              'bytes',
              'bool']
-    return Web3.soliditySha3(types, [msg.liability.address, multihash.decode(msg.result.multihash.encode(), 'base58').encode(), msg.success])
+    return Web3.soliditySha3(types, [msg.liability.address,
+                                     multihash.decode(msg.result.multihash.encode(), 'base58').encode(),
+                                     msg.success])
 
 
-def get_signer_account_address(msg):
-    if isinstance(msg, Demand):
-        message_hash = defunct_hash_message(demand_hash(msg))
-    elif isinstance(msg, Offer):
-        message_hash = defunct_hash_message(offer_hash(msg))
-    elif isinstance(msg, Result):
-        message_hash = defunct_hash_message(result_hash(msg))
+def get_result_msg_sender_address(result):
+    if isinstance(result, Result):
+        message_hash = defunct_hash_message(result_hash(result))
     else:
-        raise TypeError("Cannot get signer for message %s of type %s", msg, type(msg))
+        raise TypeError("Cannot get signer for message %s of type %s", result, type(result))
 
-    signature = msg.signature
+    signature = result.signature
     recovered_hash = w3.eth.account.recoverHash(message_hash, signature=signature)
     return recovered_hash

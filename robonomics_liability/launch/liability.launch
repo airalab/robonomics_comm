@@ -42,16 +42,20 @@
       <include file="$(find ethereum_common)/launch/signer.launch">
         <arg name="keyfile" value="$(arg keyfile)" />
         <arg name="keyfile_password_file" value="$(arg keyfile_password_file)" />
+
+        <arg name="factory_contract" value="$(arg factory_contract)" />
+        <arg name="web3_http_provider" value="$(arg web3_http_provider)" />
+        <arg name="ens_contract" value="$(arg ens_contract)" />
       </include>
     </group>
 
     <node pkg="robonomics_liability" type="listener_node" name="listener" respawn="true" output="screen">
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="liability_contract_abi" textfile="$(find robonomics_liability)/abi/liability.json" />
       <param name="factory_contract_abi" textfile="$(find robonomics_liability)/abi/factory.json" />
       <param name="factory_contract" value="$(arg factory_contract)" />
       <param name="web3_http_provider" value="$(arg web3_http_provider)" />
       <param name="web3_ws_provider" value="$(arg web3_ws_provider)" />
-      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
     </node>
