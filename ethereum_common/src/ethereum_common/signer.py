@@ -6,6 +6,8 @@
 from robonomics_msgs.msg import Demand, Offer, Result
 from ethereum_common.msg import Address, UInt256
 from web3 import Web3, HTTPProvider
+from web3.exceptions import StaleBlockchain
+from threading import Lock
 from ens import ENS
 from robonomics_msgs import robonomicsMessageUtils
 import rospy
@@ -29,9 +31,9 @@ class Signer:
         self.ens = ENS(http_provider, addr=ens_contract)
         self.web3 = Web3(http_provider, ens=self.ens)
 
-        factory_abi = json.loads(rospy.get_param('~factory_contract_abi'))
-        factory_address = self.ens.address(rospy.get_param('~factory_contract'))
-        factory = self.web3.eth.contract(factory_address, abi=factory_abi)
+        __factory_contract_abi = rospy.get_param('~factory_contract_abi')
+        __factory_contract = rospy.get_param('~factory_contract')
+        self.factory = None
 
         __keyfile = rospy.get_param('~keyfile')
         __keyfile_password_file = rospy.get_param('~keyfile_password_file')
@@ -43,9 +45,37 @@ class Signer:
         self.signed_offer  = rospy.Publisher('sending/offer',  Offer, queue_size=10)
         self.signed_result = rospy.Publisher('sending/result', Result, queue_size=10)
 
+        self.__factory_initialization_lock = Lock()
+
+        def get_initialized_factory():
+            if self.factory is None:
+                try:
+                    factory_abi = json.loads(__factory_contract_abi)
+                    factory_address = self.ens.address(__factory_contract)
+                    try:
+                        self.__factory_initialization_lock.acquire()
+                        if self.factory is None:
+                            self.factory = self.web3.eth.contract(factory_address, abi=factory_abi)
+                    finally:
+                        self.__factory_initialization_lock.release()
+
+                    return self.factory
+                except StaleBlockchain as e:
+                    rospy.logwarn("Failed to initialize factory cause exception: %s", e)
+            else:
+                return self.factory
+
         def get_nonce_by_address(address):
-            nonce = factory.call().nonceOf(address.address)
-            return UInt256(nonce)
+            try:
+                nonce = get_initialized_factory().call().nonceOf(address.address)
+                return UInt256(nonce)
+            except Exception as e:
+                rospy.logerr("Failed to get nonce by address %s with exception: %s", address.address, e)
+                try:
+                    self.__factory_initialization_lock.acquire()
+                    self.factory = None
+                finally:
+                    self.__factory_initialization_lock.release()
 
         def sign_demand(msg):
             msg.sender = Address(self.__account.address)
