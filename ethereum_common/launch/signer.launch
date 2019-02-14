@@ -4,7 +4,7 @@
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
 
-  <arg name="factory_contract" default="factory.4.robonomics.eth" />
+  <arg name="factory_contract" default="factory.5.robonomics.eth" />
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ens_contract" default="" />
 

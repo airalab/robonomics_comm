@@ -2,7 +2,7 @@
   <!-- arguments -->
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="lighthouse_contract" default="airalab.lighthouse.4.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
   <arg name="ens_contract" default="" />
   <arg name="keyfile" default="" />
   <arg name="keyfile_password_file" default="" />
