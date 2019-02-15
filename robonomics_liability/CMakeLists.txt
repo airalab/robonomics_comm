@@ -75,6 +75,7 @@ catkin_install_python(
         tests/test_infochan.py
         tests/test_messageValidator.py
         tests/test_signer.py
+        tests/test_ethereum_common_messages.py
         tests/testMessages.py
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
