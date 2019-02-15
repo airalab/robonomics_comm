@@ -3,8 +3,8 @@
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="factory_contract" default="factory.4.robonomics.eth" />
-  <arg name="lighthouse_contract" default="airalab.lighthouse.4.robonomics.eth" />
+  <arg name="factory_contract" default="factory.5.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
   <arg name="enable_executor" default="true" />
   <arg name="master_check_interval" default='0.1' />
   <arg name="recording_topics" default="" />
@@ -15,8 +15,8 @@
   <arg name="persistence_update_interval" default='0.1' />
 
   <arg name="enable_aira_graph" default="true" />
-  <arg name="graph_topic" default="graph.4.robonomics.eth" />
-  <arg name="lighthouse_topic" default="airalab.lighthouse.4.robonomics.eth" />
+  <arg name="graph_topic" default="graph.5.robonomics.eth" />
+  <arg name="lighthouse_topic" default="airalab.lighthouse.5.robonomics.eth" />
 
   <group ns="graph">
     <include  file="$(find aira_graph)/launch/aira_graph.launch">

@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="lighthouse_contract" default="airalab.lighthouse.4.robonomics.eth" />
+  <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
   <!-- PubSub information channel interface -->
