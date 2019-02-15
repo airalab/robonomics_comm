@@ -8,45 +8,96 @@
  
  class UInt256(genpy.Message):
    _md5sum = "d3e47bf4311da2c63d362b5eea4c389b"
-@@ -117,6 +118,43 @@
+@@ -117,6 +118,94 @@
      except struct.error as e:
        raise genpy.DeserializationError(e) #most likely buffer underfill
- 
+
 +  def __add__(self, other):
 +      if isinstance(other, int):
-+          self_int = int(self.uint256)
-+          result_int = self_int + other
-+          if result_int > UINT256_MAX_VALUE:
-+              raise OverflowError("Result is larger then UInt256")
-+          return UInt256(str(result_int))
++          other_int = other
 +      elif isinstance(other, UInt256):
-+          self_int = int(self.uint256)
 +          other_int = int(other.uint256)
-+          result_int = self_int + other_int
-+          if result_int > UINT256_MAX_VALUE:
-+              raise OverflowError("Result is larger then UInt256")
-+          return UInt256(str(result_int))
 +      else:
 +          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      result_int = self_int + other_int
++      if result_int > UINT256_MAX_VALUE:
++          raise OverflowError("Result is larger then UInt256")
++      return UInt256(str(result_int))
 +
 +  def __iadd__(self, other):
 +      if isinstance(other, int):
-+          self_int = int(self.uint256)
-+          result_int = self_int + other
-+          if result_int > UINT256_MAX_VALUE:
-+              raise OverflowError("Result is larger then UInt256")
-+          self.uint256 = str(result_int)
-+          return self
++          other_int = other
 +      elif isinstance(other, UInt256):
-+          self_int = int(self.uint256)
 +          other_int = int(other.uint256)
-+          result_int = self_int + other_int
-+          if result_int > UINT256_MAX_VALUE:
-+              raise OverflowError("Result is larger then UInt256")
-+          self.uint256 = str(result_int)
-+          return self
 +      else:
 +          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      result_int = self_int + other_int
++      if result_int > UINT256_MAX_VALUE:
++          raise OverflowError("Result is larger then UInt256")
++      self.uint256 = str(result_int)
++      return self
++
++  def __lt__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int < other_int
++
++  def __le__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int <= other_int
++
++  def __eq__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int == other_int
++
++  def __ne__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int != other_int
++
++  def __gt__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int > other_int
++
++  def __ge__(self, other):
++      if isinstance(other, int):
++          other_int = other
++      elif isinstance(other, UInt256):
++          other_int = int(other.uint256)
++      else:
++          raise TypeError("unexpected value: %s with type %s", other, type(other))
++      self_int = int(self.uint256)
++      return self_int >= other_int
 +
 +
  _struct_I = genpy.struct_I
