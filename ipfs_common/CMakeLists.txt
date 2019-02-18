@@ -49,12 +49,15 @@ catkin_python_setup()
 add_message_files(
     FILES
         Multihash.msg
+        Filepath.msg
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-# )
+add_service_files(
+    FILES
+        IpfsUploadFile.srv
+        IpfsDownloadFile.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(

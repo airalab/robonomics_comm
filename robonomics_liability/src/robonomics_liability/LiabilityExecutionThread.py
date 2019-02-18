@@ -5,6 +5,8 @@ from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
 import rospy
 import os
+from ipfs_common import ipfs_fileutils
+from ipfs_common.srv import IpfsUploadFileRequest, IpfsDownloadFileRequest
 
 
 class LiabilityExecutionThread(object):
@@ -20,6 +22,7 @@ class LiabilityExecutionThread(object):
 
         self.__liability_execution_namespace = "eth_{0}".format(self.liability.address.address)
         self.__liability_result_file = os.path.join(self.work_directory, 'result.bag')
+        self.__liability_objective_dst_file = os.path.join(self.work_directory, self.liability.objective.multihash)
 
         self.__player = self.__initializePlayer()
         self.__recorder = self.__initializeRecorder()
@@ -37,12 +40,11 @@ class LiabilityExecutionThread(object):
         self.__recorder.stop()
         self.__player.stop()
 
-        ipfs_response = self.ipfs_client.add(self.__liability_result_file)
-        try:
-            self.liability.result.multihash = ipfs_response['Hash']
-        except TypeError:
-            rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
-            self.liability.result.multihash = ipfs_response[0]['Hash']
+        ipfs_add_file_request = IpfsUploadFileRequest()
+        ipfs_add_file_request.file.filepath = self.__liability_result_file
+        ipfs_add_file_response = ipfs_fileutils.ipfs_upload_file(self.ipfs_client, ipfs_add_file_request)
+
+        self.liability.result = ipfs_add_file_response.ipfs_address
 
         result_msg = Result()
         result_msg.liability = self.liability.address
@@ -65,14 +67,20 @@ class LiabilityExecutionThread(object):
         return __recorder
 
     def __initializePlayer(self):
-        os.chdir(self.work_directory)
-
         rospy.logdebug('Getting objective %s...', self.liability.objective.multihash)
-        self.ipfs_client.get(self.liability.objective.multihash)
-        rospy.logdebug('Objective is written to %s',
-                       self.work_directory + '/' + self.liability.objective.multihash)
 
-        objective_rosbag = get_rosbag_from_file(self.liability.objective.multihash)
+        ipfs_get_file_request = IpfsDownloadFileRequest()
+        ipfs_get_file_request.ipfs_address = self.liability.objective
+        ipfs_get_file_request.file.filepath = self.__liability_objective_dst_file
+        ipfs_get_file_response = ipfs_fileutils.ipfs_download_file(self.ipfs_client, ipfs_get_file_request)
+
+        if not ipfs_get_file_response.success:
+            rospy.logerr("Failed to download %s objective with IPFS error msg: %s",
+                         self.liability.objective, ipfs_get_file_response.error_msg)
+            return None
+        rospy.logdebug('Objective is written to %s', self.__liability_objective_dst_file)
+
+        objective_rosbag = get_rosbag_from_file(self.__liability_objective_dst_file)
         if objective_rosbag is not None:
             __player = Player(objective_rosbag, self.liability.address, self.__liability_execution_namespace)
             return __player

@@ -1,0 +1,5 @@
+Multihash ipfs_address
+Filepath file
+---
+bool success
+string error_msg
