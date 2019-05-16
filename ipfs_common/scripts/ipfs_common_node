@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from ipfs_common.nodes import ipfs_common_node
+
+if __name__ == '__main__':
+    ipfs_common_node()
