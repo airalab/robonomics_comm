@@ -1,0 +1,5 @@
+string player_id
+bool success
+---
+bool success
+ipfs_common/Multihash ipfs_address
