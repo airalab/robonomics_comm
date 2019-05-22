@@ -41,13 +41,17 @@ class AIRAGraph:
 
         def graph_thread():
             while not rospy.is_shutdown():
-                stat['peers'] = self.ipfs_client.pubsub_peers(self.lighthouse_topic)['Strings']
-                stat['timestamp'] = int(time())
-                stat_hash = '/ipfs/{}'.format(self.ipfs_client.add_str(self.__sign(stat)))
-                name = self.ipfs_client.name_publish(stat_hash)['Name']
-                rospy.loginfo('Published to /ipns/{}'.format(name))
-                publish(self.ipfs_client, self.graph_topic, name)
                 sleep(5)
+                try:
+                    stat['peers'] = self.ipfs_client.pubsub_peers(self.lighthouse_topic)['Strings']
+                    stat['timestamp'] = int(time())
+                    stat_hash = '/ipfs/{}'.format(self.ipfs_client.add_str(self.__sign(stat)))
+                    name = self.ipfs_client.name_publish(stat_hash)['Name']
+                    rospy.loginfo('Published to /ipns/{}'.format(name))
+                    publish(self.ipfs_client, self.graph_topic, name)
+                except Exception as e:
+                    rospy.logerr(e)
+                    continue
 
         def greeting_thread():
             m = String()
