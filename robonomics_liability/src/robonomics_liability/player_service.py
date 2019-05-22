@@ -6,6 +6,7 @@
 from urllib.parse import urlparse
 from .LiabilityExecutionThread import LiabilityExecutionThread
 import rospy
+from rospy.names import ParameterInvalid
 from robonomics_liability.srv import CreateRosbagPlayer, CreateRosbagPlayerRequest, CreateRosbagPlayerResponse
 from robonomics_liability.srv import StartRosbagPlayer, StartRosbagPlayerRequest, StartRosbagPlayerResponse
 from robonomics_liability.srv import StopRosbagPlayer, StopRosbagPlayerRequest, StopRosbagPlayerResponse
@@ -29,6 +30,7 @@ class PlayerService:
         self.recording_topics = list(filter(None, [x.strip() for x in rospy.get_param('~recording_topics').split(",")]))
 
         self.player_threads = {}
+        ns_validator = rospy.names.valid_name("namespace", True)
 
         def player_id_generator(multihash, namespace, size=8, chars=string.ascii_lowercase + string.digits):
             id = ''.join(random.choice(chars) for _ in range(size))
@@ -36,19 +38,20 @@ class PlayerService:
 
         def __new_player(msg):
             ipfs_address = msg.ipfs_address
-            namespace = msg.namespace
 
             response = CreateRosbagPlayerResponse()
 
-            if len(msg.namespace) < 2 or not msg.namespace.startswith('/'):
+            try:
+                namespace = ns_validator(msg.namespace, '/')
+            except ParameterInvalid as e:
                 response.success = False
-                response.error_msg = "Namespace must starts with '/' and not be empty name"
+                response.error_msg = str(e)
                 return response
 
             rospy.logwarn("createNewRosbagPlayer ipfs_address: " + ipfs_address.multihash)
             rospy.logwarn("createNewRosbagPlayer namespace: " + namespace)
 
-            player_id = player_id_generator(msg.ipfs_address.multihash, msg.namespace)
+            player_id = player_id_generator(msg.ipfs_address.multihash, namespace)
             try:
                 player_thread = self.__createPlayerThread(player_id=player_id,
                                                           objective=ipfs_address,
