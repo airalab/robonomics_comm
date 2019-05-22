@@ -63,24 +63,24 @@ class ERC20Services:
         rospy.Service('approve', Approve,
                       approve_handler)
 
-        def account_erc20_token_balance_handler(m):
+        def erc20_balance_handler(m):
             return AccountBalanceResponse(type_converter.strToUInt256(self.eth_utils.getTokenBalance(m.account.address)))
-        rospy.Service('account_erc20_token_balance', AccountBalance, account_erc20_token_balance_handler)
+        rospy.Service('erc20_balance', AccountBalance, erc20_balance_handler)
 
-        def erc20_token_balance_handler(m):
+        def erc20_balance_of_handler(m):
             return BalanceResponse(type_converter.strToUInt256(self.eth_utils.getTokenBalance(self.__account.address)))
-        rospy.Service('erc20_token_balance', Balance, erc20_token_balance_handler)
+        rospy.Service('erc20_balance_of', Balance, erc20_balance_of_handler)
 
-        def account_to_address_erc20_token_allowance_handler(m):
+        def account_to_address_erc20_allowance_handler(m):
             amount_allowance = self.eth_utils.getAllowance(m.account.address, m.to.address)
             return AccountToAddressAllowanceResponse(type_converter.strToUInt256(amount_allowance))
-        rospy.Service('account_erc20_token_allowance', AccountToAddressAllowance, account_to_address_erc20_token_allowance_handler)
+        rospy.Service('erc20_allowance', AccountToAddressAllowance, account_to_address_erc20_allowance_handler)
 
-        def erc20_token_allowance_handler(m):
+        def erc20_allowance_of_handler(m):
             # account from keyfile to default factory allowance
             amount_allowance = self.eth_utils.getAllowance(self.__account.address, self.factory_address)
             return AllowanceResponse(type_converter.strToUInt256(amount_allowance))
-        rospy.Service('erc20_token_allowance', Allowance, erc20_token_allowance_handler)
+        rospy.Service('erc20_allowance_of', Allowance, erc20_allowance_of_handler)
 
     def initialize_event_filters(self):
         try:
