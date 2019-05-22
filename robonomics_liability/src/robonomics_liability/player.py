@@ -4,6 +4,7 @@ import rospy
 import rosbag
 from threading import Thread
 from robonomics_liability.msg import LiabilityExecutionTimestamp
+from ethereum_common.msg import Address
 
 
 def get_rosbag_from_file(filename):
@@ -17,7 +18,7 @@ def get_rosbag_from_file(filename):
 
 class Player:
     def __init__(self, bag, address, namespace=''):
-        self.liability_address = address
+        self.liability_address = Address(address)
         self.namespace = namespace
         self.pubs = {}
         self.start_timestamp = None
@@ -33,8 +34,13 @@ class Player:
     def simple_publisher(self, msgs):
         for topic, msg, timestamp in msgs:
             if topic not in self.pubs:
-                rospy.logdebug('New publisher %s of %s', topic, msg.__class__)
-                self.pubs[topic] = rospy.Publisher(self.namespace + topic, msg.__class__, queue_size=10)
+                if topic.startswith('/'):
+                    topic_name = self.namespace + topic
+                else:
+                    topic_name = self.namespace + '/' + topic
+                rospy.logdebug('New publisher %s of %s', topic_name, msg.__class__)
+
+                self.pubs[topic] = rospy.Publisher(topic_name, msg.__class__, queue_size=10)
                 rospy.sleep(1)
 
             if self.start_timestamp is None or timestamp > self.start_timestamp:

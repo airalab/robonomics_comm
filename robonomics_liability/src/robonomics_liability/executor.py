@@ -60,7 +60,13 @@ class Executor:
             liability_thread = self.liability_execution_threads.pop(msg.address)
 
             liability_msg = liability_thread.getLiabilityMsg()
-            result = liability_thread.finish(msg.success)
+
+            result_ipfs_address = liability_thread.finish(msg.success)
+            result = Result()
+            result.liability = liability_msg.address
+            result.result = result_ipfs_address
+            result.success = msg.success
+
             self.persistence_del.publish(liability_msg)
 
             self.complete.publish(liability_msg)
@@ -139,7 +145,7 @@ class Executor:
                                           self.ipfs_client,
                                           self.master_check_interval,
                                           self.recording_topics,
-                                          liability)
+                                          liability=liability)
         self.liability_execution_threads[liability.address.address] = thread
 
     def _liability_worker(self):

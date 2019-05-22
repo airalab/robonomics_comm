@@ -1,0 +1,6 @@
+ipfs_common/Multihash ipfs_address
+string namespace
+---
+bool success
+string player_id
+string error_msg

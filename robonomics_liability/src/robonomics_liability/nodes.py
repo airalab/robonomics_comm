@@ -6,6 +6,7 @@
 from . import listener
 from . import executor
 from . import LiabilityExecutionsPersistence
+from . import player_service
 
 
 def listener_node():
@@ -18,3 +19,7 @@ def executor_node():
 
 def persistence_node():
     LiabilityExecutionsPersistence.LiabilityExecutionsPersistence().spin()
+
+
+def player_service_node():
+    player_service.PlayerService().spin()

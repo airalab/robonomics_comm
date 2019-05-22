@@ -71,5 +71,12 @@
     <node pkg="robonomics_liability" type="persistence_node" name="persistence" respawn="true" output="screen">
       <param name="persistence_update_interval" value="$(arg persistence_update_interval)" />
     </node>
+
+    <node pkg="robonomics_liability" type="player_service_node" name="player_service" respawn="true" output="screen">
+      <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+      <param name="recording_topics" value="$(arg recording_topics)" />
+      <param name="master_check_interval" value="$(arg master_check_interval)" />
+    </node>
+
   </group>
 </launch>

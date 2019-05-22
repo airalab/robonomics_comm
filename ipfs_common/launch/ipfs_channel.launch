@@ -9,4 +9,8 @@
     <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
   </node>
 
+  <node pkg="ipfs_common" type="ipfs_common_node" name="ipfs_common_node" respawn="true" output="screen">
+    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+  </node>
+
 </launch>

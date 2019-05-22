@@ -7,12 +7,10 @@ from robonomics_msgs.msg import Demand, Offer, Result
 from robonomics_msgs.messageValidator import convertMessage
 from binascii import hexlify
 from .pubsub import publish, subscribe
-from .ipfs_fileutils import ipfs_upload_file, ipfs_download_file
 from urllib.parse import urlparse
 from threading import Thread
 import rospy
 import ipfsapi
-from ipfs_common.srv import IpfsUploadFile, IpfsDownloadFile
 
 
 def bid2dict(b):
@@ -71,15 +69,6 @@ class IPFSChannel:
         rospy.Subscriber('eth/sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
         rospy.Subscriber('eth/sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
         rospy.Subscriber('eth/sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
-
-        def ipfs_add_file(add_file_request):
-            return ipfs_upload_file(self.ipfs_client, add_file_request)
-        rospy.Service('/ipfs/add_file', IpfsUploadFile, ipfs_add_file)
-
-        def ipfs_get_file(download_file_request):
-            return ipfs_download_file(self.ipfs_client, download_file_request)
-        rospy.Service('/ipfs/get_file', IpfsDownloadFile, ipfs_get_file)
-
 
     def spin(self):
         '''

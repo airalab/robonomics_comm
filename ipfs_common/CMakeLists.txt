@@ -187,6 +187,7 @@ catkin_package()
 catkin_install_python(
     PROGRAMS
         scripts/ipfs_channel_node
+        scripts/ipfs_common_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -14,7 +14,7 @@
       <param name="token_contract" value="$(arg erc20_token)" />
       <param name="ens_contract" value="$(arg ens_contract)"
              if="$(eval len(arg('ens_contract')) > 0)"/>
-      <param name="factory_contract" value="factory.5.robonomics.eth" />
+      <param name="factory_contract" value="$(arg factory_contract)" />
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
     </node>

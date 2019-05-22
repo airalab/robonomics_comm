@@ -25,6 +25,9 @@ add_service_files(
         StartLiability.srv
         PersistenceContainsLiability.srv
         PersistenceLiabilityTimestamp.srv
+        CreateRosbagPlayer.srv
+        StartRosbagPlayer.srv
+        StopRosbagPlayer.srv
 )
 
 generate_messages(
@@ -41,6 +44,7 @@ catkin_install_python(
         scripts/listener_node
         scripts/executor_node
         scripts/persistence_node
+        scripts/player_service_node
     DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
