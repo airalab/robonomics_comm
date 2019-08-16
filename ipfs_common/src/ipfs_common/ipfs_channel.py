@@ -24,6 +24,7 @@ def bid2dict(b):
         'lighthouseFee': int(b.lighthouseFee.uint256),
         'deadline': int(b.deadline.uint256),
         'sender': b.sender.address,
+        'nonce': int(b.nonce.uint256),
         'signature': hexlify(b.signature).decode('utf-8')
     }
 
@@ -39,6 +40,7 @@ def ask2dict(a):
         'validatorFee': int(a.validatorFee.uint256),
         'deadline': int(a.deadline.uint256),
         'sender': a.sender.address,
+        'nonce': int(a.nonce.uint256),
         'signature': hexlify(a.signature).decode('utf-8')
     }
 
