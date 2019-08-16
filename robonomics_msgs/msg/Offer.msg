@@ -11,10 +11,12 @@ ethereum_common/Address validator     # address
 # lighthouse network address
 ethereum_common/Address lighthouse    #address
 # Settlement fee
-ethereum_common/UInt256 lighthouseFee # int 
+ethereum_common/UInt256 lighthouseFee # int
 # Deadline block number
 ethereum_common/UInt256 deadline
 # Offer sender address
 ethereum_common/Address sender     # address
+# Nonce
+ethereum_common/UInt256 nonce         # nonce
 # Order signature
 uint8[] signature   # hex

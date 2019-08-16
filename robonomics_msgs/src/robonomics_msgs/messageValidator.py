@@ -41,6 +41,7 @@ schemaAskBid = v.All(
         v.Required('cost'): v.All(int),
         v.Required('deadline'): v.All(int),
         v.Required('sender'): isAddress,
+        v.Required('nonce'): v.All(int),
         v.Required('signature'): isHexIntNotZero()
     })
 )
@@ -61,7 +62,7 @@ schemaAskBidResult = v.Any(
 def dict2ask(m):
     msg = Demand()
 
-    msg.model = Multihash() 
+    msg.model = Multihash()
     msg.model.multihash = m['model']
 
     msg.objective = Multihash()
@@ -75,7 +76,7 @@ def dict2ask(m):
 
     msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
- 
+
     msg.validator = Address()
     msg.validator.address = m['validator']
 
@@ -87,6 +88,9 @@ def dict2ask(m):
 
     msg.sender = Address()
     msg.sender.address = m['sender']
+
+    msg.nonce = UInt256()
+    msg.nonce.uint256 = str(m['nonce'])
 
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -121,6 +125,9 @@ def dict2bid(m):
 
     msg.sender = Address()
     msg.sender.address = m['sender']
+
+    msg.nonce = UInt256()
+    msg.nonce.uint256 = str(m['nonce'])
 
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
