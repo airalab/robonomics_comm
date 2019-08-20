@@ -83,6 +83,7 @@ class Signer:
             message_hash = robonomicsMessageUtils.demand_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature
+            msg.nonce = UInt256(uint256=str(current_nonce.uint256))
             rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
             self.signed_demand.publish(msg)
         rospy.Subscriber('signing/demand', Demand, sign_demand)
@@ -93,6 +94,7 @@ class Signer:
             message_hash = robonomicsMessageUtils.offer_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature
+            msg.nonce = UInt256(uint256=str(current_nonce.uint256))
             rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
             self.signed_offer.publish(msg)
         rospy.Subscriber('signing/offer', Offer, sign_offer)
