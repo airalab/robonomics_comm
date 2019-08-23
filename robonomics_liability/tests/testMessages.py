@@ -14,6 +14,7 @@ validAskDict = {
     "validatorFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b"
 }
 
@@ -37,6 +38,8 @@ def getValidAsk():
     a.deadline.uint256 = str(validAskDict['deadline'])
     a.sender = Address()
     a.sender.address = validAskDict['sender']
+    a.nonce = UInt256()
+    a.nonce.uint256 = str(validAskDict['nonce'])
     a.signature = unhexlify(validAskDict['signature'].encode('utf-8'))
     return a
 
@@ -51,6 +54,7 @@ validBidDict = {
     "lighthouseFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -75,6 +79,8 @@ def getValidBid():
     b.deadline.uint256 = str(validBidDict['deadline'])
     b.sender = Address()
     b.sender.address = validAskDict['sender']
+    b.nonce = UInt256()
+    b.nonce.uint256 = str(validAskDict['nonce'])
     b.signature = unhexlify(validBidDict['signature'].encode('utf-8'))
     return b
 
@@ -110,6 +116,7 @@ invalidAsk1Dict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "lighthouseFee": 0,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
     "validator": "0x0000000000000000000000000000000000000000",
     "validatorFee": 0
@@ -127,6 +134,7 @@ invalidBid1Dict = {
     "lighthouseFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"}
 
 #res with deadline field
@@ -147,6 +155,7 @@ invalidAsk2Dict = {
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
+    "nonce": 777,
     "validatorFee": 0
 }
 
@@ -160,6 +169,7 @@ invalidBid2Dict = {
     "validator": '0x0000000000000000000000000000000000000000',
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -181,6 +191,7 @@ invalidAsk3Dict = {
     "lighthouse": "0x0000000000000000000000000000000000000000",
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b",
     "validator": "0x0000000000000000000000000000000000000000",
+    "nonce": 777,
     "validatorFee": 0
 }
 
@@ -195,6 +206,7 @@ invalidBid3Dict = {
     "lighthouseFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
 
@@ -216,6 +228,7 @@ invalidAsk4Dict = {
     "validatorFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b"
 }
 
@@ -229,5 +242,6 @@ invalidBid4Dict = {
     "lighthouseFee": 0,
     "deadline": 9999999,
     "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }

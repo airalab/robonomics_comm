@@ -133,6 +133,7 @@ class TestExecutor(unittest.TestCase):
             "lighthouseFee": 0,
             "deadline": 9999999,
             "sender": "",
+            "nonce": 0,
             "signature": ""
         }
         return messageValidator.dict2bid(bidDict)
@@ -148,6 +149,7 @@ class TestExecutor(unittest.TestCase):
             "validatorFee": 0,
             "deadline": 9999999,
             "sender": "",
+            "nonce": 0,
             "signature": ""
         }
         return messageValidator.dict2ask(askDict)
