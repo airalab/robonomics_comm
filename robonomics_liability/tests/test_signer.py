@@ -5,7 +5,6 @@ from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_msgs import robonomicsMessageUtils
 from ethereum_common import eth_keyfile_helper
 from ethereum_common.msg import UInt256
-from robonomics_msgs import messageValidator
 import testMessages
 from binascii import hexlify
 
@@ -31,19 +30,19 @@ class TestSigner(unittest.TestCase):
 
     def test_demand_hash(self):
         test_nonce_value = UInt256("0")
-        rospy.logwarn("test_demand_hash: %s", hexlify(robonomicsMessageUtils.demand_hash(messageValidator.dict2ask(testMessages.validAskDict), nonce=test_nonce_value)))
+        rospy.logwarn("test_demand_hash: %s", hexlify(robonomicsMessageUtils.demand_hash(robonomicsMessageUtils.dict2demand(testMessages.validAskDict), nonce=test_nonce_value)))
         self.assertEqual(bytearray.fromhex('50f82ac8c4905d14a65632915fa21cf3726c720fd9650d3b5ac134ba2ebb9da2'),
-                         robonomicsMessageUtils.demand_hash(messageValidator.dict2ask(testMessages.validAskDict), nonce=test_nonce_value))
+                         robonomicsMessageUtils.demand_hash(robonomicsMessageUtils.dict2demand(testMessages.validAskDict), nonce=test_nonce_value))
 
     def test_offer_hash(self):
         test_nonce_value = UInt256("0")
-        rospy.logwarn("test_offer_hash: %s", hexlify(robonomicsMessageUtils.offer_hash(messageValidator.dict2bid(testMessages.validBidDict), nonce=test_nonce_value)))
+        rospy.logwarn("test_offer_hash: %s", hexlify(robonomicsMessageUtils.offer_hash(robonomicsMessageUtils.dict2offer(testMessages.validBidDict), nonce=test_nonce_value)))
         self.assertEqual(bytearray.fromhex('50f82ac8c4905d14a65632915fa21cf3726c720fd9650d3b5ac134ba2ebb9da2'),
-                         robonomicsMessageUtils.offer_hash(messageValidator.dict2bid(testMessages.validBidDict), nonce=test_nonce_value))
+                         robonomicsMessageUtils.offer_hash(robonomicsMessageUtils.dict2offer(testMessages.validBidDict), nonce=test_nonce_value))
 
     def test_result_hash(self):
         self.assertEqual(bytearray.fromhex('55c1a3f47762a8d67ed7c76bc140f85bdbf6eb41e70cc13aa41ed1791d939464'),
-                         robonomicsMessageUtils.result_hash(messageValidator.dict2res(testMessages.validResDict)))
+                         robonomicsMessageUtils.result_hash(robonomicsMessageUtils.dict2res(testMessages.validResDict)))
 
     def signed_ask_handler(self, ask):
         self.assertEqual(testMessages.validAskDict['model'], ask.model.multihash)

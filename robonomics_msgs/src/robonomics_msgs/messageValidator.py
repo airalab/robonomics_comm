@@ -3,18 +3,23 @@
 # Robonomics Demand/Offer/Result ipfs message converter
 #
 
+from .robonomicsMessageUtils import offer2dict, demand2dict, res2dict, dict2offer, dict2demand, dict2res
 from robonomics_msgs.msg import Demand, Offer, Result
-from ethereum_common.msg import Address, UInt256
-from ipfs_common.msg import Multihash
-from binascii import unhexlify
 import voluptuous as v
 import rospy
 
 
 @v.message('wrong hexadecimal field value')
-def isHexIntNotZero(arg):
-    if not int(arg, 16) > 0:
+def isHexIntNotZeroCanBeEmpty(arg):
+    if arg and not int(arg, 16) > 0:
         raise v.Invalid('value is zero')
+    return arg
+
+
+@v.message('wrong decimal field value')
+def isPositiveDecIntCanBeEmpty(arg):
+    if arg and not arg >= 0:
+        raise v.Invalid('value is negative')
     return arg
 
 
@@ -46,8 +51,8 @@ schemaAskBid = v.All(
         v.Required('cost'): v.All(int),
         v.Required('deadline'): v.All(int),
         v.Required('sender'): isAddress,
-        v.Required('nonce'): v.All(int),
-        v.Required('signature'): isHexIntNotZero()
+        v.Required('nonce'): isPositiveDecIntCanBeEmpty(),
+        v.Required('signature'): isHexIntNotZeroCanBeEmpty()
     })
 )
 
@@ -55,7 +60,7 @@ schemaResult = v.Schema({
     v.Required('liability'): isAddress,
     v.Required('result'): isIpfsBase58Hash,
     v.Required('success'): v.All(bool),
-    v.Required('signature'): isHexIntNotZero()
+    v.Required('signature'): isHexIntNotZeroCanBeEmpty()
 })
 
 schemaAskBidResult = v.Any(
@@ -64,95 +69,37 @@ schemaAskBidResult = v.Any(
 )
 
 
-def dict2ask(m):
-    msg = Demand()
-
-    msg.model = Multihash()
-    msg.model.multihash = m['model']
-
-    msg.objective = Multihash()
-    msg.objective.multihash = m['objective']
-
-    msg.token = Address()
-    msg.token.address = m['token']
-
-    msg.cost = UInt256()
-    msg.cost.uint256 = str(m['cost'])
-
-    msg.lighthouse = Address()
-    msg.lighthouse.address = m['lighthouse']
-
-    msg.validator = Address()
-    msg.validator.address = m['validator']
-
-    msg.validatorFee = UInt256()
-    msg.validatorFee.uint256 = str(m['validatorFee'])
-
-    msg.deadline = UInt256()
-    msg.deadline.uint256 = str(m['deadline'])
-
-    msg.sender = Address()
-    msg.sender.address = m['sender']
-
-    msg.nonce = UInt256()
-    msg.nonce.uint256 = str(m['nonce'])
-
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-    return msg
+def isDemandFieldsCorrect(msg):
+    try:
+        assert isinstance(msg, Demand)
+        schemaAskBid(demand2dict(msg))
+        return True
+    except Exception as e:
+        rospy.logerr("Fields of demand message %s is not correct. Exception is %s", msg, e)
+        return False
 
 
-def dict2bid(m):
-    msg = Offer()
-
-    msg.model = Multihash()
-    msg.model.multihash = m['model']
-
-    msg.objective = Multihash()
-    msg.objective.multihash = m['objective']
-
-    msg.token = Address()
-    msg.token.address = m['token']
-
-    msg.cost = UInt256()
-    msg.cost.uint256 = str(m['cost'])
-
-    msg.validator = Address()
-    msg.validator.address = m['validator']
-
-    msg.lighthouse = Address()
-    msg.lighthouse.address = m['lighthouse']
-
-    msg.lighthouseFee = UInt256()
-    msg.lighthouseFee.uint256 = str(m['lighthouseFee'])
-
-    msg.deadline = UInt256()
-    msg.deadline.uint256 = str(m['deadline'])
-
-    msg.sender = Address()
-    msg.sender.address = m['sender']
-
-    msg.nonce = UInt256()
-    msg.nonce.uint256 = str(m['nonce'])
-
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-    return msg
+def isOfferFieldsCorrect(msg):
+    try:
+        assert isinstance(msg, Offer)
+        schemaAskBid(offer2dict(msg))
+        return True
+    except Exception as e:
+        rospy.logerr("Fields of offer message %s is not correct. Exception is %s", msg, e)
+        return False
 
 
-def dict2res(m):
-    msg = Result()
-
-    msg.liability = Address()
-    msg.liability.address = m['liability']
-
-    msg.result = Multihash()
-    msg.result.multihash = m['result']
-
-    msg.success = m['success']
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
-    return msg
+def isResultFieldsCorrect(msg):
+    try:
+        assert isinstance(msg, Result)
+        schemaResult(res2dict(msg))
+        return True
+    except Exception as e:
+        rospy.logerr("Fields of result message %s is not correct. Exception is %s", msg, e)
+        return False
 
 
-def validateForAskBidResultBySchema(abr_msg):
+def msg_is_offer_demand_result(abr_msg):
     try:
         return schemaAskBidResult(abr_msg)
     except v.MultipleInvalid as e:
@@ -161,14 +108,14 @@ def validateForAskBidResultBySchema(abr_msg):
 
 
 def convertMessage(ipfsMessage):
-    validatedBySchema = validateForAskBidResultBySchema(ipfsMessage)
+    validatedBySchema = msg_is_offer_demand_result(ipfsMessage)
     if not (validatedBySchema is None):
         if 'validatorFee' in validatedBySchema:
             # rospy.logwarn('DEBUG: Message %s is valid Ask message', ipfsMessage)
-            return dict2ask(validatedBySchema)
+            return dict2demand(validatedBySchema)
         elif 'lighthouseFee' in validatedBySchema:
             # rospy.logwarn('DEBUG: Message %s is valid Bid ipfs message', ipfsMessage)
-            return dict2bid(validatedBySchema)
+            return dict2offer(validatedBySchema)
         else:
             # rospy.logwarn('DEBUG: Message %s is valid Result ipfs message', ipfsMessage)
             return dict2res(validatedBySchema)

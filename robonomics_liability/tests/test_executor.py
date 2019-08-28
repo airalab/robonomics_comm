@@ -3,7 +3,7 @@
 import unittest, rostest, os, time, rospy, rosbag
 
 from robonomics_msgs.msg import Result, Offer, Demand
-from robonomics_msgs import messageValidator
+from robonomics_msgs import robonomicsMessageUtils
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
@@ -136,7 +136,7 @@ class TestExecutor(unittest.TestCase):
             "nonce": 0,
             "signature": ""
         }
-        return messageValidator.dict2bid(bidDict)
+        return robonomicsMessageUtils.dict2offer(bidDict)
 
     def get_test_ask(self):
         askDict = {
@@ -152,7 +152,7 @@ class TestExecutor(unittest.TestCase):
             "nonce": 0,
             "signature": ""
         }
-        return messageValidator.dict2ask(askDict)
+        return robonomicsMessageUtils.dict2demand(askDict)
 
 
 if __name__ == '__main__':
