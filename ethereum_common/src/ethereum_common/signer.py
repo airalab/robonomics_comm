@@ -31,6 +31,11 @@ class Signer:
         self.ens = ENS(http_provider, addr=ens_contract)
         self.web3 = Web3(http_provider, ens=self.ens)
 
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+        self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         __factory_contract_abi = rospy.get_param('~factory_contract_abi')
         __factory_contract = rospy.get_param('~factory_contract')
         self.factory = None
@@ -79,6 +84,7 @@ class Signer:
 
         def sign_demand(msg):
             msg.sender = Address(self.__account.address)
+            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
             current_nonce = get_nonce_by_address(msg.sender)
             message_hash = robonomicsMessageUtils.demand_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
@@ -90,6 +96,7 @@ class Signer:
 
         def sign_offer(msg):
             msg.sender = Address(self.__account.address)
+            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
             current_nonce = get_nonce_by_address(msg.sender)
             message_hash = robonomicsMessageUtils.offer_hash(msg, current_nonce)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
@@ -100,6 +107,7 @@ class Signer:
         rospy.Subscriber('signing/offer', Offer, sign_offer)
 
         def sign_result(msg):
+            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
             message_hash = robonomicsMessageUtils.result_hash(msg)
             signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
             msg.signature = signed_hash.signature

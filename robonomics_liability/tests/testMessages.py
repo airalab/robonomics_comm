@@ -245,3 +245,17 @@ invalidBid4Dict = {
     "nonce": 777,
     "signature": "869d99495e019479dd0470546b2a2499c8154f6a1febd4b20a24d28079e27393023b4e9b38969223de93cc6807d162653335f7dd66ebbc492b020d2a812002c71b"
 }
+
+validAskWithENSNamesDict = {
+    "model": "QmfCcLKrTCuXsf6bHbVupVv4zsbs6kjqTQ7DRftGqMLjdW",
+    "objective": "Qmbm3o2wkqseSEi5F69CPAuDrsKnrwTJ3HN5FVLPgLHKUm",
+    "token": "0x3cBAF1d511Adf5098511B5c5B39e1F1b506C1AFE",
+    "cost": 1,
+    "lighthouse": "airalab.lighthouse.5.robonomics.sid",
+    "validator": "0x0000000000000000000000000000000000000000",
+    "validatorFee": 0,
+    "deadline": 9999999,
+    "sender": "0x004ec07d2329997267Ec62b4166639513386F32E",
+    "nonce": 777,
+    "signature": "260edc32bba1da3d2e7cbc15c8063ddf3327bc6cb92df3e6ab296d48116f49315f8406eb32e114c075c06261b47a9515c804ab82e623b5b0b26d42b77d04242d1b"
+}

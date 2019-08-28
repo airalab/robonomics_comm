@@ -41,7 +41,7 @@ class TestExecutor(unittest.TestCase):
         # inject the poa compatibility middleware to the innermost layer
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
         self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
-        self.lighthouse_address = self.ens.address(rospy.get_param('~lighthouse_contract'))
+        self.lighthouse_address = rospy.get_param('~lighthouse_contract')
 
         self.test_start_time = time.time()
 
