@@ -19,7 +19,12 @@ def isHexIntNotZero(arg):
 
 
 isIpfsBase58Hash = v.All(str, v.Length(min=46, max=46), v.Match(r'^[a-zA-Z0-9]+$'))
-isAddress = v.All(str, v.Length(min=42, max=42), v.Match(r'^0x[a-fA-F0-9]+$'))
+isHexAddress = v.All(str, v.Length(min=42, max=42), v.Match(r'^0x[a-fA-F0-9]+$'))
+isEnsName = v.All(str, v.Any(v.Match(r'^.+\.eth$'), v.Match(r'^.+\.sid$'), v.Match(r'^.+\.test$')))
+isAddress = v.Any(
+    isEnsName,
+    isHexAddress
+)
 
 schemaAskBid = v.All(
     v.Any(

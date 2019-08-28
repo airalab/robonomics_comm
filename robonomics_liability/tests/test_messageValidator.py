@@ -17,6 +17,10 @@ class TestMessageValidator(unittest.TestCase):
         f = messageValidator.convertMessage(testMessages.validAskDict)
         assert isinstance(f, Demand)
 
+    def test_ValidAskWithENS(self):
+        f = messageValidator.convertMessage(testMessages.validAskWithENSNamesDict)
+        assert isinstance(f, Demand)
+
     def test_ValidBid(self):
         f = messageValidator.convertMessage(testMessages.validBidDict)
         assert isinstance(f, Offer)

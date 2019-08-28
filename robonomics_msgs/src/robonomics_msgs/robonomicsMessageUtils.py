@@ -4,9 +4,29 @@
 #
 from web3 import Web3
 from web3.auto import w3
-from robonomics_msgs.msg import Result
+from robonomics_msgs.msg import Demand, Offer, Result
 from eth_account.messages import defunct_hash_message
 import multihash
+from web3.utils.normalizers import (
+    abi_ens_resolver
+)
+
+
+def resolve_ens_name_to_address(name_address, web3):
+    (abi_type, resolved) = abi_ens_resolver(w3=web3, abi_type="address", val=name_address)
+    return resolved
+
+
+def convert_msg_ens_names_to_addresses(msg, web3=None):
+    if web3 is not None:
+        if isinstance(msg, Offer) or isinstance(msg, Demand):
+            msg.token.address = resolve_ens_name_to_address(msg.token.address, web3)
+            msg.lighthouse.address = resolve_ens_name_to_address(msg.lighthouse.address, web3)
+            msg.validator.address = resolve_ens_name_to_address(msg.validator.address, web3)
+            msg.sender.address = resolve_ens_name_to_address(msg.sender.address, web3)
+        elif isinstance(msg, Result):
+            msg.liability.address = resolve_ens_name_to_address(msg.liability.address, web3)
+    return msg
 
 
 def demand_hash(msg, nonce):

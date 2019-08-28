@@ -41,7 +41,7 @@ class TestExecutor(unittest.TestCase):
         # inject the poa compatibility middleware to the innermost layer
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
         self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
-        self.lighthouse_address = self.ens.address(rospy.get_param('~lighthouse_contract'))
+        self.lighthouse_address = rospy.get_param('~lighthouse_contract')
 
         self.test_start_time = time.time()
 
@@ -133,6 +133,7 @@ class TestExecutor(unittest.TestCase):
             "lighthouseFee": 0,
             "deadline": 9999999,
             "sender": "",
+            "nonce": 0,
             "signature": ""
         }
         return messageValidator.dict2bid(bidDict)
@@ -148,6 +149,7 @@ class TestExecutor(unittest.TestCase):
             "validatorFee": 0,
             "deadline": 9999999,
             "sender": "",
+            "nonce": 0,
             "signature": ""
         }
         return messageValidator.dict2ask(askDict)
