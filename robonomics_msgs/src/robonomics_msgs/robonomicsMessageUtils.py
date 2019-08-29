@@ -10,6 +10,9 @@ import multihash
 from web3.utils.normalizers import (
     abi_ens_resolver
 )
+from binascii import hexlify, unhexlify
+from ethereum_common.msg import Address, UInt256
+from ipfs_common.msg import Multihash
 
 
 def resolve_ens_name_to_address(name_address, web3):
@@ -93,3 +96,132 @@ def get_result_msg_sender_address(result):
     signature = result.signature
     recovered_hash = w3.eth.account.recoverHash(message_hash, signature=signature)
     return recovered_hash
+
+
+def offer2dict(b):
+    return {
+        'model': b.model.multihash,
+        'objective': b.objective.multihash,
+        'token': b.token.address,
+        'cost': int(b.cost.uint256),
+        'validator': b.validator.address,
+        'lighthouse': b.lighthouse.address,
+        'lighthouseFee': int(b.lighthouseFee.uint256),
+        'deadline': int(b.deadline.uint256),
+        'sender': b.sender.address,
+        'nonce': int(b.nonce.uint256) if b.nonce.uint256 else '',
+        'signature': hexlify(b.signature).decode('utf-8')
+    }
+
+
+def demand2dict(a):
+    return {
+        'model': a.model.multihash,
+        'objective': a.objective.multihash,
+        'token': a.token.address,
+        'cost': int(a.cost.uint256),
+        'lighthouse': a.lighthouse.address,
+        'validator': a.validator.address,
+        'validatorFee': int(a.validatorFee.uint256),
+        'deadline': int(a.deadline.uint256),
+        'sender': a.sender.address,
+        'nonce': int(a.nonce.uint256) if a.nonce.uint256 else '',
+        'signature': hexlify(a.signature).decode('utf-8')
+    }
+
+
+def res2dict(r):
+    return {
+        'liability': r.liability.address,
+        'result': r.result.multihash,
+        'success': r.success,
+        'signature': hexlify(r.signature).decode('utf-8')
+    }
+
+
+def dict2demand(m):
+    msg = Demand()
+
+    msg.model = Multihash()
+    msg.model.multihash = m['model']
+
+    msg.objective = Multihash()
+    msg.objective.multihash = m['objective']
+
+    msg.token = Address()
+    msg.token.address = m['token']
+
+    msg.cost = UInt256()
+    msg.cost.uint256 = str(m['cost'])
+
+    msg.lighthouse = Address()
+    msg.lighthouse.address = m['lighthouse']
+
+    msg.validator = Address()
+    msg.validator.address = m['validator']
+
+    msg.validatorFee = UInt256()
+    msg.validatorFee.uint256 = str(m['validatorFee'])
+
+    msg.deadline = UInt256()
+    msg.deadline.uint256 = str(m['deadline'])
+
+    msg.sender = Address()
+    msg.sender.address = m['sender']
+
+    msg.nonce = UInt256()
+    msg.nonce.uint256 = str(m['nonce'])
+
+    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    return msg
+
+
+def dict2offer(m):
+    msg = Offer()
+
+    msg.model = Multihash()
+    msg.model.multihash = m['model']
+
+    msg.objective = Multihash()
+    msg.objective.multihash = m['objective']
+
+    msg.token = Address()
+    msg.token.address = m['token']
+
+    msg.cost = UInt256()
+    msg.cost.uint256 = str(m['cost'])
+
+    msg.validator = Address()
+    msg.validator.address = m['validator']
+
+    msg.lighthouse = Address()
+    msg.lighthouse.address = m['lighthouse']
+
+    msg.lighthouseFee = UInt256()
+    msg.lighthouseFee.uint256 = str(m['lighthouseFee'])
+
+    msg.deadline = UInt256()
+    msg.deadline.uint256 = str(m['deadline'])
+
+    msg.sender = Address()
+    msg.sender.address = m['sender']
+
+    msg.nonce = UInt256()
+    msg.nonce.uint256 = str(m['nonce'])
+
+    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    return msg
+
+
+def dict2res(m):
+    msg = Result()
+
+    msg.liability = Address()
+    msg.liability.address = m['liability']
+
+    msg.result = Multihash()
+    msg.result.multihash = m['result']
+
+    msg.success = m['success']
+    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    return msg

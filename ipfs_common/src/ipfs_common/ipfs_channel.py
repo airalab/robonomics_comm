@@ -5,53 +5,12 @@
 
 from robonomics_msgs.msg import Demand, Offer, Result
 from robonomics_msgs.messageValidator import convertMessage
-from binascii import hexlify
+from robonomics_msgs.robonomicsMessageUtils import offer2dict, demand2dict, res2dict
 from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
 import rospy
 import ipfsapi
-
-
-def bid2dict(b):
-    return {
-        'model': b.model.multihash,
-        'objective': b.objective.multihash,
-        'token': b.token.address,
-        'cost': int(b.cost.uint256),
-        'validator': b.validator.address,
-        'lighthouse': b.lighthouse.address,
-        'lighthouseFee': int(b.lighthouseFee.uint256),
-        'deadline': int(b.deadline.uint256),
-        'sender': b.sender.address,
-        'nonce': int(b.nonce.uint256),
-        'signature': hexlify(b.signature).decode('utf-8')
-    }
-
-
-def ask2dict(a):
-    return {
-        'model': a.model.multihash,
-        'objective': a.objective.multihash,
-        'token': a.token.address,
-        'cost': int(a.cost.uint256),
-        'lighthouse': a.lighthouse.address,
-        'validator': a.validator.address,
-        'validatorFee': int(a.validatorFee.uint256),
-        'deadline': int(a.deadline.uint256),
-        'sender': a.sender.address,
-        'nonce': int(a.nonce.uint256),
-        'signature': hexlify(a.signature).decode('utf-8')
-    }
-
-
-def res2dict(r):
-    return {
-        'liability': r.liability.address,
-        'result': r.result.multihash,
-        'success': r.success,
-        'signature': hexlify(r.signature).decode('utf-8')
-    }
 
 
 class IPFSChannel:
@@ -68,8 +27,8 @@ class IPFSChannel:
         self.incoming_demand = rospy.Publisher('incoming/demand', Demand, queue_size=10)
         self.incoming_result = rospy.Publisher('incoming/result', Result, queue_size=10)
 
-        rospy.Subscriber('eth/sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, bid2dict(m)))
-        rospy.Subscriber('eth/sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, ask2dict(m)))
+        rospy.Subscriber('eth/sending/offer',  Offer,  lambda m: publish(self.ipfs_client, self.lighthouse, offer2dict(m)))
+        rospy.Subscriber('eth/sending/demand', Demand, lambda m: publish(self.ipfs_client, self.lighthouse, demand2dict(m)))
         rospy.Subscriber('eth/sending/result', Result, lambda m: publish(self.ipfs_client, self.lighthouse, res2dict(m)))
 
     def spin(self):

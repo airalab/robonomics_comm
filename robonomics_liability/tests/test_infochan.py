@@ -3,6 +3,7 @@
 import rostest, sys, unittest, rospy, time
 from ipfs_common import ipfs_channel
 from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.robonomicsMessageUtils import offer2dict, demand2dict, res2dict
 import testMessages
 
 PKG = 'robonomics_liability'
@@ -26,14 +27,14 @@ class TestInfochan(unittest.TestCase):
         self.infochan_Res_subscriber_topic = rospy.Publisher('/liability/infochan/eth/sending/result', Result, queue_size=10)
 
 
-    def test_ask2dict(self):
-        self.assertEqual(testMessages.validAskDict, ipfs_channel.ask2dict(testMessages.getValidAsk()))
+    def test_demand2dict(self):
+        self.assertEqual(testMessages.validAskDict, demand2dict(testMessages.getValidAsk()))
 
-    def test_bid2dict(self):
-        self.assertEqual(testMessages.validBidDict, ipfs_channel.bid2dict(testMessages.getValidBid()))
+    def test_offer2dict(self):
+        self.assertEqual(testMessages.validBidDict, offer2dict(testMessages.getValidBid()))
 
     def test_res2dict(self):
-        self.assertEqual(testMessages.validResDict, ipfs_channel.res2dict(testMessages.getValidRes()))
+        self.assertEqual(testMessages.validResDict, res2dict(testMessages.getValidRes()))
 
     def infochan_published_ask_handler(self, ask):
         self.assertEqual(testMessages.getValidAsk(), ask)

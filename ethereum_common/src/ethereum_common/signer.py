@@ -9,7 +9,7 @@ from web3 import Web3, HTTPProvider
 from web3.exceptions import StaleBlockchain
 from threading import Lock
 from ens import ENS
-from robonomics_msgs import robonomicsMessageUtils
+from robonomics_msgs import robonomicsMessageUtils, messageValidator
 import rospy
 import binascii
 import json
@@ -84,35 +84,46 @@ class Signer:
 
         def sign_demand(msg):
             msg.sender = Address(self.__account.address)
-            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
-            current_nonce = get_nonce_by_address(msg.sender)
-            message_hash = robonomicsMessageUtils.demand_hash(msg, current_nonce)
-            signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
-            msg.signature = signed_hash.signature
-            msg.nonce = UInt256(uint256=str(current_nonce.uint256))
-            rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
-            self.signed_demand.publish(msg)
+
+            if messageValidator.isDemandFieldsCorrect(msg):
+                msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
+                current_nonce = get_nonce_by_address(msg.sender)
+                message_hash = robonomicsMessageUtils.demand_hash(msg, current_nonce)
+                signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
+                msg.signature = signed_hash.signature
+                msg.nonce = UInt256(uint256=str(current_nonce.uint256))
+                rospy.loginfo('askhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
+                self.signed_demand.publish(msg)
+            else:
+                rospy.logerr("Signing demand error: msg %s is not valid Demand message", msg)
         rospy.Subscriber('signing/demand', Demand, sign_demand)
 
         def sign_offer(msg):
             msg.sender = Address(self.__account.address)
-            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
-            current_nonce = get_nonce_by_address(msg.sender)
-            message_hash = robonomicsMessageUtils.offer_hash(msg, current_nonce)
-            signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
-            msg.signature = signed_hash.signature
-            msg.nonce = UInt256(uint256=str(current_nonce.uint256))
-            rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
-            self.signed_offer.publish(msg)
+
+            if messageValidator.isOfferFieldsCorrect(msg):
+                msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
+                current_nonce = get_nonce_by_address(msg.sender)
+                message_hash = robonomicsMessageUtils.offer_hash(msg, current_nonce)
+                signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
+                msg.signature = signed_hash.signature
+                msg.nonce = UInt256(uint256=str(current_nonce.uint256))
+                rospy.loginfo('bidhash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
+                self.signed_offer.publish(msg)
+            else:
+                rospy.logerr("Signing offer error: msg %s is not valid Offer message", msg)
         rospy.Subscriber('signing/offer', Offer, sign_offer)
 
         def sign_result(msg):
-            msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
-            message_hash = robonomicsMessageUtils.result_hash(msg)
-            signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
-            msg.signature = signed_hash.signature
-            rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
-            self.signed_result.publish(msg)
+            if messageValidator.isResultFieldsCorrect(msg):
+                msg = robonomicsMessageUtils.convert_msg_ens_names_to_addresses(msg, web3=self.web3)
+                message_hash = robonomicsMessageUtils.result_hash(msg)
+                signed_hash = self.__account.signHash(defunct_hash_message(message_hash))
+                msg.signature = signed_hash.signature
+                rospy.loginfo('reshash: %s signature: %s', binascii.hexlify(message_hash), binascii.hexlify(msg.signature))
+                self.signed_result.publish(msg)
+            else:
+                rospy.logerr("Signing result error: msg %s is not valid Result message")
         rospy.Subscriber('signing/result', Result, sign_result)
 
     def spin(self):
