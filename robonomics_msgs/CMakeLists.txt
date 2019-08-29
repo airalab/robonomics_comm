@@ -54,6 +54,8 @@ add_message_files(
         Demand.msg
         Offer.msg
         Result.msg
+        AddedOrderFeedback.msg
+        AddedPendingTransactionFeedback.msg
 )
 
 ## Generate services in the 'srv' folder

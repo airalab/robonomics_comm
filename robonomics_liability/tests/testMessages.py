@@ -1,4 +1,4 @@
-from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.msg import Demand, Offer, Result, AddedOrderFeedback, AddedPendingTransactionFeedback
 from ethereum_common.msg import Address, UInt256
 from ipfs_common.msg import Multihash
 from binascii import unhexlify
@@ -101,6 +101,37 @@ def getValidRes():
     r.success = validResDict['success']
     r.signature = unhexlify(validResDict['signature'].encode('utf-8'))
     return r
+
+
+validAddedOrderFeedbackDict = {
+    'signature': '3820c99af1518a4c2bf13b79ab144c1451928e1ab9f361e4c506f29ea4e8f0e54bbe0b2f7f401c269f43f14ed009329a13ecbf9a2c9e0d0806bffabf654fc5c81b',
+    'order': '6c9cb72e1a7cd5ec94f9dc2fac64082278d8788a190c13e6d6dca138250082ff',
+    'accepted': 0
+}
+
+
+def getValidAddedOrderFeedback():
+    f = AddedOrderFeedback()
+
+    f.order = unhexlify(validAddedOrderFeedbackDict['order'].encode('utf-8'))
+
+    f.accepted = UInt256()
+    f.accepted.uint256 = str(validAddedOrderFeedbackDict['accepted'])
+
+    f.signature = unhexlify(validAddedOrderFeedbackDict['signature'].encode('utf-8'))
+    return f
+
+
+validAddedPendingTransactionFeedbackDict = {
+    'tx': '6c9cb72e1a7cd5ec94f9dc2fac64082278d8788a190c13e6d6dca138250082ff',
+}
+
+
+def getValidAddedPendingTransactionFeedback():
+    f = AddedPendingTransactionFeedback()
+
+    f.tx = unhexlify(validAddedPendingTransactionFeedbackDict['tx'].encode('utf-8'))
+    return f
 
 
 #invalid data

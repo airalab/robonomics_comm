@@ -3,7 +3,9 @@
 # Robonomics Demand/Offer/Result ipfs message converter
 #
 
-from .robonomicsMessageUtils import offer2dict, demand2dict, res2dict, dict2offer, dict2demand, dict2res
+from .robonomicsMessageUtils import offer2dict, demand2dict, res2dict, \
+    dict2offer, dict2demand, dict2res, \
+    dict2addedOrderFeedback, dict2addedPendingTransactionFeedback
 from robonomics_msgs.msg import Demand, Offer, Result
 import voluptuous as v
 import rospy
@@ -11,16 +13,28 @@ import rospy
 
 @v.message('wrong hexadecimal field value')
 def isHexIntNotZeroCanBeEmpty(arg):
-    if arg and not int(arg, 16) > 0:
-        raise v.Invalid('value is zero')
+    if arg:
+        try:
+            int_arg = int(arg, 16)
+            if not int_arg > 0:
+                raise v.Invalid('value is zero')
+            else:
+                return hex(int_arg)[2:]
+        except ValueError as e:
+            raise v.Invalid(e)
     return arg
 
 
-@v.message('wrong decimal field value')
-def isPositiveDecIntCanBeEmpty(arg):
-    if arg and not arg >= 0:
-        raise v.Invalid('value is negative')
-    return arg
+@v.message('wrong TxHash field value')
+def isTxHash(arg):
+    try:
+        int_arg = int(arg, 16)
+        if not int_arg > 0:
+            raise v.Invalid('value is zero')
+        else:
+            return hex(int_arg)[2:]
+    except ValueError as e:
+        raise v.Invalid(e)
 
 
 isIpfsBase58Hash = v.All(str, v.Length(min=46, max=46), v.Match(r'^[a-zA-Z0-9]+$'))
@@ -51,7 +65,7 @@ schemaAskBid = v.All(
         v.Required('cost'): v.All(int),
         v.Required('deadline'): v.All(int),
         v.Required('sender'): isAddress,
-        v.Required('nonce'): isPositiveDecIntCanBeEmpty(),
+        v.Required('nonce'): v.All(int),
         v.Required('signature'): isHexIntNotZeroCanBeEmpty()
     })
 )
@@ -63,9 +77,21 @@ schemaResult = v.Schema({
     v.Required('signature'): isHexIntNotZeroCanBeEmpty()
 })
 
-schemaAskBidResult = v.Any(
+schemaAddedOrderFeedback = v.Schema({
+    v.Required('signature'): isHexIntNotZeroCanBeEmpty(),
+    v.Required('order'): isTxHash(),
+    v.Required('accepted'): v.All(int)
+})
+
+schemaAddedPendingTransactionFeedback = v.Schema({
+    v.Required('tx'): isTxHash(),
+})
+
+schemaAskBidResultReport = v.Any(
     schemaAskBid,
-    schemaResult
+    schemaResult,
+    schemaAddedOrderFeedback,
+    schemaAddedPendingTransactionFeedback
 )
 
 
@@ -101,7 +127,7 @@ def isResultFieldsCorrect(msg):
 
 def msg_is_offer_demand_result(abr_msg):
     try:
-        return schemaAskBidResult(abr_msg)
+        return schemaAskBidResultReport(abr_msg)
     except v.MultipleInvalid as e:
         rospy.logerr("Message validation error: %s", str(e))
         return None
@@ -116,9 +142,15 @@ def convertMessage(ipfsMessage):
         elif 'lighthouseFee' in validatedBySchema:
             # rospy.logwarn('DEBUG: Message %s is valid Bid ipfs message', ipfsMessage)
             return dict2offer(validatedBySchema)
-        else:
+        elif 'accepted' in validatedBySchema:
+            # rospy.logwarn('DEBUG: Message %s is valid AddedOrderFeedback ipfs message', validatedBySchema)
+            return dict2addedOrderFeedback(validatedBySchema)
+        elif 'tx' in validatedBySchema:
+            # rospy.logwarn('DEBUG: Message %s is valid AddedPendingTransactionFeedback ipfs message', validatedBySchema)
+            return dict2addedPendingTransactionFeedback(validatedBySchema)
+        elif 'liability' in validatedBySchema:
             # rospy.logwarn('DEBUG: Message %s is valid Result ipfs message', ipfsMessage)
             return dict2res(validatedBySchema)
 
-    rospy.logwarn('Message %s is not valid Ask, Bid or Result ipfs message', ipfsMessage)
+    rospy.logwarn('Message %s is not valid Ask, Bid, Result or Feedback ipfs message', ipfsMessage)
     return None
