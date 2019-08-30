@@ -3,23 +3,23 @@
 # Robonomics control related nodes.
 #
 
-from . import listener
-from . import executor
-from . import LiabilityExecutionsPersistence
-from . import player_service
+from .listener import Listener
+from .executor import Executor
+from .LiabilityExecutionsPersistence import LiabilityExecutionsPersistence
+from .player_service import PlayerService
 
 
 def listener_node():
-    listener.Listener().spin()
+    Listener().spin()
 
 
 def executor_node():
-    executor.Executor().spin()
+    Executor().spin()
 
 
 def persistence_node():
-    LiabilityExecutionsPersistence.LiabilityExecutionsPersistence().spin()
+    LiabilityExecutionsPersistence().spin()
 
 
 def player_service_node():
-    player_service.PlayerService().spin()
+    PlayerService().spin()

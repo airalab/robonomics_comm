@@ -1,5 +1,5 @@
-from . import aira_graph
+from .aira_graph import AIRAGraph
 
 
 def aira_graph_node():
-    aira_graph.AIRAGraph().spin()
+    AIRAGraph().spin()

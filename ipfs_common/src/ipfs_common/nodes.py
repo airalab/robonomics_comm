@@ -1,10 +1,10 @@
-from . import ipfs_channel
-from . import ipfs_common
+from .ipfs_channel import IPFSChannel
+from .ipfs_common import IPFSCommon
 
 
 def ipfs_channel_node():
-    ipfs_channel.IPFSChannel().spin()
+    IPFSChannel().spin()
 
 
 def ipfs_common_node():
-    ipfs_common.IPFSCommon().spin()
+    IPFSCommon().spin()

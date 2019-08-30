@@ -3,18 +3,18 @@
 # ethereum common related nodes.
 #
 
-from . import erc20_services
-from . import eth_services
-from . import signer
+from .erc20_services import ERC20Services
+from .eth_services import ETHServices
+from .signer import Signer
 
 
 def erc20_node():
-    erc20_services.ERC20Services().spin()
+    ERC20Services().spin()
 
 
 def eth_node():
-    eth_services.ETHServices().spin()
+    ETHServices().spin()
 
 
 def signer_node():
-    signer.Signer().spin()
+    Signer().spin()

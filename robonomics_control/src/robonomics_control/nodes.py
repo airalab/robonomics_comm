@@ -3,7 +3,7 @@
 # Robonomics control related nodes.
 #
 
-from . import distribution
+from .distribution import Distribution
 
 def distribution_node():
-    distribution.Distribution().spin()
+    Distribution().spin()

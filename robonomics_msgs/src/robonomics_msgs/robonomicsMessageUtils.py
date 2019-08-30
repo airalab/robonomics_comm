@@ -4,7 +4,7 @@
 #
 from web3 import Web3
 from web3.auto import w3
-from robonomics_msgs.msg import Demand, Offer, Result
+from robonomics_msgs.msg import Demand, Offer, Result, AddedOrderFeedback, AddedPendingTransactionFeedback
 from eth_account.messages import defunct_hash_message
 import multihash
 from web3.utils.normalizers import (
@@ -139,6 +139,20 @@ def res2dict(r):
     }
 
 
+def addedOrderFeedback2dict(f):
+    return {
+        'order': hexlify(f.order).decode('utf-8'),
+        'accepted': int(f.accepted.uint256),
+        'signature': hexlify(f.signature).decode('utf-8')
+    }
+
+
+def addedPendingTransactionFeedback2dict(f):
+    return {
+        'tx': hexlify(f.tx).decode('utf-8')
+    }
+
+
 def dict2demand(m):
     msg = Demand()
 
@@ -172,7 +186,7 @@ def dict2demand(m):
     msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
 
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
     return msg
 
 
@@ -209,7 +223,7 @@ def dict2offer(m):
     msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
 
-    msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
     return msg
 
 
@@ -223,5 +237,24 @@ def dict2res(m):
     msg.result.multihash = m['result']
 
     msg.success = m['success']
+    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
+    return msg
+
+
+def dict2addedOrderFeedback(m):
+    msg = AddedOrderFeedback()
+
+    msg.order = unhexlify(m['order'].encode('utf-8'))
+
+    msg.accepted = UInt256()
+    msg.accepted.uint256 = str(m['accepted'])
+
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
+    return msg
+
+
+def dict2addedPendingTransactionFeedback(m):
+    msg = AddedPendingTransactionFeedback()
+
+    msg.tx = unhexlify(m['tx'].encode('utf-8'))
     return msg
