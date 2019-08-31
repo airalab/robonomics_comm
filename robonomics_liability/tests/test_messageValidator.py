@@ -57,6 +57,26 @@ class TestMessageValidator(unittest.TestCase):
         f = messageValidator.convertMessage(testMessages.invalidRes2Dict)
         assert f is None
 
+    def test_InvalidAsk3(self):
+        f = messageValidator.convertMessage(testMessages.invalidAsk3Dict)
+        assert f is None
+
+    def test_InvalidBid3(self):
+        f = messageValidator.convertMessage(testMessages.invalidBid3Dict)
+        assert f is None
+
+    def test_InvalidRes3(self):
+        f = messageValidator.convertMessage(testMessages.invalidRes3Dict)
+        assert f is None
+
+    def test_InvalidAsk4(self):
+        f = messageValidator.convertMessage(testMessages.invalidAsk4Dict)
+        assert f is None
+
+    def test_InvalidBid4(self):
+        f = messageValidator.convertMessage(testMessages.invalidBid4Dict)
+        assert f is None
+
     def test_ValidAddedOrderFeedback(self):
         f = messageValidator.convertMessage(testMessages.validAddedOrderFeedbackDict)
         assert isinstance(f, AddedOrderFeedback)

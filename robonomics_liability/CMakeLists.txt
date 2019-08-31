@@ -28,6 +28,7 @@ add_service_files(
         CreateRosbagPlayer.srv
         StartRosbagPlayer.srv
         StopRosbagPlayer.srv
+        ReadLiability.srv
 )
 
 generate_messages(
