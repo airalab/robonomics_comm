@@ -186,7 +186,8 @@ def dict2demand(m):
     msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
 
-    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
+    if m['signature']:
+        msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
 
@@ -223,7 +224,8 @@ def dict2offer(m):
     msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
 
-    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
+    if m['signature']:
+        msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
 
@@ -237,7 +239,8 @@ def dict2res(m):
     msg.result.multihash = m['result']
 
     msg.success = m['success']
-    msg.signature = unhexlify(m['signature'].encode('utf-8')) if m['signature'] else []
+    if m['signature']:
+        msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
 

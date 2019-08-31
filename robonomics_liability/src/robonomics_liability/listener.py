@@ -5,7 +5,7 @@
 
 from robonomics_msgs.msg import Result
 from robonomics_liability.msg import Liability
-from robonomics_liability.srv import PersistenceContainsLiability
+from robonomics_liability.srv import PersistenceContainsLiability, ReadLiability, ReadLiabilityResponse
 from web3 import Web3, HTTPProvider, WebsocketProvider
 from ens import ENS
 from threading import Timer
@@ -62,6 +62,19 @@ class Listener:
 
         self.persistence_contains_liability = rospy.ServiceProxy('persistence/exists', PersistenceContainsLiability)
 
+        def read_liability_service_handler(msg):
+            response = ReadLiabilityResponse()
+            response.read = False
+            try:
+                liability = self.liability_read(msg.address)
+                response.read = True
+                response.liability = liability
+            except Exception as e:
+                rospy.logerr("Failed to read liability %s with exception: %s", msg.address, e)
+            return response
+        rospy.Service('read', ReadLiability, read_liability_service_handler)
+
+
         def liability_finalize(msg):
             rospy.logdebug("liability_finalize: msg is: %s", msg)
             is_finalized = False
@@ -98,6 +111,10 @@ class Listener:
         msg.cost.uint256 = str(c.call().cost())
         msg.validator.address = c.call().validator()
         msg.validatorFee.uint256 = str(c.call().validatorFee())
+
+        p_result = c.call().result()
+        if p_result:
+            msg.result.multihash = multihash.decode(p_result).encode('base58').decode()
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 
