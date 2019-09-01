@@ -7,7 +7,7 @@ from robonomics_msgs import robonomicsMessageUtils
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
 from urllib.parse import urlparse
-import ipfsapi
+import ipfshttpclient
 from tempfile import TemporaryDirectory
 from std_msgs.msg import *
 from web3 import Web3, HTTPProvider
@@ -24,7 +24,7 @@ class TestExecutor(unittest.TestCase):
         super(TestExecutor, self).__init__(*args)
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
+        self.ipfs_client = ipfshttpclient.connect("/dns/{0}/tcp/{1}/http".format(ipfs_provider[0], ipfs_provider[1]))
 
         self.test_token = rospy.get_param('~test_token')
         self.test_bid_publisher = rospy.Publisher('/liability/test_executor/o/eth/signing/offer', Offer, queue_size=10)
@@ -63,7 +63,7 @@ class TestExecutor(unittest.TestCase):
 
             test_objective_bag.close()
 
-            ipfs_objective = self.ipfs.add(test_objective_bag.filename)
+            ipfs_objective = self.ipfs_client.add(test_objective_bag.filename)
             rospy.logwarn("TEST_EXECUTOR: ADD TEST OBJECTIVE TO IPFS is %s", ipfs_objective)
             return ipfs_objective['Hash']
 
@@ -82,7 +82,7 @@ class TestExecutor(unittest.TestCase):
     def check_rosbag_is_new_and_has_messages(self, msg):
         with TemporaryDirectory() as tmpdir:
             os.chdir(tmpdir)
-            self.ipfs.get(msg.result.multihash)
+            self.ipfs_client.get(msg.result.multihash)
             bag = rosbag.Bag(msg.result.multihash, 'r')
             bag_topics = bag.get_type_and_topic_info()
 
