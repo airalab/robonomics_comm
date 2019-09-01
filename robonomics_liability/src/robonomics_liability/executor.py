@@ -13,7 +13,7 @@ from threading import Thread
 from .LiabilityExecutionThread import LiabilityExecutionThread
 from queue import Queue
 import rospy
-import ipfsapi
+import ipfshttpclient
 import os
 from ethereum_common import eth_keyfile_helper
 
@@ -37,7 +37,7 @@ class Executor:
         self.__account = __keyfile_helper.get_local_account_from_keyfile()
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_client = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
+        self.ipfs_client = ipfshttpclient.connect("/dns/{0}/tcp/{1}/http".format(ipfs_provider[0], ipfs_provider[1]))
 
         self.liability_execution_threads = {}
 

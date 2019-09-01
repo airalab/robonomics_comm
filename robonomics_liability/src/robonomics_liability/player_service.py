@@ -11,7 +11,7 @@ from robonomics_liability.srv import CreateRosbagPlayer, CreateRosbagPlayerReque
 from robonomics_liability.srv import StartRosbagPlayer, StartRosbagPlayerRequest, StartRosbagPlayerResponse
 from robonomics_liability.srv import StopRosbagPlayer, StopRosbagPlayerRequest, StopRosbagPlayerResponse
 from ipfs_common.msg import Multihash
-import ipfsapi
+import ipfshttpclient
 import os
 import string
 import random
@@ -22,7 +22,7 @@ class PlayerService:
         rospy.init_node('player_service', anonymous=True)
 
         ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_client = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
+        self.ipfs_client = ipfshttpclient.connect("/dns/{0}/tcp/{1}/http".format(ipfs_provider[0], ipfs_provider[1]))
 
         self.executions_work_directory = os.path.join(os.getcwd(), 'liabilities_executions')
         self.master_check_interval = rospy.get_param('~master_check_interval')
