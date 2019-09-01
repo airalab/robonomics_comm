@@ -53,7 +53,7 @@ class LiabilityExecutionsPersistence:
                        self.__liability_executions_timestamps[msg.address.address])
 
     def __liability_exists(self, msg):
-        return PersistenceContainsLiabilityResponse(msg.address in self.__liability_executions)
+        return PersistenceContainsLiabilityResponse(msg.address.address in self.__liability_executions)
 
     def __register_liability_in_timestamp_persistence(self, msg):
         try:

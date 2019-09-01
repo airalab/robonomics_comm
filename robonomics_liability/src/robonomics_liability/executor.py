@@ -61,7 +61,7 @@ class Executor:
         rospy.Subscriber('incoming', Liability, incoming_liability)
 
         def finish_liability(msg):
-            liability_thread = self.liability_execution_threads.pop(msg.address)
+            liability_thread = self.liability_execution_threads.pop(msg.address.address)
 
             liability_msg = liability_thread.getLiabilityMsg()
 
@@ -80,69 +80,69 @@ class Executor:
         rospy.Service('finish', FinishLiability, finish_liability)
 
         def start_liability(msg):
-            if msg.address not in self.liability_execution_threads:
+            if msg.address.address not in self.liability_execution_threads:
                 rospy.wait_for_service(self.read_libility_srv.resolved_name)
 
                 read_liability_response = self.read_libility_srv(msg.address)
                 if not read_liability_response.read:
                     return StartLiabilityResponse(False,
-                                                  "Could not find {0} in ready liabilities or read them from chain for starting".format(msg.address))
+                                                  "Could not find {0} in ready liabilities or read them from chain for starting".format(msg.address.address))
                 try:
                     self.persistence_add.publish(read_liability_response.liability)
                     self._createLiabilityExceutionThread(read_liability_response.liability)
                 except Exception as e:
-                    rospy.logerr("Failed to prepare liability {0} to execution with e: {1}".format(msg.address, e))
-                    return StartLiabilityResponse(False, "Failed to prepare liability {0} to execution with e: {1}".format(msg.address, e))
+                    rospy.logerr("Failed to prepare liability {0} to execution with e: {1}".format(msg.address.address, e))
+                    return StartLiabilityResponse(False, "Failed to prepare liability {0} to execution with e: {1}".format(msg.address.address, e))
 
-            liability_thread = self.liability_execution_threads[msg.address]
+            liability_thread = self.liability_execution_threads[msg.address.address]
 
             try:
                 liability_thread.start()
-                rospy.loginfo('Liability %s started', liability_thread.getLiabilityMsg().address)
+                rospy.loginfo('Liability %s started', liability_thread.getLiabilityMsg().address.address)
             except Exception as e:
-                rospy.logerr("Can't start liability %s with %s", msg.address, e)
-                return StartLiabilityResponse(False, "Can't start liability {0} with exception: {1}".format(msg.address, e))
+                rospy.logerr("Can't start liability %s with %s", msg.address.address, e)
+                return StartLiabilityResponse(False, "Can't start liability {0} with exception: {1}".format(msg.address.address, e))
 
             return StartLiabilityResponse(True, "Liability {0} started".format(liability_thread.getLiabilityMsg().address.address))
         rospy.Service('start', StartLiability, start_liability)
 
         def restart_liability(msg):
             try:
-                liability_thread = self.liability_execution_threads.pop(msg.address)
+                liability_thread = self.liability_execution_threads.pop(msg.address.address)
             except KeyError as e:
-                rospy.logerr("Could not find liability %s for restarting", msg.address)
-                return StartLiabilityResponse(False, "Could not find liability {0} for restarting".format(msg.address))
+                rospy.logerr("Could not find liability %s for restarting", msg.address.address)
+                return StartLiabilityResponse(False, "Could not find liability {0} for restarting".format(msg.address.address))
 
             liability = liability_thread.getLiabilityMsg()
             try:
                 liability_thread.interrupt(delete_result=True)
-                rospy.loginfo('Liability %s interrupted', liability.address)
+                rospy.loginfo('Liability %s interrupted', liability.address.address)
             except Exception as e:
-                rospy.logerr("Can't interrupt liability %s with %s", msg.address, e)
+                rospy.logerr("Can't interrupt liability %s with %s", msg.address.address, e)
                 return StartLiabilityResponse(False,
-                                              "Can't interrupt liability {0} with exception: {1}".format(msg.address, e))
+                                              "Can't interrupt liability {0} with exception: {1}".format(msg.address.address, e))
             try:
                 self._createLiabilityExceutionThread(liability)
             except Exception as e:
-                return StartLiabilityResponse(False, "Can't initialize liability {0} execution thread with exception: {1}".format(msg.address, e))
+                return StartLiabilityResponse(False, "Can't initialize liability {0} execution thread with exception: {1}".format(msg.address.address, e))
             return start_liability(msg)
         rospy.Service('restart', StartLiability, restart_liability)
 
         def resume_liability(msg):
             try:
-                liability_thread = self.liability_execution_threads[msg.address]
+                liability_thread = self.liability_execution_threads[msg.address.address]
             except KeyError as e:
-                rospy.logerr("Could not find liability %s for resuming", msg.address)
-                return StartLiabilityResponse(False, "Could not find liability {0} for resuming".format(msg.address))
+                rospy.logerr("Could not find liability %s for resuming", msg.address.address)
+                return StartLiabilityResponse(False, "Could not find liability {0} for resuming".format(msg.address.address))
             try:
                 rospy.wait_for_service(self.persistence_get_liability_timestamp.resolved_name)
                 timestamp = self.persistence_get_liability_timestamp(liability_thread.getLiabilityMsg().address)
-                rospy.logwarn("Getting %s timestamp for liability %s", timestamp.timestamp, msg.address)
+                rospy.logwarn("Getting %s timestamp for liability %s", timestamp.timestamp, msg.address.address)
                 liability_thread.start(timestamp.timestamp)
-                rospy.loginfo('Liability %s resumed', liability_thread.getLiabilityMsg().address)
+                rospy.loginfo('Liability %s resumed', liability_thread.getLiabilityMsg().address.address)
             except Exception as e:
-                rospy.logerr("Can't resume liability %s with %s", msg.address, e)
-                return StartLiabilityResponse(False, "Can't resume liability {0} with exception: {1}".format(msg.address, e))
+                rospy.logerr("Can't resume liability %s with %s", msg.address.address, e)
+                return StartLiabilityResponse(False, "Can't resume liability {0} with exception: {1}".format(msg.address.address, e))
 
             return StartLiabilityResponse(True, "Liability {0} resumed".format(liability_thread.getLiabilityMsg().address.address))
         rospy.Service('resume', StartLiability, resume_liability)
