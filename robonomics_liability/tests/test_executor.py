@@ -111,12 +111,12 @@ class TestExecutor(unittest.TestCase):
             time.sleep(0.1)
 
         start_service_proxy = rospy.ServiceProxy('/liability/start', StartLiability)
-        start_service_proxy(self.ready_liability.address.address)
+        start_service_proxy(self.ready_liability.address)
 
         time.sleep(5)
 
         finish_service_proxy = rospy.ServiceProxy('/liability/finish', FinishLiability)
-        finish_service_proxy(self.ready_liability.address.address, True)
+        finish_service_proxy(self.ready_liability.address, True)
 
         while not rospy.is_shutdown() and not self.success:
             time.sleep(0.1)

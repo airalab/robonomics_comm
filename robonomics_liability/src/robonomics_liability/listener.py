@@ -4,6 +4,7 @@
 #
 
 from robonomics_msgs.msg import Result
+from ethereum_common.msg import Address
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import PersistenceContainsLiability, ReadLiability, ReadLiabilityResponse
 from web3 import Web3, HTTPProvider, WebsocketProvider
@@ -66,11 +67,11 @@ class Listener:
             response = ReadLiabilityResponse()
             response.read = False
             try:
-                liability = self.liability_read(msg.address)
+                liability = self.liability_read(msg.address.address)
                 response.read = True
                 response.liability = liability
             except Exception as e:
-                rospy.logerr("Failed to read liability %s with exception: %s", msg.address, e)
+                rospy.logerr("Failed to read liability %s with exception: %s", msg.address.address, e)
             return response
         rospy.Service('read', ReadLiability, read_liability_service_handler)
 
@@ -126,7 +127,7 @@ class Listener:
         def liability_filter_thread():
             try:
                 for entry in self.liability_filter.get_new_entries():
-                    liability_address = entry['args']['liability']
+                    liability_address = Address(entry['args']['liability'])
                     self.liabilities_queue.push(liability_address)
                     rospy.loginfo("New liability added to persistence queue: %s", liability_address)
             except Exception as e:
@@ -143,7 +144,7 @@ class Listener:
 
                     # TODO: verify that liability for my saved in persistence before pop them from liabilities_queue
                     if not liability_already_in_persistence.exists:
-                        self.liability.publish(self.liability_read(entry))
+                        self.liability.publish(self.liability_read(entry.address))
 
                     self.liabilities_queue.pop()
                     rospy.loginfo("Liability read successfully: %s", entry)
