@@ -196,8 +196,8 @@ class Recorder(object):
             self._subscriber_helpers[topic].subscriber.unregister()
         except Exception:
             return
-
-        del self._subscriber_helpers[topic]
+        finally:
+            del self._subscriber_helpers[topic]
 
     def _record(self, topic, m):
         if self._paused:

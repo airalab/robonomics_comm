@@ -6,7 +6,7 @@ from web3 import Web3
 from web3.auto import w3
 from robonomics_msgs.msg import Demand, Offer, Result, AddedOrderFeedback, AddedPendingTransactionFeedback
 from eth_account.messages import defunct_hash_message
-import multihash
+import base58
 from web3.utils.normalizers import (
     abi_ens_resolver
 )
@@ -43,8 +43,8 @@ def demand_hash(msg, nonce):
              'uint256',
              'uint256',
              'address']
-    return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), "base58").encode(),
-                                     multihash.decode(msg.objective.multihash.encode(), "base58").encode(),
+    return Web3.soliditySha3(types, [base58.b58decode(msg.model.multihash),
+                                     base58.b58decode(msg.objective.multihash),
                                      msg.token.address,
                                      int(msg.cost.uint256),
                                      msg.lighthouse.address,
@@ -66,8 +66,8 @@ def offer_hash(msg, nonce):
              'uint256',
              'uint256',
              'address']
-    return Web3.soliditySha3(types, [multihash.decode(msg.model.multihash.encode(), 'base58').encode(),
-                                     multihash.decode(msg.objective.multihash.encode(), 'base58').encode(),
+    return Web3.soliditySha3(types, [base58.b58decode(msg.model.multihash),
+                                     base58.b58decode(msg.objective.multihash),
                                      msg.token.address,
                                      int(msg.cost.uint256),
                                      msg.validator.address,
@@ -83,7 +83,7 @@ def result_hash(msg):
              'bytes',
              'bool']
     return Web3.soliditySha3(types, [msg.liability.address,
-                                     multihash.decode(msg.result.multihash.encode(), 'base58').encode(),
+                                     base58.b58decode(msg.result.multihash),
                                      msg.success])
 
 

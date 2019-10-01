@@ -13,7 +13,7 @@ from threading import Timer
 import rospy
 import json
 import time
-import multihash
+import base58
 from std_msgs.msg import String
 from . import finalization_checker
 from persistent_queue import PersistentQueue
@@ -103,8 +103,8 @@ class Listener:
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
         msg.address.address = address
-        msg.model.multihash = multihash.decode(c.call().model()).encode('base58').decode()
-        msg.objective.multihash = multihash.decode(c.call().objective()).encode('base58').decode()
+        msg.model.multihash = base58.b58encode(c.call().model()).decode()
+        msg.objective.multihash = base58.b58encode(c.call().objective()).decode()
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()
         msg.lighthouse.address = c.call().lighthouse()
@@ -115,7 +115,7 @@ class Listener:
 
         p_result = c.call().result()
         if p_result:
-            msg.result.multihash = multihash.decode(p_result).encode('base58').decode()
+            msg.result.multihash = base58.b58encode(p_result)
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 
