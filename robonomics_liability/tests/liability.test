@@ -74,7 +74,4 @@
     <param name="keyfile_password_file" value="$(arg keyfile_password_file)" />
   </test>
 
-  <test test-name="test_ethereum_common_messages" pkg="robonomics_liability" type="test_ethereum_common_messages.py" time-limit="10.0">
-  </test>
-
 </launch>
