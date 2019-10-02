@@ -10,7 +10,7 @@ from .pubsub import publish, subscribe
 from urllib.parse import urlparse
 from threading import Thread
 import rospy
-import ipfshttpclient
+import ipfsapi
 
 
 class IPFSChannel:
@@ -21,7 +21,7 @@ class IPFSChannel:
         rospy.init_node('ipfs_channel')
         self.lighthouse = rospy.get_param('~lighthouse_contract')
         ipfs_api_parts = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_client = ipfshttpclient.connect("/dns/{0}/tcp/{1}/http".format(ipfs_api_parts[0], ipfs_api_parts[1]))
+        self.ipfs_client = ipfsapi.Client(host=ipfs_api_parts[0], port=ipfs_api_parts[1])
 
         self.incoming_offer  = rospy.Publisher('incoming/offer',  Offer, queue_size=10)
         self.incoming_demand = rospy.Publisher('incoming/demand', Demand, queue_size=10)

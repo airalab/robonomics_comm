@@ -1,13 +1,25 @@
---- _UInt256.py	2019-01-16 10:50:03.382925478 +0300
-+++ _UInt256.py	2019-01-16 10:51:23.251234649 +0300
+--- UInt256.py	2019-10-01 15:17:05.332645361 +0300
++++ UInt256.py	2019-10-01 15:03:36.801120491 +0300
 @@ -5,6 +5,7 @@
  import genpy
  import struct
- 
+
 +UINT256_MAX_VALUE = 2**256 - 1
- 
+
  class UInt256(genpy.Message):
    _md5sum = "d3e47bf4311da2c63d362b5eea4c389b"
+@@ -34,9 +35,9 @@
+       super(UInt256, self).__init__(*args, **kwds)
+       #message fields cannot be None, assign default values for those that are
+       if self.uint256 is None:
+-        self.uint256 = ''
++        self.uint256 = '0'
+     else:
+-      self.uint256 = ''
++      self.uint256 = '0'
+
+   def _get_types(self):
+     """
 @@ -117,6 +118,94 @@
      except struct.error as e:
        raise genpy.DeserializationError(e) #most likely buffer underfill

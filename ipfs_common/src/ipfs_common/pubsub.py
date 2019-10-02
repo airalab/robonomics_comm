@@ -13,14 +13,14 @@ def publish(ipfs_client, topic, msg):
     '''
         Publish message to given topic.
     '''
-    return ipfs_client.pubsub.publish(topic, dumps(msg))
+    return ipfs_client.pubsub_pub(topic, dumps(msg))
 
 
 def subscribe(ipfs_client, topic):
     '''
         Subscribe to given topic and return generator of received messages.
     '''
-    with ipfs_client.pubsub.subscribe(topic) as sub:
+    with ipfs_client.pubsub_sub(topic) as sub:
         for msg in sub:
             try:
                 yield loads(b64decode(msg['data']).decode('utf-8'))
