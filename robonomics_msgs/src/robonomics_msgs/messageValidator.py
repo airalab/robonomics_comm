@@ -9,30 +9,33 @@ from .robonomicsMessageUtils import offer2dict, demand2dict, res2dict, \
 from robonomics_msgs.msg import Demand, Offer, Result
 import voluptuous as v
 import rospy
+import re
 
 
 @v.message('wrong hexadecimal field value')
-def isHexIntNotZeroCanBeEmpty(arg):
+def isSignatureCanBeEmpty(arg):
     if arg:
+        value = re.sub(r'^0x', '', arg)
         try:
-            int_arg = int(arg, 16)
+            int_arg = int(value, 16)
             if not int_arg > 0:
                 raise v.Invalid('value is zero')
             else:
-                return hex(int_arg)[2:]
+                return value
         except ValueError as e:
             raise v.Invalid(e)
-    return arg
+    return ''
 
 
 @v.message('wrong TxHash field value')
 def isTxHash(arg):
     try:
-        int_arg = int(arg, 16)
+        value = re.sub(r'^0x', '', arg)
+        int_arg = int(value, 16)
         if not int_arg > 0:
             raise v.Invalid('value is zero')
         else:
-            return hex(int_arg)[2:]
+            return value
     except ValueError as e:
         raise v.Invalid(e)
 
@@ -66,7 +69,7 @@ schemaAskBid = v.All(
         v.Required('deadline'): v.All(int),
         v.Required('sender'): isAddress,
         v.Required('nonce'): v.All(int),
-        v.Required('signature'): isHexIntNotZeroCanBeEmpty()
+        v.Required('signature'): isSignatureCanBeEmpty()
     })
 )
 
@@ -74,11 +77,11 @@ schemaResult = v.Schema({
     v.Required('liability'): isAddress,
     v.Required('result'): isIpfsBase58Hash,
     v.Required('success'): v.All(bool),
-    v.Required('signature'): isHexIntNotZeroCanBeEmpty()
+    v.Required('signature'): isSignatureCanBeEmpty()
 })
 
 schemaAddedOrderFeedback = v.Schema({
-    v.Required('signature'): isHexIntNotZeroCanBeEmpty(),
+    v.Required('signature'): isSignatureCanBeEmpty(),
     v.Required('order'): isTxHash(),
     v.Required('accepted'): v.All(int)
 })
@@ -136,21 +139,25 @@ def msg_is_offer_demand_result(abr_msg):
 def convertMessage(ipfsMessage):
     validatedBySchema = msg_is_offer_demand_result(ipfsMessage)
     if not (validatedBySchema is None):
-        if 'validatorFee' in validatedBySchema:
-            # rospy.logwarn('DEBUG: Message %s is valid Ask message', ipfsMessage)
-            return dict2demand(validatedBySchema)
-        elif 'lighthouseFee' in validatedBySchema:
-            # rospy.logwarn('DEBUG: Message %s is valid Bid ipfs message', ipfsMessage)
-            return dict2offer(validatedBySchema)
-        elif 'accepted' in validatedBySchema:
-            # rospy.logwarn('DEBUG: Message %s is valid AddedOrderFeedback ipfs message', validatedBySchema)
-            return dict2addedOrderFeedback(validatedBySchema)
-        elif 'tx' in validatedBySchema:
-            # rospy.logwarn('DEBUG: Message %s is valid AddedPendingTransactionFeedback ipfs message', validatedBySchema)
-            return dict2addedPendingTransactionFeedback(validatedBySchema)
-        elif 'liability' in validatedBySchema:
-            # rospy.logwarn('DEBUG: Message %s is valid Result ipfs message', ipfsMessage)
-            return dict2res(validatedBySchema)
+        try:
+            if 'validatorFee' in validatedBySchema:
+                # rospy.logwarn('DEBUG: Message %s is valid Ask message', ipfsMessage)
+                return dict2demand(validatedBySchema)
+            elif 'lighthouseFee' in validatedBySchema:
+                # rospy.logwarn('DEBUG: Message %s is valid Bid ipfs message', ipfsMessage)
+                return dict2offer(validatedBySchema)
+            elif 'accepted' in validatedBySchema:
+                # rospy.logwarn('DEBUG: Message %s is valid AddedOrderFeedback ipfs message', validatedBySchema)
+                return dict2addedOrderFeedback(validatedBySchema)
+            elif 'tx' in validatedBySchema:
+                # rospy.logwarn('DEBUG: Message %s is valid AddedPendingTransactionFeedback ipfs message', validatedBySchema)
+                return dict2addedPendingTransactionFeedback(validatedBySchema)
+            elif 'liability' in validatedBySchema:
+                # rospy.logwarn('DEBUG: Message %s is valid Result ipfs message', ipfsMessage)
+                return dict2res(validatedBySchema)
+        except Exception as e:
+            rospy.logerr("Failed to convert message %s with error: %s", validatedBySchema, e)
+            return None
 
     rospy.logwarn('Message %s is not valid Ask, Bid, Result or Feedback ipfs message', ipfsMessage)
     return None
