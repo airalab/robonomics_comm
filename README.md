@@ -17,6 +17,17 @@ catkin_init_workspace && cd .. && catkin_make
 
 > `robonomics_comm` also can be builded with Nix, `nix build -f release.nix`.
 
+There is a script made especially to simplify installation and usage of robonomics_comm
+
+Download the following [script](http://bootstrap.aira.life/robonomics.sh) and run it:
+
+```
+wget http://bootstrap.aira.life/robonomics.sh
+chmod +x ./robonomics.sh
+./robonomics.sh init        # for the first time only
+./robonomics.sh mainnet     # or sidechain for Sidechain network
+```
+
 Robonomics liability
 --------------------
 
