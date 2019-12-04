@@ -4,16 +4,14 @@ from .player import Player, get_rosbag_from_file
 from .recorder import Recorder
 import rospy
 import os
-from ipfs_common import ipfs_fileutils
-from ipfs_common.srv import IpfsUploadFileRequest, IpfsDownloadFileRequest
+from ipfs_common.srv import IpfsUploadFile, IpfsUploadFileRequest, IpfsDownloadFile, IpfsDownloadFileRequest
 
 
 class LiabilityExecutionThread(object):
-    def __init__(self, work_directory, ipfs_client, master_check_interval, recording_topics,
+    def __init__(self, work_directory, master_check_interval, recording_topics,
                  liability=None, liability_execution_id=None, objective=None, namespace=None):
 
         self.work_directory = work_directory
-        self.ipfs_client = ipfs_client
         self.master_check_interval = master_check_interval
         self.recording_topics = recording_topics
 
@@ -50,8 +48,10 @@ class LiabilityExecutionThread(object):
 
         ipfs_add_file_request = IpfsUploadFileRequest()
         ipfs_add_file_request.file.filepath = self.__liability_result_file
-        ipfs_add_file_response = ipfs_fileutils.ipfs_upload_file(self.ipfs_client, ipfs_add_file_request)
 
+        rospy.wait_for_service('/ipfs/add_file')
+        ipfs_upload_proxy = rospy.ServiceProxy('/ipfs/add_file', IpfsUploadFile)
+        ipfs_add_file_response = ipfs_upload_proxy(ipfs_add_file_request)
         return ipfs_add_file_response.ipfs_address
 
     def interrupt(self, delete_result=True):
@@ -74,7 +74,10 @@ class LiabilityExecutionThread(object):
         ipfs_get_file_request = IpfsDownloadFileRequest()
         ipfs_get_file_request.ipfs_address = self.execution_objective
         ipfs_get_file_request.file.filepath = self.__liability_objective_dst_file
-        ipfs_get_file_response = ipfs_fileutils.ipfs_download_file(self.ipfs_client, ipfs_get_file_request)
+
+        rospy.wait_for_service('/ipfs/get_file')
+        ipfs_download_proxy = rospy.ServiceProxy('/ipfs/get_file', IpfsDownloadFile)
+        ipfs_get_file_response = ipfs_download_proxy(ipfs_get_file_request)
 
         if not ipfs_get_file_response.success:
             rospy.logerr("Failed to download %s objective with IPFS error msg: %s",

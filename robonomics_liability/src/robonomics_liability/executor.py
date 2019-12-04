@@ -8,12 +8,10 @@ from robonomics_liability.srv import FinishLiability, FinishLiabilityResponse, \
     StartLiability, StartLiabilityResponse, PersistenceLiabilityTimestamp, \
     ReadLiability
 from robonomics_msgs.msg import Result
-from urllib.parse import urlparse
 from threading import Thread
 from .LiabilityExecutionThread import LiabilityExecutionThread
 from queue import Queue
 import rospy
-import ipfsapi
 import os
 from ethereum_common import eth_keyfile_helper
 
@@ -35,9 +33,6 @@ class Executor:
         __keyfile_password_file = rospy.get_param('~keyfile_password_file')
         __keyfile_helper = eth_keyfile_helper.KeyfileHelper(__keyfile, keyfile_password_file=__keyfile_password_file)
         self.__account = __keyfile_helper.get_local_account_from_keyfile()
-
-        ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_client = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
 
         self.liability_execution_threads = {}
 
@@ -157,7 +152,6 @@ class Executor:
         rospy.loginfo('Use directory %s for liability %s executor thread',
                       liability_work_directory, liability.address.address)
         thread = LiabilityExecutionThread(liability_work_directory,
-                                          self.ipfs_client,
                                           self.master_check_interval,
                                           self.recording_topics,
                                           liability=liability)

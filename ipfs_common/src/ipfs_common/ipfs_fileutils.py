@@ -5,28 +5,31 @@ from shutil import move
 from ipfs_common.srv import IpfsUploadFileResponse, IpfsDownloadFileResponse
 
 
-def ipfs_upload_file(ipfs_client, add_file_request):
+def _ipfs_upload_file(ipfs_file_clients, add_file_request):
     add_file_response = IpfsUploadFileResponse()
+    add_file_response.success = False
 
     filepath = add_file_request.file.filepath
     if os.path.isfile(filepath):
-        ipfs_response = ipfs_client.add(filepath)
-        try:
-            add_file_response.ipfs_address.multihash = ipfs_response['Hash']
-            add_file_response.success = True
-        except TypeError:
-            rospy.logwarn('IPFS add proceeding error: %s', ipfs_response[1]['Message'])
-            add_file_response.ipfs_address.multihash = ipfs_response[0]['Hash']
-            add_file_response.error_msg = ipfs_response[1]['Message']
-            add_file_response.success = False
+        for ipfs_client in ipfs_file_clients:
+            try:
+                ipfs_response = ipfs_client.add(filepath)
+                if not add_file_response.success:
+                    add_file_response.ipfs_address.multihash = ipfs_response['Hash']
+                    add_file_response.error_msg = ''
+                    add_file_response.success = True
+            except Exception as e:
+                rospy.logerr("IPFS: Failed to add file %s with exception %s", filepath, str(e))
+                if not add_file_response.success:
+                    add_file_response.error_msg = 'IPFS: Failed to add file {0}'.format(filepath)
     else:
         add_file_response.error_msg = "File not found"
-        add_file_response.success = False
 
     return add_file_response
 
 
-def ipfs_download_file(ipfs_client, download_file_request):
+def _ipfs_download_file(ipfs_file_clients, download_file_request):
+    ipfs_client = ipfs_file_clients[0]
     download_file_response = IpfsDownloadFileResponse()
 
     file_dst = download_file_request.file.filepath
