@@ -115,7 +115,7 @@ class Listener:
 
         p_result = c.call().result()
         if p_result:
-            msg.result.multihash = base58.b58encode(p_result)
+            msg.result.multihash = base58.b58encode(p_result).decode()
         rospy.logdebug('New liability readed: %s', msg)
         return msg
 

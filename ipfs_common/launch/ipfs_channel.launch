@@ -3,14 +3,17 @@
   <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
+  <arg name="ipfs_pubsub_provider" default="$(arg ipfs_http_provider)"/>
+  <arg name="ipfs_file_providers" default="[$(arg ipfs_http_provider)]"/>
+
   <!-- PubSub information channel interface -->
   <node pkg="ipfs_common" type="ipfs_channel_node" name="ipfs_channel" respawn="true" output="screen">
-    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    <param name="ipfs_pubsub_provider" value="$(arg ipfs_pubsub_provider)" />
     <param name="lighthouse_contract" value="$(arg lighthouse_contract)" />
   </node>
 
   <node pkg="ipfs_common" type="ipfs_common_node" name="ipfs_common_node" respawn="true" output="screen">
-    <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+    <rosparam param="ipfs_file_providers" subst_value="True">$(arg ipfs_file_providers)</rosparam>
   </node>
 
 </launch>

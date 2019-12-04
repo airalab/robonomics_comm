@@ -6,8 +6,7 @@ from robonomics_msgs.msg import Result, Offer, Demand
 from robonomics_msgs import robonomicsMessageUtils
 from robonomics_liability.msg import Liability
 from robonomics_liability.srv import FinishLiability, StartLiability
-from urllib.parse import urlparse
-import ipfsapi
+from ipfs_common.ipfs_common import build_client
 from tempfile import TemporaryDirectory
 from std_msgs.msg import *
 from web3 import Web3, HTTPProvider
@@ -23,8 +22,7 @@ class TestExecutor(unittest.TestCase):
         rospy.init_node(NAME)
         super(TestExecutor, self).__init__(*args)
 
-        ipfs_provider = urlparse(rospy.get_param('~ipfs_http_provider')).netloc.split(':')
-        self.ipfs_client = ipfsapi.connect(ipfs_provider[0], int(ipfs_provider[1]))
+        self.ipfs_client = build_client(rospy.get_param('~ipfs_http_provider'))
 
         self.test_token = rospy.get_param('~test_token')
         self.test_bid_publisher = rospy.Publisher('/liability/test_executor/o/eth/signing/offer', Offer, queue_size=10)
