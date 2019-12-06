@@ -5,6 +5,7 @@
   <arg name="ipfs_file_providers" default="[$(arg ipfs_http_provider)]" />
 
   <arg name="ipfs_swarm_connect_addresses" default="" />
+  <arg name="ipfs_swarm_connect_to" default="[$(arg ipfs_swarm_connect_addresses)]" />
 
   <!-- PubSub information channel interface -->
   <node pkg="ipfs_common" type="ipfs_channel_node" name="ipfs_channel" respawn="true" output="screen">
@@ -14,8 +15,7 @@
 
   <node pkg="ipfs_common" type="ipfs_common_node" name="ipfs_common_node" respawn="true" output="screen">
     <param name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
-    <param name="ipfs_swarm_connect_addresses" value="$(arg ipfs_swarm_connect_addresses)"
-      if="$(eval len(arg('ipfs_swarm_connect_addresses')) > 0)" />
+    <rosparam param="ipfs_swarm_connect_to"  subst_value="True">$(arg ipfs_swarm_connect_to)</rosparam>
     <rosparam param="ipfs_file_providers" subst_value="True">$(arg ipfs_file_providers)</rosparam>
   </node>
 
