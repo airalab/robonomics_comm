@@ -3,6 +3,7 @@
   <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
   <arg name="web3_ws_provider" default="ws://127.0.0.1:8546" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
+  <arg name="ipfs_swarm_connect_addresses" default="" />
   <arg name="ipfs_public_providers" default="" />
   <arg name="factory_contract" default="factory.5.robonomics.eth" />
   <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
@@ -36,8 +37,9 @@
     <group ns="infochan">
       <include  file="$(find ipfs_common)/launch/ipfs_channel.launch">
         <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
-        <arg name="ipfs_pubsub_provider" default="$(arg ipfs_http_provider)"/>
-        <arg name="ipfs_file_providers" default="[$(arg ipfs_http_provider), $(arg ipfs_public_providers) ]"/>
+        <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
+        <arg name="ipfs_file_providers" value="[$(arg ipfs_http_provider), $(arg ipfs_public_providers) ]"/>
+        <arg name="ipfs_swarm_connect_addresses" value="$(arg ipfs_swarm_connect_addresses)" />
       </include>
 
       <!-- message signer interface -->

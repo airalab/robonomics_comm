@@ -19,9 +19,9 @@ class IPFSChannel:
         '''
         rospy.init_node('ipfs_channel')
         self.lighthouse = rospy.get_param('~lighthouse_contract')
-        self.ipfs_pubsub_provider = rospy.get_param('~ipfs_pubsub_provider')
+        self.ipfs_http_provider = rospy.get_param('~ipfs_http_provider')
 
-        self.ipfs_pubsub_client = build_client(self.ipfs_pubsub_provider)
+        self.ipfs_pubsub_client = build_client(self.ipfs_http_provider)
         self.ipfs_topic_subscriber = subscribe(self.ipfs_pubsub_client, self.lighthouse)
 
         self.incoming_offer  = rospy.Publisher('incoming/offer',  Offer, queue_size=10)
@@ -48,7 +48,7 @@ class IPFSChannel:
         def channel_thread():
             while True:
                 try:
-                    rospy.loginfo("[ipfs_channel] subscribe to %s topic %s", self.ipfs_pubsub_provider, self.lighthouse)
+                    rospy.loginfo("[ipfs_channel] subscribe to %s topic %s", self.ipfs_http_provider, self.lighthouse)
                     for m in self.ipfs_topic_subscriber:
                         converted = convertMessage(m)
                         if not (converted is None):
@@ -69,7 +69,7 @@ class IPFSChannel:
                                 self.incoming_added_pending_transaction_feedback.publish(converted)
                 except Exception as e:
                     rospy.logerr("[ipfs_channel] channel_thread exception: %s", e)
-                    self.ipfs_pubsub_client = build_client(self.ipfs_pubsub_provider)
+                    self.ipfs_pubsub_client = build_client(self.ipfs_http_provider)
                     self.ipfs_topic_subscriber = subscribe(self.ipfs_pubsub_client, self.lighthouse)
 
         Thread(target=channel_thread, daemon=True).start()
