@@ -8,6 +8,7 @@ from base64 import b64decode
 from json import dumps, loads
 import rospy
 
+
 def publish(ipfs_pubsub_client, topic, msg):
     '''
         Publish message to given topic.

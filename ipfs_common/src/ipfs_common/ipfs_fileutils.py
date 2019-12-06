@@ -28,8 +28,7 @@ def _ipfs_upload_file(ipfs_file_clients, add_file_request):
     return add_file_response
 
 
-def _ipfs_download_file(ipfs_file_clients, download_file_request):
-    ipfs_client = ipfs_file_clients[0]
+def _ipfs_download_file(ipfs_client, download_file_request):
     download_file_response = IpfsDownloadFileResponse()
 
     file_dst = download_file_request.file.filepath
