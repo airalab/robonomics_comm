@@ -34,7 +34,7 @@ class IPFSCommon:
         http_provider = rospy.get_param('~ipfs_http_provider')
         self.ipfs_http_client = build_client(http_provider)
 
-        self.swarm_connect_addresses = rospy.get_param('~ipfs_swarm_connect_addresses', None)
+        self.swarm_connect_addresses = rospy.get_param('~ipfs_swarm_connect_to')
         self.swarm_connect_interval = rospy.get_param('~swarm_connect_interval', 60)
 
         def ipfs_add_file(add_file_request):
@@ -48,13 +48,13 @@ class IPFSCommon:
     def spin(self):
         def __ipfs_swarm_connect_thread():
             try:
-                rospy.loginfo("swarm connect to %s", self.swarm_connect_addresses)
-                self.ipfs_http_client.swarm.connect(self.swarm_connect_addresses)
+                for s in self.swarm_connect_addresses:
+                    self.ipfs_http_client.swarm.connect(s)
             except Exception as e:
                 rospy.logerr("[ipfs_common] ipfs swarm connect error: %s", str(e))
             Timer(self.swarm_connect_interval, __ipfs_swarm_connect_thread).start()
 
-        if self.swarm_connect_addresses is not None:
+        if len(self.swarm_connect_addresses) != 0:
             rospy.loginfo("[ipfs_common] launch swarm connect to %s", self.swarm_connect_addresses)
             __ipfs_swarm_connect_thread()
 
