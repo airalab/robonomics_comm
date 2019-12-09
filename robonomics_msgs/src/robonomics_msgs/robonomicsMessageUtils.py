@@ -11,8 +11,6 @@ from web3.utils.normalizers import (
     abi_ens_resolver
 )
 from binascii import hexlify, unhexlify
-from ethereum_common.msg import Address, UInt256
-from ipfs_common.msg import Multihash
 
 
 def resolve_ens_name_to_address(name_address, web3):
@@ -149,43 +147,23 @@ def addedOrderFeedback2dict(f):
 
 def addedPendingTransactionFeedback2dict(f):
     return {
-        'tx': hexlify(f.tx).decode('utf-8')
+        'tx': f.tx.txhash
     }
 
 
 def dict2demand(m):
     msg = Demand()
 
-    msg.model = Multihash()
     msg.model.multihash = m['model']
-
-    msg.objective = Multihash()
     msg.objective.multihash = m['objective']
-
-    msg.token = Address()
     msg.token.address = m['token']
-
-    msg.cost = UInt256()
     msg.cost.uint256 = str(m['cost'])
-
-    msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
-
-    msg.validator = Address()
     msg.validator.address = m['validator']
-
-    msg.validatorFee = UInt256()
     msg.validatorFee.uint256 = str(m['validatorFee'])
-
-    msg.deadline = UInt256()
     msg.deadline.uint256 = str(m['deadline'])
-
-    msg.sender = Address()
     msg.sender.address = m['sender']
-
-    msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
-
     if m['signature']:
         msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -194,36 +172,16 @@ def dict2demand(m):
 def dict2offer(m):
     msg = Offer()
 
-    msg.model = Multihash()
     msg.model.multihash = m['model']
-
-    msg.objective = Multihash()
     msg.objective.multihash = m['objective']
-
-    msg.token = Address()
     msg.token.address = m['token']
-
-    msg.cost = UInt256()
     msg.cost.uint256 = str(m['cost'])
-
-    msg.validator = Address()
     msg.validator.address = m['validator']
-
-    msg.lighthouse = Address()
     msg.lighthouse.address = m['lighthouse']
-
-    msg.lighthouseFee = UInt256()
     msg.lighthouseFee.uint256 = str(m['lighthouseFee'])
-
-    msg.deadline = UInt256()
     msg.deadline.uint256 = str(m['deadline'])
-
-    msg.sender = Address()
     msg.sender.address = m['sender']
-
-    msg.nonce = UInt256()
     msg.nonce.uint256 = str(m['nonce'])
-
     if m['signature']:
         msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
@@ -232,12 +190,8 @@ def dict2offer(m):
 def dict2res(m):
     msg = Result()
 
-    msg.liability = Address()
     msg.liability.address = m['liability']
-
-    msg.result = Multihash()
     msg.result.multihash = m['result']
-
     msg.success = m['success']
     if m['signature']:
         msg.signature = unhexlify(m['signature'].encode('utf-8'))
@@ -248,10 +202,7 @@ def dict2addedOrderFeedback(m):
     msg = AddedOrderFeedback()
 
     msg.order = unhexlify(m['order'].encode('utf-8'))
-
-    msg.accepted = UInt256()
     msg.accepted.uint256 = str(m['accepted'])
-
     msg.signature = unhexlify(m['signature'].encode('utf-8'))
     return msg
 
@@ -259,5 +210,5 @@ def dict2addedOrderFeedback(m):
 def dict2addedPendingTransactionFeedback(m):
     msg = AddedPendingTransactionFeedback()
 
-    msg.tx = unhexlify(m['tx'].encode('utf-8'))
+    msg.tx.txhash = m['tx']
     return msg

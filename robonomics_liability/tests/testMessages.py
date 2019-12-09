@@ -1,5 +1,5 @@
 from robonomics_msgs.msg import Demand, Offer, Result, AddedOrderFeedback, AddedPendingTransactionFeedback
-from ethereum_common.msg import Address, UInt256
+from ethereum_common.msg import Address, UInt256, TxHash
 from ipfs_common.msg import Multihash
 from binascii import unhexlify
 
@@ -130,7 +130,9 @@ validAddedPendingTransactionFeedbackDict = {
 def getValidAddedPendingTransactionFeedback():
     f = AddedPendingTransactionFeedback()
 
-    f.tx = unhexlify(validAddedPendingTransactionFeedbackDict['tx'].encode('utf-8'))
+    tx = TxHash()
+    tx.txhash = str(validAddedPendingTransactionFeedbackDict['tx'])
+    f.tx = tx
     return f
 
 
