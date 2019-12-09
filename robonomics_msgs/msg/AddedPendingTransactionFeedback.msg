@@ -1,2 +1,2 @@
 # Transaction hash
-uint8[32]               tx          # tx hash
+ethereum_common/TxHash tx         # tx

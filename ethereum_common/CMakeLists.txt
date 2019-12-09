@@ -52,6 +52,7 @@ add_message_files(
     UInt256.msg
     TransferEvent.msg
     ApprovalEvent.msg
+    TxHash.msg
 )
 
 ## Generate services in the 'srv' folder
