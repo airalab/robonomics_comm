@@ -2,7 +2,9 @@
 
   <arg name="lighthouse_contract" default="airalab.lighthouse.5.robonomics.eth" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
-  <arg name="ipfs_file_providers" default="[$(arg ipfs_http_provider)]" />
+
+  <arg name="ipfs_public_providers" default="" />
+  <arg name="ipfs_file_providers" default="[$(arg ipfs_public_providers)]" />
 
   <arg name="ipfs_swarm_connect_addresses" default="" />
   <arg name="ipfs_swarm_connect_to" default="[$(arg ipfs_swarm_connect_addresses)]" />
