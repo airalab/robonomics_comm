@@ -10,23 +10,38 @@ import base58
 from web3.utils.normalizers import (
     abi_ens_resolver
 )
+from web3.utils.ens import is_ens_name
+from web3.exceptions import InvalidAddress
 from binascii import hexlify, unhexlify
+import eth_utils.address
 
 
-def resolve_ens_name_to_address(name_address, web3):
-    (abi_type, resolved) = abi_ens_resolver(w3=web3, abi_type="address", val=name_address)
+def __to_checksum_address(address, web3):
+    if eth_utils.address.is_address(address):
+        if eth_utils.address.is_checksum_address(address):
+            return address
+        else:
+            return eth_utils.address.to_checksum_address(address)
+    elif is_ens_name(address):
+        return __resolve_ens_name_to_address(address, web3=web3)
+    else:
+        raise InvalidAddress("%a is not valid address or ENS name" % address)
+
+
+def __resolve_ens_name_to_address(ens_name, web3):
+    (abi_type, resolved) = abi_ens_resolver(w3=web3, abi_type="address", val=ens_name)
     return resolved
 
 
 def convert_msg_ens_names_to_addresses(msg, web3=None):
     if web3 is not None:
         if isinstance(msg, Offer) or isinstance(msg, Demand):
-            msg.token.address = resolve_ens_name_to_address(msg.token.address, web3)
-            msg.lighthouse.address = resolve_ens_name_to_address(msg.lighthouse.address, web3)
-            msg.validator.address = resolve_ens_name_to_address(msg.validator.address, web3)
-            msg.sender.address = resolve_ens_name_to_address(msg.sender.address, web3)
+            msg.token.address = __to_checksum_address(msg.token.address, web3)
+            msg.lighthouse.address = __to_checksum_address(msg.lighthouse.address, web3)
+            msg.validator.address = __to_checksum_address(msg.validator.address, web3)
+            msg.sender.address = __to_checksum_address(msg.sender.address, web3)
         elif isinstance(msg, Result):
-            msg.liability.address = resolve_ens_name_to_address(msg.liability.address, web3)
+            msg.liability.address = __to_checksum_address(msg.liability.address, web3)
     return msg
 
 

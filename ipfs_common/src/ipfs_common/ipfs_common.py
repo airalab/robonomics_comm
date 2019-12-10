@@ -9,7 +9,7 @@ from threading import Timer
 import rospy
 import ipfshttpclient
 from urllib3.util.timeout import Timeout
-from ipfs_common.srv import IpfsUploadFile, IpfsDownloadFile
+from ipfs_common.srv import IpfsUploadFile, IpfsDownloadFile, IpfsUploadFileRequest
 
 
 def build_client(provider_endpoint):
@@ -33,17 +33,26 @@ class IPFSCommon:
 
         http_provider = rospy.get_param('~ipfs_http_provider')
         self.ipfs_http_client = build_client(http_provider)
+        self.ipfs_http_clients = [self.ipfs_http_client]
 
         self.swarm_connect_addresses = rospy.get_param('~ipfs_swarm_connect_to')
         self.swarm_connect_interval = rospy.get_param('~swarm_connect_interval', 60)
 
+        self.ipfs_add_file_publisher = rospy.Publisher('~ipfs/add_to_file_providers', IpfsUploadFileRequest, queue_size=10)
+
         def ipfs_add_file(add_file_request):
-            return _ipfs_upload_file(self.ipfs_file_clients, add_file_request)
+            self.ipfs_add_file_publisher.publish(add_file_request)
+            return _ipfs_upload_file(self.ipfs_http_clients, add_file_request)
         rospy.Service('/ipfs/add_file', IpfsUploadFile, ipfs_add_file)
 
         def ipfs_get_file(download_file_request):
             return _ipfs_download_file(self.ipfs_http_client, download_file_request)
         rospy.Service('/ipfs/get_file', IpfsDownloadFile, ipfs_get_file)
+
+        def __ipfs_add_to_file_providers(add_file_request):
+            _ipfs_upload_file(self.ipfs_file_clients, add_file_request)
+        if len(self.ipfs_file_clients) != 0:
+            rospy.Subscriber('~ipfs/add_to_file_providers', IpfsUploadFileRequest, __ipfs_add_to_file_providers)
 
     def spin(self):
         def __ipfs_swarm_connect_thread():

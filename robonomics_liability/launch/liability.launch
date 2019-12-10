@@ -38,7 +38,7 @@
       <include  file="$(find ipfs_common)/launch/ipfs_channel.launch">
         <arg name="lighthouse_contract" value="$(arg lighthouse_contract)" />
         <arg name="ipfs_http_provider" value="$(arg ipfs_http_provider)" />
-        <arg name="ipfs_file_providers" value="[$(arg ipfs_http_provider), $(arg ipfs_public_providers) ]"/>
+        <arg name="ipfs_public_providers" value="$(arg ipfs_public_providers)"/>
         <arg name="ipfs_swarm_connect_addresses" value="$(arg ipfs_swarm_connect_addresses)" />
       </include>
 
