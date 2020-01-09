@@ -2,26 +2,27 @@
 
 from ipfs_common.srv import IpfsUploadFile, IpfsDownloadFile
 from ipfs_common.msg import Multihash, Filepath
-from tempfile import NamedTemporaryFile, mktemp
+from tempfile import NamedTemporaryFile
 from rosbag import Bag
 import rospy
+import os
 
 
 def ipfs_download(multihash):
     rospy.wait_for_service('/ipfs/get_file')
     download = rospy.ServiceProxy('/ipfs/get_file', IpfsDownloadFile)
-
-    tmpfile = mktemp()
-
-    res = download(multihash, Filepath(tmpfile))
+    tmpfile = NamedTemporaryFile(delete=False)
+    res = download(multihash, Filepath(tmpfile.name))
+    tmpfile.close()
     if not res.success:
         raise Exception(res.error_msg)
     messages = {}
-    for topic, msg, timestamp in Bag(tmpfile, 'r').read_messages():
+    for topic, msg, timestamp in Bag(tmpfile.name, 'r').read_messages():
         if topic not in messages:
             messages[topic] = [msg]
         else:
             messages[topic].append(msg)
+    os.unlink(tmpfile.name)
     return messages
 
 
