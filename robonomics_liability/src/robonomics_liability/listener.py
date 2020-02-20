@@ -108,10 +108,13 @@ class Listener:
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()
         msg.lighthouse.address = c.call().lighthouse()
+        msg.lighthouseFee.uint256 = str(c.call().lighthouseFee())
         msg.token.address = c.call().token()
         msg.cost.uint256 = str(c.call().cost())
         msg.validator.address = c.call().validator()
         msg.validatorFee.uint256 = str(c.call().validatorFee())
+        msg.isSuccess = c.call().isSuccess()
+        msg.isFinalized = c.call().isFinalized()
 
         p_result = c.call().result()
         if p_result:
