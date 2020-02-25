@@ -44,7 +44,7 @@ class Listener:
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
         self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
-        self.poll_interval = rospy.get_param('~poll_interval', 5)
+        self.poll_interval = rospy.get_param('~poll_interval', 15)
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)
 
