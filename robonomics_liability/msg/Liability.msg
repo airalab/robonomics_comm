@@ -2,10 +2,13 @@ ethereum_common/Address address
 ipfs_common/Multihash   model
 ipfs_common/Multihash   objective
 ipfs_common/Multihash   result
+ethereum_common/Address token
+ethereum_common/UInt256 cost
 ethereum_common/Address promisee
 ethereum_common/Address promisor
 ethereum_common/Address lighthouse
-ethereum_common/Address token
-ethereum_common/UInt256 cost
+ethereum_common/UInt256 lighthouseFee
 ethereum_common/Address validator
 ethereum_common/UInt256 validatorFee
+bool                    isSuccess
+bool                    isFinalized

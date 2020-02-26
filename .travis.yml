@@ -1,2 +1,2 @@
-language: nix 
-script: make package 
+language: nix
+script: nix-build -A package release.nix

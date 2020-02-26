@@ -44,7 +44,7 @@ class Listener:
         self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
         self.ens.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
-        self.poll_interval = rospy.get_param('~poll_interval', 5)
+        self.poll_interval = rospy.get_param('~poll_interval', 15)
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)
 
@@ -108,10 +108,13 @@ class Listener:
         msg.promisee.address = c.call().promisee()
         msg.promisor.address = c.call().promisor()
         msg.lighthouse.address = c.call().lighthouse()
+        msg.lighthouseFee.uint256 = str(c.call().lighthouseFee())
         msg.token.address = c.call().token()
         msg.cost.uint256 = str(c.call().cost())
         msg.validator.address = c.call().validator()
         msg.validatorFee.uint256 = str(c.call().validatorFee())
+        msg.isSuccess = c.call().isSuccess()
+        msg.isFinalized = c.call().isFinalized()
 
         p_result = c.call().result()
         if p_result:
