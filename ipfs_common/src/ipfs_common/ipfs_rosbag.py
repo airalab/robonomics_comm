@@ -8,7 +8,7 @@ import rospy
 import os
 
 
-def ipfs_download(multihash):
+def ipfs_download(multihash: Multihash) -> (dict, Bag):
     rospy.wait_for_service('/ipfs/get_file')
     download = rospy.ServiceProxy('/ipfs/get_file', IpfsDownloadFile)
     tmpfile = NamedTemporaryFile(delete=False)
@@ -17,16 +17,17 @@ def ipfs_download(multihash):
     if not res.success:
         raise Exception(res.error_msg)
     messages = {}
-    for topic, msg, timestamp in Bag(tmpfile.name, 'r').read_messages():
+    bag = Bag(tmpfile.name, 'r')
+    for topic, msg, timestamp in bag.read_messages():
         if topic not in messages:
             messages[topic] = [msg]
         else:
             messages[topic].append(msg)
     os.unlink(tmpfile.name)
-    return messages
+    return (messages, bag)
 
 
-def ipfs_upload(messages):
+def ipfs_upload(messages: Multihash):
     rospy.wait_for_service('/ipfs/add_file')
     upload = rospy.ServiceProxy('/ipfs/add_file', IpfsUploadFile)
     with NamedTemporaryFile(delete=False) as tmpfile:
@@ -57,7 +58,8 @@ class IpfsRosBag:
 
         if messages is None:
             self.multihash = multihash
-            self.messages = ipfs_download(multihash)
+            self.messages, self.bag = ipfs_download(multihash)
         else:
             self.messages = messages
             self.multihash = ipfs_upload(messages)
+            self.bag = None
