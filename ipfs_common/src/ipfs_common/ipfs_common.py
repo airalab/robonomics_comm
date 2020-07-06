@@ -14,11 +14,7 @@ from ipfs_common.srv import IpfsUploadFile, IpfsDownloadFile, IpfsUploadFileRequ
 
 def build_client(provider_endpoint):
     rospy.loginfo("Build IPFS client: %s", provider_endpoint)
-    ipfs_url = urlparse(provider_endpoint)
-    ipfs_netloc = ipfs_url.netloc.split(':')
-    no_read_timeout = Timeout(read=None)
-    return ipfshttpclient.connect("/dns/{0}/tcp/{1}/{2}".format(ipfs_netloc[0], ipfs_netloc[1], ipfs_url.scheme),
-                                  session=True, timeout=no_read_timeout)
+    return ipfshttpclient.connect(provider_endpoint, session=True)
 
 
 class IPFSCommon:
