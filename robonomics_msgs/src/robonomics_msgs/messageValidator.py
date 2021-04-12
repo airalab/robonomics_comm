@@ -42,10 +42,12 @@ def isTxHash(arg):
 
 isIpfsBase58Hash = v.All(str, v.Length(min=46, max=46), v.Match(r'^[a-zA-Z0-9]+$'))
 isHexAddress = v.All(str, v.Length(min=42, max=42), v.Match(r'^0x[a-fA-F0-9]+$'))
+isSubAddress = v.All(str, v.Length(min=48, max=48), v.Match(r'^4[a-zA-Z0-9]+$'))
 isEnsName = v.All(str, v.Any(v.Match(r'^.+\.eth$'), v.Match(r'^.+\.sid$'), v.Match(r'^.+\.test$')))
 isAddress = v.Any(
     isEnsName,
-    isHexAddress
+    isHexAddress,
+    isSubAddress
 )
 
 schemaAskBid = v.All(
