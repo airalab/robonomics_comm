@@ -14,7 +14,7 @@ from web3.utils.ens import is_ens_name
 from web3.exceptions import InvalidAddress
 from binascii import hexlify, unhexlify
 import eth_utils.address
-
+import re
 
 def __to_checksum_address(address, web3):
     if eth_utils.address.is_address(address):
@@ -22,6 +22,8 @@ def __to_checksum_address(address, web3):
             return address
         else:
             return eth_utils.address.to_checksum_address(address)
+    elif (re.match("^4[a-zA-Z0-9]+$", address) is not None) and (len(address) == 48):
+        return address
     elif is_ens_name(address):
         return __resolve_ens_name_to_address(address, web3=web3)
     else:
@@ -46,16 +48,20 @@ def convert_msg_ens_names_to_addresses(msg, web3=None):
 
 
 def demand_hash(msg, nonce):
+    if (re.match("^4[a-zA-Z0-9]+$", msg.liability.address) is not None) and (len(msg.liability.address) == 48):
+        address_type = 'string'
+    else:
+        address_type = 'address'
     types = ['bytes',
              'bytes',
-             'address',
+             address_type,
              'uint256',
-             'address',
-             'address',
+             address_type,
+             address_type,
              'uint256',
              'uint256',
              'uint256',
-             'address']
+             address_type]
     return Web3.soliditySha3(types, [base58.b58decode(msg.model.multihash),
                                      base58.b58decode(msg.objective.multihash),
                                      msg.token.address,
@@ -69,16 +75,20 @@ def demand_hash(msg, nonce):
 
 
 def offer_hash(msg, nonce):
+    if (re.match("^4[a-zA-Z0-9]+$", msg.liability.address) is not None) and (len(msg.liability.address) == 48):
+        address_type = 'string'
+    else:
+        address_type = 'address'
     types = ['bytes',
              'bytes',
-             'address',
+             address_type,
              'uint256',
-             'address',
-             'address',
+             address_type,
+             address_type,
              'uint256',
              'uint256',
              'uint256',
-             'address']
+             address_type]
     return Web3.soliditySha3(types, [base58.b58decode(msg.model.multihash),
                                      base58.b58decode(msg.objective.multihash),
                                      msg.token.address,
@@ -92,9 +102,13 @@ def offer_hash(msg, nonce):
 
 
 def result_hash(msg):
-    types = ['address',
-             'bytes',
-             'bool']
+    if (re.match("^4[a-zA-Z0-9]+$", msg.liability.address) is not None) and (len(msg.liability.address) == 48):
+        address_type = 'string'
+    else:
+        address_type = 'address'
+    types = [address_type,
+            'bytes',
+            'bool']
     return Web3.soliditySha3(types, [msg.liability.address,
                                      base58.b58decode(msg.result.multihash),
                                      msg.success])
